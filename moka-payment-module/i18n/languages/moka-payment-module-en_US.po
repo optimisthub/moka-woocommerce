@@ -1,0 +1,116 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_US\n"
+
+# This file is distributed under the GNU General Public License v2 or later.
+msgid "Installments Options."
+msgstr "Installments Options."
+
+msgid "Payment Error."
+msgstr "Payment Error."
+
+msgid "Enable/Disable."
+msgstr "Enable/Disable."
+
+msgid "Enable Moka Module."
+msgstr "Enable Moka Module."
+
+msgid "Title."
+msgstr "Title."
+
+msgid "This message will show to the user during checkout."
+msgstr "This message will show to the user during checkout."
+
+msgid "Description."
+msgstr "Description."
+
+msgid "Installment."
+msgstr "Installment."
+
+msgid "Moka Dealer Code."
+msgstr "Moka Dealer Code."
+
+msgid "Dealer Code Given by Moka System."
+msgstr "Dealer Code Given by Moka System."
+
+msgid "installments options."
+msgstr "installments options."
+
+msgid "Moka Username."
+msgstr "Moka Username."
+
+msgid "Username Given by Moka System."
+msgstr "Username Given by Moka System."
+
+msgid "Moka Password."
+msgstr "Moka Password."
+
+msgid "Password Given by Moka System."
+msgstr "Password Given by Moka System."
+
+msgid "Three D Selection."
+msgstr "Three D Selection."
+
+msgid "Installment Fee."
+msgstr "Installment Fee."
+
+msgid "Pay with your credit card via moka."
+msgstr "Online payment by card."
+
+msgid "Payment successful."
+msgstr "Payment successful."
+
+msgid "Thank you for shopping with us. However, the transaction has been declined."
+msgstr "Thank you for shopping with us. However, the transaction has been declined."
+
+msgid "Transaction ERROR."
+msgstr "Transaction ERROR."
+
+msgid "Security error. Illegal access detected."
+msgstr "Security error. Illegal access detected."
+
+msgid "Error."
+msgstr "Error."
+
+msgid "Your bank response."
+msgstr "Your bank response."
+
+msgid "Checkout Button."
+msgstr "Checkout Button."
+
+msgid "Please check the form and try again."
+msgstr "Please check the form and try again."
+
+msgid "This controls the description which the user sees during checkout."
+msgstr "This controls the description which the user sees during checkout."
+
+msgid "Name on Card"
+msgstr "Name on Card"
+
+msgid "Card Number"
+msgstr "Card Number"
+
+msgid "MM/YY"
+msgstr "MM/YY"
+
+msgid "All Installment"
+msgstr "All Installment"
+
+msgid "Pay"
+msgstr "Pay"
+
+msgid "Installment"
+msgstr "Installment"
+
+msgid "Payment Form"
+msgstr "Payment Form"
