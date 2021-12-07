@@ -8,3 +8,44 @@
  * Author URI: https://optimisthub.com?ref=mokaPayment
  * Domain Path: /i18n/languages/
  */
+
+add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
+function addOptimisthubMokaGateway( $gateways ) {
+	$gateways[] = 'OptimistHub_Moka'; 
+	return $gateways;
+}
+
+add_action( 'plugins_loaded', 'initOptimisthubGatewayClass' );
+function initOptimisthubGatewayClass() {
+
+	class OptimistHub_Moka extends WC_Payment_Gateway {
+ 
+ 		public function __construct() 
+        {
+ 		}
+ 
+ 		public function init_form_fields()
+        {
+	 	}
+
+		public function payment_fields() 
+        {
+		}
+
+	 	public function payment_scripts() 
+        {
+	 	}
+         
+		public function validate_fields() 
+        {
+		}
+        
+		public function process_payment( $order_id ) 
+        {
+	 	}
+         
+		public function webhook() 
+        {
+	 	}
+ 	}
+}
