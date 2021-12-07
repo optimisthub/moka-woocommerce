@@ -6,20 +6,11 @@
     'aliases' => 
     array (
     ),
-    'reference' => '47d7f5a2e51dd2f131e80910cbb82cd732001f4d',
-    'name' => '__root__',
+    'reference' => '893353817ed134b67b890fdee29650c50dbb9fd2',
+    'name' => 'optimisthub/moka-woocommerce',
   ),
   'versions' => 
   array (
-    '__root__' => 
-    array (
-      'pretty_version' => 'dev-master',
-      'version' => 'dev-master',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '47d7f5a2e51dd2f131e80910cbb82cd732001f4d',
-    ),
     'brick/math' => 
     array (
       'pretty_version' => '0.9.3',
@@ -55,6 +46,15 @@
       array (
       ),
       'reference' => '8c2a18ce3e67c34efc1b29f64fe61304368259a2',
+    ),
+    'optimisthub/moka-woocommerce' => 
+    array (
+      'pretty_version' => 'dev-master',
+      'version' => 'dev-master',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '893353817ed134b67b890fdee29650c50dbb9fd2',
     ),
     'psr/container' => 
     array (
@@ -225,12 +225,12 @@
     ),
     'tightenco/collect' => 
     array (
-      'pretty_version' => 'v8.68.0',
-      'version' => '8.68.0.0',
+      'pretty_version' => 'v8.75.0',
+      'version' => '8.75.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '8bb884bdab8088b358074f629d8402b64efce2c0',
+      'reference' => 'd05d932b9f066b2de4601fb17f72aab69b7d1c9b',
     ),
     'twig/twig' => 
     array (

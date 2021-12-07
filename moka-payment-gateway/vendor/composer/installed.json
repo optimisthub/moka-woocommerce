@@ -1567,29 +1567,29 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v8.68.0",
-            "version_normalized": "8.68.0.0",
+            "version": "v8.75.0",
+            "version_normalized": "8.75.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tighten/collect.git",
-                "reference": "8bb884bdab8088b358074f629d8402b64efce2c0"
+                "reference": "d05d932b9f066b2de4601fb17f72aab69b7d1c9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tighten/collect/zipball/8bb884bdab8088b358074f629d8402b64efce2c0",
-                "reference": "8bb884bdab8088b358074f629d8402b64efce2c0",
+                "url": "https://api.github.com/repos/tighten/collect/zipball/d05d932b9f066b2de4601fb17f72aab69b7d1c9b",
+                "reference": "d05d932b9f066b2de4601fb17f72aab69b7d1c9b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2|^8.0",
-                "symfony/var-dumper": "^3.4 || ^4.0 || ^5.0"
+                "symfony/var-dumper": "^3.4 || ^4.0 || ^5.0 || ^6.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.0",
                 "nesbot/carbon": "^2.23.0",
                 "phpunit/phpunit": "^8.3"
             },
-            "time": "2021-11-30T18:41:31+00:00",
+            "time": "2021-12-07T18:53:43+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -1618,7 +1618,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tighten/collect/issues",
-                "source": "https://github.com/tighten/collect/tree/v8.68.0"
+                "source": "https://github.com/tighten/collect/tree/v8.75.0"
             },
             "install-path": "../tightenco/collect"
         },

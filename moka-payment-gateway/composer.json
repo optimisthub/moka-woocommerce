@@ -1,5 +1,18 @@
 {
+    "name": "optimisthub/moka-woocommerce",
+    "type": "project",
+    "license": "MIT",
+    "description": "Moka Payment Gateway for WooCommerce",
+    "homepage": "https://optimisthub.com/",
+    "authors": [
+        {
+            "name": "Fatih Toprak",
+            "email": "patron@fatihtoprak.com",
+            "homepage": "https://github.com/optimisthub"
+        } 
+    ],
     "require": {
+        "php": ">=7.1",
         "hellonico/timber-dump-extension": "^1.0",
         "spatie/ray": "^1.32",
         "rappasoft/laravel-helpers": "^2.0",
