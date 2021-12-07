@@ -8,9 +8,9 @@
 
 This version is still under development. Follow the link below to download and install the version developed by Kahve Digital.
 
-### Older version of
+### Older version
 
 This version was developed by Kahve Digital. The new version will be published by the Optimist Hub Developer team and announced here.
 
-- For older versions : https://github.com/optimisthub/moka-woocommerce/archive/refs/tags/1.0.zip
+- Version 1.0 : https://github.com/optimisthub/moka-woocommerce/archive/refs/tags/1.0.zip
 
