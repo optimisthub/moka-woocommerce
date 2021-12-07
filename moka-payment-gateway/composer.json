@@ -1,0 +1,9 @@
+{
+    "require": {
+        "hellonico/timber-dump-extension": "^1.0",
+        "spatie/ray": "^1.32",
+        "rappasoft/laravel-helpers": "^2.0",
+        "nesbot/carbon": "^2.55",
+        "tightenco/collect": "^8.68"
+    }
+}
