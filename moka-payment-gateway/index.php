@@ -9,6 +9,11 @@
  * Domain Path: /i18n/languages/
  */
 
+if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) 
+{
+    require __DIR__ . '/vendor/autoload.php';
+}
+
 add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
 function addOptimisthubMokaGateway( $gateways ) {
 	$gateways[] = 'OptimistHub_Moka'; 
@@ -16,8 +21,8 @@ function addOptimisthubMokaGateway( $gateways ) {
 }
 
 add_action( 'plugins_loaded', 'initOptimisthubGatewayClass' );
-function initOptimisthubGatewayClass() {
-
+function initOptimisthubGatewayClass() 
+{
 	class OptimistHub_Moka extends WC_Payment_Gateway {
  
  		public function __construct() 
