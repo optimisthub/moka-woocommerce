@@ -12,6 +12,8 @@
 if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) 
 {
     require __DIR__ . '/vendor/autoload.php';
+	require __DIR__ . '/core/UpdateChecker.php';
+	require __DIR__ . '/core/MokaCore.php';
 }
 
 add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
