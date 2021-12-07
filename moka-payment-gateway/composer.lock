@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d178283e638dfc7b4b6eebf24c317d49",
+    "content-hash": "07b8237388bf3cf04d0188965c34a4c8",
     "packages": [
         {
             "name": "brick/math",
@@ -1510,21 +1510,21 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v8.68.0",
+            "version": "v8.75.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tighten/collect.git",
-                "reference": "8bb884bdab8088b358074f629d8402b64efce2c0"
+                "reference": "d05d932b9f066b2de4601fb17f72aab69b7d1c9b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tighten/collect/zipball/8bb884bdab8088b358074f629d8402b64efce2c0",
-                "reference": "8bb884bdab8088b358074f629d8402b64efce2c0",
+                "url": "https://api.github.com/repos/tighten/collect/zipball/d05d932b9f066b2de4601fb17f72aab69b7d1c9b",
+                "reference": "d05d932b9f066b2de4601fb17f72aab69b7d1c9b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2|^8.0",
-                "symfony/var-dumper": "^3.4 || ^4.0 || ^5.0"
+                "symfony/var-dumper": "^3.4 || ^4.0 || ^5.0 || ^6.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.0",
@@ -1558,9 +1558,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tighten/collect/issues",
-                "source": "https://github.com/tighten/collect/tree/v8.68.0"
+                "source": "https://github.com/tighten/collect/tree/v8.75.0"
             },
-            "time": "2021-11-30T18:41:31+00:00"
+            "time": "2021-12-07T18:53:43+00:00"
         },
         {
             "name": "twig/twig",
@@ -1645,7 +1645,9 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7.1"
+    },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"
 }
