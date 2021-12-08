@@ -61,8 +61,23 @@ function initOptimisthubGatewayClass()
 			$this->method_description = __('Moka by Isbank WooCommerce Gateway','moka-woocommerce');
 			$this->supports = ['products'];
  
-			$this->init_form_fields(); 
+			$this->init_form_fields();  
 			$this->init_settings();
+
+			$this->title = $this->get_option( 'title' );
+			$this->description = $this->get_option( 'description' );
+			$this->enabled = $this->get_option( 'enabled' );
+			$this->testmode = 'yes' === $this->get_option( 'testmode' );
+			$this->company_code = $this->get_option( 'company_code' );
+			$this->company_name = $this->get_option( 'company_name' );
+			$this->api_username = $this->get_option( 'api_username' );
+			$this->api_password = $this->get_option( 'api_password' );
+			 
+
+ 
+			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
+			add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] );
+	
 			
  		}
  
