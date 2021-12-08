@@ -9,12 +9,10 @@
  * Domain Path: /i18n/languages/
  */
 
-if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) 
-{
-    require __DIR__ . '/vendor/autoload.php';
-	require __DIR__ . '/core/UpdateChecker.php';
-	require __DIR__ . '/core/MokaCore.php';
-}
+require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/core/UpdateChecker.php';
+require __DIR__ . '/core/MokaCore.php';
+ 
 
 add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
 function addOptimisthubMokaGateway( $gateways ) {
@@ -29,6 +27,15 @@ function initOptimisthubGatewayClass()
  
  		public function __construct() 
         {
+			$this->id = 'mokapay';  
+			$this->icon = ''; // TODO : Moka Icon
+			$this->has_fields = true; 
+			$this->method_title = 'Moka by Isbank';
+			$this->method_description = 'Moka by Isbank WooCommerce Gateway';
+			$this->supports = ['products'];
+ 
+			$this->init_form_fields(); 
+			$this->init_settings();
  		}
  
  		public function init_form_fields()
