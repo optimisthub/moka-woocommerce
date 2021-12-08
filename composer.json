@@ -18,5 +18,11 @@
         "rappasoft/laravel-helpers": "^2.0",
         "nesbot/carbon": "^2.55",
         "tightenco/collect": "^8.68"
+    },
+    "autoload": {
+        "files": [
+            "core/UpdateChecker.php", 
+            "core/MokaCore.php"
+        ]
     }
 }

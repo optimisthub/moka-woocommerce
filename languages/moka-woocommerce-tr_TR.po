@@ -1,0 +1,61 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
+"PO-Revision-Date: 2021-12-09 01:14+0300\n"
+"Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
+"Language-Team: \n"
+"Language: tr_TR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.0\n"
+"X-Domain: languages\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: tr_TR\n"
+
+msgid "Moka by Isbank WooCommerce Gateway"
+msgstr "İş Bankası desteği ile Moka Pay"
+
+msgid "Enable/Disable"
+msgstr "Açık / Kapalı"
+
+msgid "Enable Moka Pay Gateway?"
+msgstr "Moka Pay Ödeme Metodu Aktifleştirilsin mi ?"
+
+msgid "Title"
+msgstr "Başlık"
+
+msgid "This controls the title which the user sees during checkout."
+msgstr "Kullanıcılarınızın ödeme admında göreceği başlık alanıdır."
+
+msgid "Credit Card"
+msgstr "Kredi Kartı"
+
+msgid "Description"
+msgstr "Açıklama"
+
+msgid "This controls the description which the user sees during checkout."
+msgstr "Kullanıcılarınızın ödeme admında göreceği açıklama alanıdır."
+
+msgid "Pay with your credit card via our super-cool payment gateway."
+msgstr "Kredi kartınız veya banka kartınız ile, güvenle MokaPay ile ödeme yapabilirsiniz."
+
+msgid "Enable Test Mode?"
+msgstr "Test Modunu Aktifleştir?"
+
+msgid "Place the payment gateway in test mode using test API keys."
+msgstr "Test modunuzu aktif ederseniz, size test ortamı için size iletilen test bilgilerinizi eklemeyi unutmayınız. Size iletilen bilgilerden canlı ve test ortamı giriş bilgilerinin farklı bilgiler olduğunu hatırlatmak isteriz."
+
+msgid "Company Code"
+msgstr "Bayi Kodu"
+
+msgid "Company Name"
+msgstr "Bayi Adı"
+
+msgid "Api Username"
+msgstr "Api Kullanıcı Adı"
+
+msgid "Api Password"
+msgstr "Api Şifresi"
