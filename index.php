@@ -135,6 +135,35 @@ function initOptimisthubGatewayClass()
 
 		public function payment_fields() 
         {
+  
+			if ( $this->description ) { 
+				if ( $this->testmode ) {
+					$this->description .= ' <hr>TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href="#">documentation</a>.';
+					$this->description  = trim( $this->description );
+				} 
+				echo wpautop( wp_kses_post( $this->description ) );
+			}
+		 
+			echo '<fieldset id="wc-' . esc_attr( $this->id ) . '-cc-form" class="wc-credit-card-form wc-payment-form" style="background:transparent;">';
+		 
+			do_action( 'woocommerce_credit_card_form_start', $this->id );
+		 
+			echo '<div class="form-row form-row-wide"><label>Card Number <span class="required">*</span></label>
+				<input id="'.$this->id.'_ccNo" type="text" autocomplete="off">
+				</div>
+				<div class="form-row form-row-first">
+					<label>Expiry Date <span class="required">*</span></label>
+					<input id="'.$this->id.'_expdate" type="text" autocomplete="off" placeholder="MM / YY">
+				</div>
+				<div class="form-row form-row-last">
+					<label>Card Code (CVC) <span class="required">*</span></label>
+					<input id="'.$this->id.'_cvv" type="password" autocomplete="off" placeholder="CVC">
+				</div>
+				<div class="clear"></div>';
+		
+			do_action( 'woocommerce_credit_card_form_end', $this->id );
+		
+			echo '<div class="clear"></div></fieldset>';
 		}
 
 	 	public function payment_scripts() 
