@@ -20,9 +20,11 @@
         "tightenco/collect": "^8.68"
     },
     "autoload": {
-        "files": [
-            "core/UpdateChecker.php", 
-            "core/MokaCore.php"
+        "files": [ 
+            "core/library/Moka_Init.php", 
+            "core/library/OptimistHub_Moka_Gateway.php", 
+            "core/library/Optimisthub_Update_Checker.php", 
+            "core/library/Moka_Core.php"
         ]
     }
 }
