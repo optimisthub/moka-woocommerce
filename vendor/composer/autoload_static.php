@@ -23,8 +23,10 @@ class ComposerStaticInitfd623bf18bd862ee63a9bbe9992e886d
         '3074abeef0bacf5811f59e9dee6311d1' => __DIR__ . '/..' . '/spatie/ray/src/helpers.php',
         'fe62ba7e10580d903cc46d808b5961a4' => __DIR__ . '/..' . '/tightenco/collect/src/Collect/Support/helpers.php',
         'caf31cc6ec7cf2241cb6f12c226c3846' => __DIR__ . '/..' . '/tightenco/collect/src/Collect/Support/alias.php',
-        'f8a7e0541097060468e629b2b1731215' => __DIR__ . '/../..' . '/core/UpdateChecker.php',
-        '57483626a12cafd295e48582b7b43bf3' => __DIR__ . '/../..' . '/core/MokaCore.php',
+        '87a441cc0a9becb56112f465a238f99e' => __DIR__ . '/../..' . '/core/library/Moka_Init.php',
+        '1b6562fe88c9ab897f399641e5770f51' => __DIR__ . '/../..' . '/core/library/OptimistHub_Moka_Gateway.php',
+        '9339c423427a46c6a4b1eb06acd29212' => __DIR__ . '/../..' . '/core/library/Optimisthub_Update_Checker.php',
+        '59cf957801c02b59a7fed8baaea9c4a0' => __DIR__ . '/../..' . '/core/library/Moka_Core.php',
     );
 
     public static $prefixLengthsPsr4 = array (
