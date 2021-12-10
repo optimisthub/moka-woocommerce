@@ -1,0 +1,19 @@
+#mokapay-card-number {
+    background-size: 10% auto !important;
+    background-position: right 10px bottom 0px !important;
+    display: flex;
+    justify-content: center;
+    padding-right:10px !important;
+}
+#mokapay-card-number.visa { 
+    background: url('cards/visa.png') top right no-repeat;
+}
+#mokapay-card-number.mastercard { 
+    background: url('cards/mastercard.png') top right no-repeat;
+}
+#mokapay-card-number.amex { 
+    background: url('cards/amex.png') top right no-repeat;
+}
+#mokapay-card-number.discover { 
+    background: url('cards/discover.png') top right no-repeat;
+} 

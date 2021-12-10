@@ -36,7 +36,7 @@ function initOptimisthubGatewayClass()
     
     
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
-            add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] );
+            add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
     
             
         }
@@ -104,6 +104,9 @@ function initOptimisthubGatewayClass()
                 echo wpautop( wp_kses_post( $this->description ) );
             } 
             
+            echo '<div class="card-js">';
+ 
+ 
             do_action( 'woocommerce_credit_card_form_start', $this->id );
             
             $cc_form           = new WC_Payment_Gateway_CC();
@@ -112,10 +115,16 @@ function initOptimisthubGatewayClass()
             $cc_form->form();
         
             do_action( 'woocommerce_credit_card_form_end', $this->id ); 
+            echo '</div>'; 
         }
-    
+ 
         public function payment_scripts() 
-        {
+        {  
+ 
+            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce/assets/moka.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            
+            wp_register_style( 'moka-pay-card_css',  plugins_url( 'moka-woocommerce/assets/moka.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_enqueue_style ( 'moka-pay-card_css' );
         }
             
         public function validate_fields() 
