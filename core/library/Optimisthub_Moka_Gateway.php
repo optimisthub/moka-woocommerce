@@ -41,6 +41,11 @@ function initOptimisthubGatewayClass()
             
         }
     
+        /**
+         * Admin Settings Panel form Fields
+         *
+         * @return void
+         */
         public function init_form_fields()
         {
     
@@ -98,11 +103,16 @@ function initOptimisthubGatewayClass()
                 ],
             ];		
         }
-
-
         
-        public function payment_form_fields($cc_fields , $payment_id){
- 
+        /**
+         * Payment Form Fields
+         *
+         * @param [array] $cc_fields
+         * @param [string] $payment_id
+         * @return void
+         */
+        public function payment_form_fields($cc_fields , $payment_id)
+        {
             $cc_fields = [
                 'name-on-card' => '
                     <p class="form-row form-row-wide">
@@ -161,7 +171,11 @@ function initOptimisthubGatewayClass()
             return $cc_fields;
         }
 
-    
+        /**
+         * Payment Container
+         *
+         * @return void
+         */
         public function payment_fields() 
         {
     
@@ -183,19 +197,34 @@ function initOptimisthubGatewayClass()
             do_action( 'woocommerce_credit_card_form_end', $this->id );  
         }
  
+        /**
+         * Payment Scripts
+         *
+         * @return void
+         */
         public function payment_scripts() 
         {  
- 
             wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce/assets/moka.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
             
             wp_register_style( 'moka-pay-card_css',  plugins_url( 'moka-woocommerce/assets/moka.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
             wp_enqueue_style ( 'moka-pay-card_css' );
         }
             
+        /**
+         * Validate form fields
+         *
+         * @return void
+         */
         public function validate_fields() 
         {
         }
         
+        /**
+         * Process payment
+         *
+         * @param [type] $order_id
+         * @return void
+         */
         public function process_payment( $order_id ) 
         {
         }
