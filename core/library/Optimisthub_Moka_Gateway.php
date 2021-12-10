@@ -3,7 +3,7 @@
 add_action( 'plugins_loaded', 'initOptimisthubGatewayClass' );
 
 /**
- * Gateway Class Filter
+ * Gateway Class
  *
  * @return void
  */

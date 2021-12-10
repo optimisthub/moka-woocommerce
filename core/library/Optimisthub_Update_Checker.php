@@ -2,14 +2,20 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-
+ 
 class OptimisthubUpdateChecker 
 {
     private $endpoint = 'https://moka.wooxup.com/check';
     private $platform = 'wordpress';
-    private $currentVersion = '0.1';
+    private $currentVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
 
-    public function check() {
+    /**
+     * Send Current Information to WooxUp Servers 
+     *
+     * @return void
+     */
+    public function check() 
+    { 
         $response = wp_remote_post( $this->endpoint,
             [
                 'method'      => 'POST',
