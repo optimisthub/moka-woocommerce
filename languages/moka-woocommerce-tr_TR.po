@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2021-12-09 01:14+0300\n"
+"PO-Revision-Date: 2021-12-10 16:53+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -59,3 +59,21 @@ msgstr "Api Kullanıcı Adı"
 
 msgid "Api Password"
 msgstr "Api Şifresi"
+
+msgid "Installement"
+msgstr "Taksitli Alışveriş"
+
+msgid "Enable/Disable Installement ?"
+msgstr "Taksitli Alışveriş aktifleştirilsin mi?"
+
+msgid "Name On Card"
+msgstr "Kart Üzerindeki İsim"
+
+msgid "Card Number"
+msgstr "Kart Numaranız"
+
+msgid "Card Code"
+msgstr "Güvenlik Kodunuz"
+
+msgid "TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href='#''>documentation</a>"
+msgstr "<br><strong>Şu an test modu aktif durumdadır.</strong>"
