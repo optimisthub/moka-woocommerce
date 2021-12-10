@@ -1,6 +1,5 @@
 <?php
 
-
 function isNewVersionAvaliable(){
  	$update = new OptimisthubUpdateChecker();
 	$versionControl = $update->check();
