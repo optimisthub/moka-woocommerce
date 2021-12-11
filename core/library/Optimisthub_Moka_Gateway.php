@@ -37,9 +37,7 @@ function initOptimisthubGatewayClass()
     
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
-            add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 );
-    
-            
+            add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 );        
         }
     
         /**
@@ -110,6 +108,28 @@ function initOptimisthubGatewayClass()
                     'type'        => 'text', 
                 ],
             ];		
+        }
+
+        public function admin_options() {
+            ?>
+                <div class="moka-admin-interface">
+                    <div class="left">
+                        <img src="<?php echo plugins_url( 'moka-woocommerce/assets/img/mokapos.png' ); ?>" alt="">
+                        <h2><?php _e('Moka Pos Settings','moka-woocommerce'); ?></h2>
+
+                        <table class="form-table">
+                            <?php $this->generate_settings_html(); ?>
+                        </table> 
+
+                        <h2>Taksit Tablosu</h2>
+                    </div>
+                    <div class="right">
+                        <div class="optimist">
+                            <?php include __DIR__ .'/static/Optimisthub.php' ?>
+                        </div>
+                    </div>
+                </div>
+            <?php
         }
         
         /**
