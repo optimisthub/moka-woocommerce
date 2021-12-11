@@ -29,6 +29,7 @@ function initOptimisthubGatewayClass()
             $this->enabled = $this->get_option( 'enabled' );
             $this->testmode = 'yes' === $this->get_option( 'testmode' );
             $this->installment = 'yes' === $this->get_option( 'installment' );
+            $this->enable_3d = 'yes' === $this->get_option( 'enable_3d' );
             $this->company_code = $this->get_option( 'company_code' );
             $this->company_name = $this->get_option( 'company_name' );
             $this->api_username = $this->get_option( 'api_username' );
@@ -84,6 +85,13 @@ function initOptimisthubGatewayClass()
                     'label'       => __('Enable/Disable Installement ?', 'moka-woocommerce' ),
                     'type'        => 'checkbox', 
                     'default'     => 'yes',
+                ],
+                'enable_3d' => [
+                    'title'       => __( 'Enable 3D', 'moka-woocommerce' ),
+                    'label'       => __( 'Enable 3d Payment?', 'moka-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'description' => '',
+                    'default'     => 'yes'
                 ],
                 'company_code' => [
                     'title'       => __( 'Company Code', 'moka-woocommerce' ),
