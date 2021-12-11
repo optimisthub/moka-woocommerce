@@ -1,0 +1,35 @@
+    .moka-admin-interface{display:flex;justify-content:center;}  
+    .moka-admin-interface .left{width:70%;}  
+    .moka-admin-interface .right{width:28%;margin-left:2%;}  
+    .moka-admin-interface .right .optimist{background:#fff;padding:40px;border-radius:4px;}   
+
+ 
+    .moka-admin-interface .right .optimist .accordion{background-color:#eee;color:#444;cursor:pointer;padding:18px; border:0;text-align:left;outline:0;font-size:15px;transition:.4s;display:block;border-bottom:1px solid #fff;}.moka-admin-interface .right .optimist .active,.moka-admin-interface .right .optimist .accordion:hover{background-color:#ccc}.moka-admin-interface .right .optimist .accordion:after{content:"+";color:#777;font-weight:700;float:right;margin-left:5px}.moka-admin-interface .right .optimist .active:after{content:"−"}.moka-admin-interface .right .optimist .panel{background-color:#fff;max-height:0;overflow:hidden;transition:max-height .2s ease-out}
+ 
+ 
+    #comission-rates {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    #comission-rates td, #comission-rates th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    #comission-rates thead {background-color:#333;color:#fff;}
+
+    #comission-rates tr:nth-child(even){background-color: #f2f2f2;}
+
+    #comission-rates tr:hover {background-color: #ddd;}
+
+    #comission-rates th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #04AA6D;
+        color: white;
+    }
+    #comission-rates input[type="number"] {width:59px !important;font-size:11px}
+    #comission-rates img {width:100px;}

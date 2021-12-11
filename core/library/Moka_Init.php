@@ -15,7 +15,6 @@ function isNewVersionAvaliable(){
 	}
 }
 
-
 function addOptimisthubMokaGateway( $gateways ) {
 	$gateways[] = 'OptimistHub_Moka_Gateway'; 
 	return $gateways;

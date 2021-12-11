@@ -1,14 +1,3 @@
-<style>
-    .moka-admin-interface{display:flex;justify-content:center;}  
-    .moka-admin-interface .left{width:70%;}  
-    .moka-admin-interface .right{width:28%;margin-left:2%;}  
-    .moka-admin-interface .right .optimist{background:#fff;padding:40px;border-radius:4px;}   
-
- 
-    .moka-admin-interface .right .optimist .accordion{background-color:#eee;color:#444;cursor:pointer;padding:18px; border:0;text-align:left;outline:0;font-size:15px;transition:.4s;display:block;border-bottom:1px solid #fff;}.moka-admin-interface .right .optimist .active,.moka-admin-interface .right .optimist .accordion:hover{background-color:#ccc}.moka-admin-interface .right .optimist .accordion:after{content:"+";color:#777;font-weight:700;float:right;margin-left:5px}.moka-admin-interface .right .optimist .active:after{content:"−"}.moka-admin-interface .right .optimist .panel{background-color:#fff;max-height:0;overflow:hidden;transition:max-height .2s ease-out}
-    
-</style>
-
 <img src="<?php echo plugins_url( 'moka-woocommerce/assets/img/optimisthub.svg' ); ?>" alt="">
 <p>Moka POS WordPress Eklentisi OptimistHub Bünyesinde geliştirilmiştir.</p>
 
