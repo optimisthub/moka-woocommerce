@@ -34,10 +34,18 @@ function initOptimisthubGatewayClass()
             $this->company_name = $this->get_option( 'company_name' );
             $this->api_username = $this->get_option( 'api_username' );
             $this->api_password = $this->get_option( 'api_password' );
+            
+            $this->optimisthubMoka = new MokaPayment();
+            $this->maxInstallment = range(1,12);
+
+            $this->installments = $this->get_option( 'woocommerce_mokapay-installments' );
     
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
-            add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 );        
+            add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
+            add_action( 'admin_head', [$this, 'admin_css']);    
+            
+            self::__saveRates();
         }
     
         /**
@@ -110,7 +118,28 @@ function initOptimisthubGatewayClass()
             ];		
         }
 
-        public function admin_options() {
+        /**
+         * Admin area css init.
+         *
+         * @return void
+         */
+        public function admin_css()
+        {
+            global $pagenow; 
+            if($pagenow == 'admin.php' && isset($_GET['tab']) && isset($_GET['section']) && $_GET['section'] == 'mokapay')
+            {
+                wp_register_style( 'moka-pay-admin',  plugins_url( 'moka-woocommerce/assets/moka-admin.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+                wp_enqueue_style ( 'moka-pay-admin' );
+            } 
+        }
+
+        /**
+         * Admin Options
+         *
+         * @return void
+         */
+        public function admin_options() 
+        {
             ?>
                 <div class="moka-admin-interface">
                     <div class="left">
@@ -120,8 +149,6 @@ function initOptimisthubGatewayClass()
                         <table class="form-table">
                             <?php $this->generate_settings_html(); ?>
                         </table> 
-
-                        <h2>Taksit Tablosu</h2>
                     </div>
                     <div class="right">
                         <div class="optimist">
@@ -129,7 +156,27 @@ function initOptimisthubGatewayClass()
                         </div>
                     </div>
                 </div>
+                <div class="moka-admin-interface">
+                    <?php  
+                        if(!$this->installments)
+                        {
+                            echo $this->optimisthubMoka->generateInstallmentsTableHtml(
+                            [
+                                'maxInstallment' => $this->maxInstallment,
+                                'paymentGatewayId' => $this->id
+                            ]);
+                        } else {
+                            echo $this->optimisthubMoka->generateDefaultInstallmentsTableHtml(
+                            [
+                                'maxInstallment' => $this->maxInstallment,
+                                'paymentGatewayId' => $this->id
+                            ]);
+                        }
+
+                   ?>
+                </div>
             <?php
+
         }
         
         /**
@@ -231,7 +278,7 @@ function initOptimisthubGatewayClass()
          * @return void
          */
         public function payment_scripts() 
-        {  
+        { 
             wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce/assets/moka.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
             
             wp_register_style( 'moka-pay-card_css',  plugins_url( 'moka-woocommerce/assets/moka.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
@@ -259,6 +306,14 @@ function initOptimisthubGatewayClass()
             
         public function webhook() 
         {
+        }
+
+        private function __saveRates()
+        {
+            if(data_get($_POST, 'woocommerce_mokapay-installments'))
+            {  
+                $this->optimisthubMoka->setInstallments($_POST['woocommerce_mokapay-installments']);
+            }
         }
     }
 }
