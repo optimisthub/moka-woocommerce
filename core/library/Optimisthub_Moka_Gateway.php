@@ -44,7 +44,7 @@ function initOptimisthubGatewayClass()
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
             add_action( 'admin_head', [$this, 'admin_css']);     
-            
+ 
             self::__saveRates();
         }
     
@@ -259,7 +259,7 @@ function initOptimisthubGatewayClass()
                     $this->description .=  __( "TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href='#''>documentation</a>", 'moka-woocommerce' );
                     $this->description  = trim( $this->description );
                 } 
-                echo wpautop( wp_kses_post( $this->description ) );
+                echo wpautop( wp_kses_post( $this->description ) ).'<br>';
             } 
              
             do_action( 'woocommerce_credit_card_form_start', $this->id );
@@ -268,7 +268,7 @@ function initOptimisthubGatewayClass()
             $cc_form->id       = $this->id;
             $cc_form->supports = $this->supports; 
             $cc_form->form();
-        
+ 
             do_action( 'woocommerce_credit_card_form_end', $this->id );  
         }
  
@@ -292,6 +292,31 @@ function initOptimisthubGatewayClass()
          */
         public function validate_fields() 
         {
+
+            if( empty(data_get($_POST, $this->id.'-name-oncard') )) 
+            {
+                wc_add_notice(  __( "<strong>Card holder</strong> is required.", 'moka-woocommerce' ), 'error' );
+                return false;
+            }
+
+            if( empty(data_get($_POST, $this->id.'-card-number'))) 
+            {
+                wc_add_notice(  __( "<strong>Card Number</strong> is required.", 'moka-woocommerce' ), 'error' );
+                return false;
+            }
+
+            if( empty(data_get($_POST, $this->id.'-card-expiry') )) 
+            {
+                wc_add_notice(  __( "<strong>Card Expiry</strong> is required.", 'moka-woocommerce' ), 'error' );
+                return false;
+            }
+            if( empty(data_get($_POST, $this->id.'-card-cvc'))) 
+            {
+                wc_add_notice(  __( "<strong>Card CVC</strong> is required.", 'moka-woocommerce' ), 'error' );
+                return false;
+            }
+
+            return true;
         }
         
         /**
