@@ -124,6 +124,55 @@ class MokaPayment
         return $return;
     }
 
+    /**
+     * Generate Installment Table For Shortcode 
+     * @return string
+     */
+    public function generateInstallmentsTableShortcode()
+    {
+
+        $storedData = get_option( 'woocommerce_mokapay-installments' ); 
+        $return = '<div class="center"> <table id="comission-rates"> <thead> <tr><td>&nbsp;</td>';
+ 
+        foreach(range(1,count(current($storedData))) as $perIns)
+        {
+            $return.= '<td>'.$perIns.' Taksit</td>';
+        }
+
+        $return.= '</tr></thead>';
+
+        if(!$storedData)
+        {
+            return '';
+        }
+        
+        foreach($storedData as $perStoredInstallmentKey => $perStoredInstallment)
+        {
+            $return.='<tr>';
+                $imagePath =  plugins_url( 'moka-woocommerce/assets/img/cards/banks/' );
+
+                $return.= '<tr>';
+                $return.= '<td><img style="width:100px !important;max-width:unset;" src="'.$imagePath.$perStoredInstallmentKey.'.svg" /></td>';
+                for ($i=1; $i < count($perStoredInstallment)+1 ; $i++) { 
+                    $return.='<td>';
+                        $return.=$perStoredInstallment[$i]['value'] != 0 ? $perStoredInstallment[$i]['value'].' '.get_option('woocommerce_currency') : '-'; 
+                    $return.='</td>';
+                }
+            $return.='</tr>';
+        }
+ 
+
+
+        $return.= '</table></div>';  
+        return $return;
+    }
+
+    /**
+     * Generate Default Installments
+     *
+     * @param [type] $params
+     * @return void
+     */
     public function generateDefaultInstallmentsTableHtml( $params )
     {
 
