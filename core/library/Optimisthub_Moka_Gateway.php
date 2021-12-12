@@ -43,7 +43,7 @@ function initOptimisthubGatewayClass()
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
-            add_action( 'admin_head', [$this, 'admin_css']);    
+            add_action( 'admin_head', [$this, 'admin_css']);     
             
             self::__saveRates();
         }
@@ -308,6 +308,11 @@ function initOptimisthubGatewayClass()
         {
         }
 
+        /**
+         * Save Installment Rates to DB
+         *
+         * @return void
+         */
         private function __saveRates()
         {
             if(data_get($_POST, 'woocommerce_mokapay-installments'))

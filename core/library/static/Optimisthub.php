@@ -6,7 +6,12 @@
 
 <a class="accordion">Eklenti Kurulumu ve Ayarlar</a>
 <div class="panel">
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  
+    <p>
+        <strong>Taksit Tablosunu Temanızda Gösterme:</strong>
+        <br>
+        Taksit tablosunu temanızın ya da içeriklerinizin istediğiniz alanında, <strong>[moka-taksit-tablosu]</strong> kısa kodu ile gösterebilirsiniz.
+    </p>
 </div>
 
 <a class="accordion">Sıkça Sorulan sorular</a>
