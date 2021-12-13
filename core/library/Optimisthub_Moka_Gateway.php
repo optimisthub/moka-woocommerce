@@ -37,8 +37,7 @@ function initOptimisthubGatewayClass()
             
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
-
-            $this->installments = $this->get_option( 'woocommerce_mokapay-installments' );
+ 
     
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
@@ -158,21 +157,11 @@ function initOptimisthubGatewayClass()
                 </div>
                 <div class="moka-admin-interface">
                     <?php  
-                        if(!$this->installments)
-                        {
-                            echo $this->optimisthubMoka->generateInstallmentsTableHtml(
-                            [
-                                'maxInstallment' => $this->maxInstallment,
-                                'paymentGatewayId' => $this->id
-                            ]);
-                        } else {
-                            echo $this->optimisthubMoka->generateDefaultInstallmentsTableHtml(
-                            [
-                                'maxInstallment' => $this->maxInstallment,
-                                'paymentGatewayId' => $this->id
-                            ]);
-                        }
-
+                        $this->optimisthubMoka->generateInstallmentsTableHtml(
+                        [
+                            'maxInstallment' => $this->maxInstallment,
+                            'paymentGatewayId' => $this->id
+                        ]);
                    ?>
                 </div>
             <?php
@@ -349,10 +338,29 @@ function initOptimisthubGatewayClass()
          */
         private function __saveRates()
         {
-            if(data_get($_POST, 'woocommerce_mokapay-installments'))
+            $optionKey = 'woocommerce_mokapay-installments';
+
+            if(data_get($_POST, $optionKey))
             {  
-                $this->optimisthubMoka->setInstallments($_POST['woocommerce_mokapay-installments']);
+                if (self::option_exists($optionKey))
+                {
+                    delete_option($optionKey); 
+                }
+
+                return $this->optimisthubMoka->setInstallments($_POST[$optionKey]);
             }
+        }
+
+        /**
+         * Check isOption Has on Db.
+         *
+         * @param [type] $name
+         * @param boolean $site_wide
+         * @return void
+         */
+        private function option_exists($name, $site_wide=false){
+            global $wpdb; 
+            return $wpdb->query("SELECT * FROM ". ($site_wide ? $wpdb->base_prefix : $wpdb->prefix). "options WHERE option_name ='$name' LIMIT 1");
         }
     }
 }
