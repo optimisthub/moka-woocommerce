@@ -341,7 +341,29 @@ class MokaPayment
                     'value'     => data_get($perItem, 'CommissionRate'.$i),
                 ]; 
             }  
-        }   
+
+            ## setAdvantage
+            if(strtolower(data_get($perItem, 'GroupName')) == 'cardfinans')
+            {
+                $output['advantage'] = [
+                    'groupName' => 'advantage',
+                    'bankName' => 'HSCB A.Ş'
+                ];
+                $output['advantage']['rates']['1'] = [
+                    'active' => 1,
+                    'value'  => data_get($perItem, 'CommissionRate')
+                ]; 
+                foreach(range(2,12) as $i)
+                { 
+                    $output['advantage']['rates'][$i] = [
+                        'active'    => 1,
+                        'value'     => data_get($perItem, 'CommissionRate'.$i),
+                    ]; 
+                } 
+            }
+            ## setAdvantage
+
+        }    
         return $output;
     }
 
