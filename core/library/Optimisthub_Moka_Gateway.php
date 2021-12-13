@@ -11,7 +11,7 @@ function initOptimisthubGatewayClass()
 { 
 	
     class OptimistHub_Moka_Gateway extends WC_Payment_Gateway {
-     
+
         public function __construct() 
         {  
             $this->id = 'mokapay';  
@@ -44,7 +44,7 @@ function initOptimisthubGatewayClass()
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
             add_action( 'admin_head', [$this, 'admin_css']);     
- 
+
             self::__saveRates();
         }
     
@@ -268,6 +268,11 @@ function initOptimisthubGatewayClass()
             $cc_form->id       = $this->id;
             $cc_form->supports = $this->supports; 
             $cc_form->form();
+
+            echo '<div id="ajaxify-installment-table" class="installment-table"></div>';
+
+            #$binRequest = $this->optimisthubMoka->requestBin(['binNumber' => '531389']);
+            #dd($binRequest);
  
             do_action( 'woocommerce_credit_card_form_end', $this->id );  
         }
@@ -283,6 +288,8 @@ function initOptimisthubGatewayClass()
             
             wp_register_style( 'moka-pay-card_css',  plugins_url( 'moka-woocommerce/assets/moka.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
             wp_enqueue_style ( 'moka-pay-card_css' );
+
+            wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
             
         /**
@@ -293,24 +300,26 @@ function initOptimisthubGatewayClass()
         public function validate_fields() 
         {
 
-            if( empty(data_get($_POST, $this->id.'-name-oncard') )) 
+            $postedData = $_POST;
+
+            if( empty(data_get($postedData, $this->id.'-name-oncard') )) 
             {
                 wc_add_notice(  __( "<strong>Card holder</strong> is required.", 'moka-woocommerce' ), 'error' );
                 return false;
             }
 
-            if( empty(data_get($_POST, $this->id.'-card-number'))) 
+            if( empty(data_get($postedData, $this->id.'-card-number'))) 
             {
                 wc_add_notice(  __( "<strong>Card Number</strong> is required.", 'moka-woocommerce' ), 'error' );
                 return false;
             }
 
-            if( empty(data_get($_POST, $this->id.'-card-expiry') )) 
+            if( empty(data_get($postedData, $this->id.'-card-expiry') )) 
             {
                 wc_add_notice(  __( "<strong>Card Expiry</strong> is required.", 'moka-woocommerce' ), 'error' );
                 return false;
             }
-            if( empty(data_get($_POST, $this->id.'-card-cvc'))) 
+            if( empty(data_get($postedData, $this->id.'-card-cvc'))) 
             {
                 wc_add_notice(  __( "<strong>Card CVC</strong> is required.", 'moka-woocommerce' ), 'error' );
                 return false;
