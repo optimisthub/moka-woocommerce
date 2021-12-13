@@ -211,6 +211,12 @@ class MokaPayment
     {
 
         $storedData = get_option( 'woocommerce_mokapay-installments' ); 
+
+        if(!$storedData)
+        {
+            return 'Lütfen Moka Pay ayarlarından, taksit seçeneğini aktif edip ayarları kaydedin.';
+        }
+
         $return = '<div class="center"> <table id="comission-rates"> <thead> <tr><td>&nbsp;</td>';
     
         foreach(range(1,count(current($storedData)['rates'])) as $perIns)
@@ -219,11 +225,6 @@ class MokaPayment
         }
 
         $return.= '</tr></thead>';
-
-        if(!$storedData)
-        {
-            return '';
-        }
         
         foreach($storedData as $perStoredInstallmentKey => $perStoredInstallment)
         {

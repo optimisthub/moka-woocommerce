@@ -130,6 +130,9 @@ function initOptimisthubGatewayClass()
                 wp_register_style( 'moka-pay-admin',  plugins_url( 'moka-woocommerce/assets/moka-admin.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
                 wp_enqueue_style ( 'moka-pay-admin' );
             } 
+
+            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce/assets/moka-admin.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
 
         /**

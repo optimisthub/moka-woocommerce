@@ -40,7 +40,8 @@ function installments_shortcode()
  *
  * @return boolean
  */
-function isNewVersionAvaliable(){
+function isNewVersionAvaliable()
+{
  	$update = new OptimisthubUpdateChecker();
 	$versionControl = $update->check();
 	$body = json_decode( data_get($versionControl, 'body') );
@@ -60,9 +61,9 @@ function isNewVersionAvaliable(){
  *
  * @return void
  */
-function validate_bin()
+function validate_bin($params)
 {
-	$postData = $_POST;
+	$postData = $params;
 	$action = data_get($postData, 'action');
 
 	if(!$action)
@@ -92,6 +93,45 @@ function validate_bin()
 }
 
 /**
+ * Clear Stored Installment
+ *
+ * @param [array] $params
+ * @return void
+ */
+function clear_installment($params)
+{
+	delete_option('woocommerce_mokapay-installments');
+	wp_send_json_success( [
+		'time' => time(), 
+		'data' => ['message' => 'ok'],
+	], 200 );
+
+	wp_die();
+}
+
+/**
+ * General Ajax Request Callback
+ */
+function optimisthub_ajax()
+{
+	$postData = $_POST;
+	$action = data_get($postData, 'action');
+	$method = data_get($postData, 'method');
+ 
+	if($method == 'validate_bin')
+	{
+		validate_bin($postData);
+	}
+
+	if($method == 'clear_installment')
+	{
+		clear_installment($postData);
+	}
+
+	wp_die();
+}
+
+/**
  * Moka Gateway Init.
  *
  * @param [type] $gateways
@@ -106,5 +146,5 @@ add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
 add_shortcode( 'moka-taksit-tablosu', 'installments_shortcode' );
 
 add_action( 'admin_notices', 'isNewVersionAvaliable');
-add_action( 'wp_ajax_nopriv_validate_bin', 'validate_bin');
-add_action( 'wp_ajax_validate_bin', 'validate_bin');
+add_action( 'wp_ajax_nopriv_optimisthub_ajax', 'optimisthub_ajax');
+add_action( 'wp_ajax_optimisthub_ajax', 'optimisthub_ajax');
