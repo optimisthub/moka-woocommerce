@@ -1,8 +1,6 @@
 $ = jQuery;
 $.ajaxSetup({cache: false});
 
-
-
 $(document).ready(function () {
     console.log('Moka Pay js loaded.');
     
@@ -18,7 +16,8 @@ $(document).ready(function () {
                 dataType: "json",
                 url: moka_ajax.ajax_url,
                 data: {
-                    action : 'validate_bin',
+                    action : 'optimisthub_ajax',
+                    method : 'validate_bin',
                     binNumber : binValue,
                 },
                 success: function(response){
@@ -32,4 +31,5 @@ $(document).ready(function () {
             });
         } 
     });
+ 
 });
