@@ -5,19 +5,75 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MokaPayment
 {
-
-    private $apiEndPoint = '';
-    private $apiUsername = '';
-    private $apiSecret = '';
+    private $mokaOptions            = [];
+    private $apiHost                = null;
+    private $productionApiHost      = 'https://service.moka.com';
+    private $testApiHost            = 'https://service.refmoka.com';
     private $installmentApiEndpoint = 'https://moka.wooxup.com/installments';
 
-    public function __construct() {}
+    public function __construct() 
+    {
+        $this->mokaOptions  = get_option('woocommerce_mokapay_settings');
+        $this->apiHost      = self::apiHost($this->mokaOptions);
+
+        self::mokaKey($this->mokaOptions); 
+        
+    }
 
     public function initializePayment() {}
 
     public function payWith( $params ) {}
 
-    public function requestBin( $params ) {}
+    /**
+     * Request Bin number for card details
+     * @usage : self::requestBin(['binNumber' => '529876'])
+     *
+     * @param [type] $params
+     * @return void
+     */
+    public function requestBin( $params ) 
+    {
+        global $mokaKey;
+
+        $postParams = [
+            'PaymentDealerAuthentication' => 
+            [
+                'DealerCode'=> data_get($this->mokaOptions, 'company_code'),
+                'Username'  => data_get($this->mokaOptions, 'api_username'),
+                'Password'  => data_get($this->mokaOptions, 'api_password'),
+                'CheckKey'  => $mokaKey,
+            ],
+            'BankCardInformationRequest' => 
+            [
+                'BinNumber' => data_get($params, 'binNumber') 
+            ]
+        ]; 
+
+        $response = wp_remote_post( $this->apiHost.'/PaymentDealer/GetBankCardInformation',
+            [
+                'method'      => 'POST',
+                'timeout'     => 45,
+                'redirection' => 5,
+                'httpversion' => '1.0',
+                'blocking'    => true,
+                'headers'     => [
+                    'Content-Type' => 'application/json'
+                ],
+                'body'        => json_encode($postParams),
+                'cookies'     => [],
+            ]
+        );   
+        
+        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        {
+            $responseBody = data_get($response, 'body');
+            $responseBody = json_decode($responseBody, true);
+            $responseBody = data_get($responseBody, 'Data');
+            return $responseBody;
+        }
+        
+        return $response;        
+    }
 
     /**
      * Fetch Installemnts From Remote Server
@@ -224,5 +280,37 @@ class MokaPayment
     private function with3dPayment( $params ) {}
     private function getPaymentOptions() {}
     private function doRequest( $params ) {}
+
+    /**
+     * Generate Moka Key Hash
+     *
+     * @param [array] $params
+     * @return void
+     */
+    private function mokaKey($params)
+    {
+        global $mokaKey;
+
+        $dealer     = data_get($params, 'company_code');
+        $username   = data_get($params, 'api_username');
+        $password   = data_get($params, 'api_password');
+
+        $output     = hash("sha256", $dealer . "MK" . $username . "PD" . $password);
+        $mokaKey    = $output;
+        
+        return $mokaKey; 
+    }
+
+    /**
+     * Select Api Host
+     *
+     * @param [array] $params
+     * @return void
+     */
+    private function apiHost($params)
+    {
+        $isTestMode = 'yes' === data_get($params, 'testmode');
+        return $isTestMode ? $this->testApiHost : $this->productionApiHost;
+    }
 
 }

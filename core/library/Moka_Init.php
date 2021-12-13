@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Installment Table Shortcode suport
+ *
+ * @return void
+ */
 function installments_shortcode()
 {
 	?>
@@ -30,6 +35,11 @@ function installments_shortcode()
 	return $table->generateInstallmentsTableShortcode();
 }
 
+/**
+ * Check new version avalibiality
+ *
+ * @return boolean
+ */
 function isNewVersionAvaliable(){
  	$update = new OptimisthubUpdateChecker();
 	$versionControl = $update->check();
@@ -45,11 +55,56 @@ function isNewVersionAvaliable(){
 	}
 }
 
+/**
+ * Bin number validation requestvia ajax.
+ *
+ * @return void
+ */
+function validate_bin()
+{
+	$postData = $_POST;
+	$action = data_get($postData, 'action');
+
+	if(!$action)
+	{
+		$error = new WP_Error( '001', 'Action Is Required' );
+		return wp_send_json_error( $error );
+	}
+
+	$binNumber = data_get($postData, 'binNumber');
+
+	$mokaPay = new MokaPayment();
+	$response = $mokaPay->requestBin(['binNumber' => $binNumber]);
+
+	if(!$response)
+	{
+		$error = new WP_Error( '002', 'Response Could Not Fetched.' );
+		return wp_send_json_error( $error );
+	}
+
+	wp_send_json_success( [
+		'binNumber' => $binNumber, 
+		'time' => time(), 
+		'data' => $response,
+	], 200 );
+
+	wp_die();
+}
+
+/**
+ * Moka Gateway Init.
+ *
+ * @param [type] $gateways
+ * @return void
+ */
 function addOptimisthubMokaGateway( $gateways ) {
 	$gateways[] = 'OptimistHub_Moka_Gateway'; 
 	return $gateways;
 }
 
 add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
-add_action( 'admin_notices', 'isNewVersionAvaliable');
 add_shortcode( 'moka-taksit-tablosu', 'installments_shortcode' );
+
+add_action( 'admin_notices', 'isNewVersionAvaliable');
+add_action( 'wp_ajax_nopriv_validate_bin', 'validate_bin');
+add_action( 'wp_ajax_validate_bin', 'validate_bin');
