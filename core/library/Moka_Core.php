@@ -253,8 +253,6 @@ class MokaPayment
         return $return;
     }
 
- 
-
     private function without3dPayment( $params ) {}
     private function with3dPayment( $params ) {}
     private function getPaymentOptions() {} 
@@ -316,6 +314,12 @@ class MokaPayment
         );   
     }
 
+    /**
+     * Format Default Installment Response
+     *
+     * @param [array] $response
+     * @return void
+     */
     private function formatInstallmentResponse($response)
     {
         $output = [];
