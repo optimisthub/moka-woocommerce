@@ -293,7 +293,7 @@ function initOptimisthubGatewayClass()
         public function validate_fields() 
         {
 
-            $postedData = $_POST;
+            $postedData = $_POST; 
 
             if( empty(data_get($postedData, $this->id.'-name-oncard') )) 
             {
@@ -318,6 +318,15 @@ function initOptimisthubGatewayClass()
                 return false;
             }
 
+            if($this->installment)
+            {
+                if( empty(data_get($postedData, $this->id.'-installment'))) 
+                {
+                    wc_add_notice(  __( "<strong>Card CVC</strong> is required.", 'moka-woocommerce' ), 'error' );
+                    return false;
+                }
+            }
+            
             return true;
         }
         
