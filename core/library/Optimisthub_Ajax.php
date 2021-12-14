@@ -10,7 +10,8 @@ class Optimisthub_Ajax
         $this->mokaOptions  = get_option('woocommerce_mokapay_settings');
         $this->installments = get_option('woocommerce_mokapay-installments');
         $this->currency = get_option('woocommerce_currency');
-
+        $this->enableInstallment = 'yes' === data_get($this->mokaOptions, 'installment');
+ 
         add_action( 'wp_ajax_optimisthub_ajax', array( $this, 'optimisthub_ajax' ) ); 
         add_action( 'wp_ajax_nopriv_optimisthub_ajax', array( $this, 'optimisthub_ajax' ) );
     }
@@ -150,7 +151,11 @@ class Optimisthub_Ajax
         ];
         ### Disable rate for 1 installment
 
-        $formHtml = '';
+        $formHtml = ''; 
+        if(!$this->enableInstallment)
+        {
+            return $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
+        }
 
         if($installmentRates)
         {
@@ -172,7 +177,7 @@ class Optimisthub_Ajax
 
         if(!$installmentRates)
         {
-            $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
+            return $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
         }
 
         return $formHtml;
