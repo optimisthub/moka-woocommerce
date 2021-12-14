@@ -375,6 +375,30 @@ function initOptimisthubGatewayClass()
             global $wpdb; 
             return $wpdb->query("SELECT * FROM ". ($site_wide ? $wpdb->base_prefix : $wpdb->prefix). "options WHERE option_name ='$name' LIMIT 1");
         }
+
+        /**
+         * Set Cookies
+         *
+         * @param [array] $params
+         * @return void
+         */
+        private function setcookieSameSite( $params )
+        {
+            // TODO :: Will be deprecated in next version.
+            if (PHP_VERSION_ID < 70300) {
+                setcookie(data_get($params, 'name'), data_get($params,'value'), data_get($params, 'expire'), data_get($params, 'path')." samesite=None", data_get($params,'domain'), data_get($params, 'secure'), data_get($params,'httponly'));
+            } else {
+                setcookie(data_get($params, 'name'), data_get($params,'value'), [
+                    'expires' => data_get($params, 'expire'),
+                    'path' => data_get($params, 'path'),
+                    'domain' => data_get($params,'domain'),
+                    'samesite' => 'None',
+                    'secure' => data_get($params, 'secure'),
+                    'httponly' => data_get($params,'httponly'),
+                ]);
+
+            }
+        }
         
     }
 }
