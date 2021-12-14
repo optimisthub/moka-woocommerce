@@ -351,7 +351,7 @@ class MokaPayment
             {
                 $output['advantage'] = [
                     'groupName' => 'advantage',
-                    'bankName' => 'HSCB A.Ş'
+                    'bankName' => '004 - HSCB A.Ş'
                 ];
                 $output['advantage']['rates']['1'] = [
                     'active' => 1,

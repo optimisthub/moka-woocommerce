@@ -22,11 +22,13 @@ $(document).ready(function () {
                 },
                 success: function(response){
                     $('#ajaxify-installment-table').html('');
+                    $('#ajaxify-installment-table').html(response.data.data.renderedHtml);
+                    /*
                     $('#ajaxify-installment-table').append('Maksimum Taksit' + response.data.data.MaxInstallmentNumber + '<br>');
                     $('#ajaxify-installment-table').append('Kart' + response.data.data.CardName + '<br>');
                     $('#ajaxify-installment-table').append('Banka' + response.data.data.BankName + '<br>');
                     $('#ajaxify-installment-table').append('Grup' + response.data.data.GroupName + '<br>');
-                    $('#ajaxify-installment-table').append('<img src="'+response.data.data.CardTemplate+'">');
+                    $('#ajaxify-installment-table').append('<img src="'+response.data.data.CardTemplate+'">');*/
                 }
             });
         } 
