@@ -143,6 +143,13 @@ class Optimisthub_Ajax
         $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
         $installmentRates = data_get($params, 'installments.rates');
 
+        ### Disable rate for 1 installment
+        $installmentRates[1]=[
+            'active' => 1,
+            'value' => 0,
+        ];
+        ### Disable rate for 1 installment
+
         $formHtml = '';
 
         if($installmentRates)
@@ -153,10 +160,19 @@ class Optimisthub_Ajax
                 $formHtml .= '<select name="mokapay-installment" class="input-select">';
                 foreach(range(1,$maxInstallment) as $perInstallmentKey)
                 {
-                    $formHtml.='<option value="'.$perInstallmentKey.'">'.self::calculateComissionRate($total, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '. $perInstallmentKey.' '. __( "Installment", 'moka-woocommerce' ) .'</option>';
+                    if($installmentRates[$perInstallmentKey]['active'] == 1)
+                    {
+                        $optionValue = $perInstallmentKey == 1 ? __( "Cash In Advence", 'moka-woocommerce' ) : $perInstallmentKey. ' '. __( "Installment", 'moka-woocommerce' );
+                        $formHtml.='<option value="'.$perInstallmentKey.'">'.self::calculateComissionRate($total, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</option>';
+                    }
                 }
                 $formHtml .= '</select>';
             $formHtml .= '</p></fieldset>';
+        }
+
+        if(!$installmentRates)
+        {
+            $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
         }
 
         return $formHtml;
