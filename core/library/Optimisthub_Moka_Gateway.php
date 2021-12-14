@@ -44,9 +44,10 @@ function initOptimisthubGatewayClass()
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
             add_action( 'admin_head', [$this, 'admin_css']);     
 
+
             self::__saveRates();
         }
-    
+        
         /**
          * Admin Settings Panel form Fields
          *
@@ -365,5 +366,6 @@ function initOptimisthubGatewayClass()
             global $wpdb; 
             return $wpdb->query("SELECT * FROM ". ($site_wide ? $wpdb->base_prefix : $wpdb->prefix). "options WHERE option_name ='$name' LIMIT 1");
         }
+        
     }
 }
