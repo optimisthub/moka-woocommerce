@@ -322,11 +322,11 @@ function initOptimisthubGatewayClass()
             {
                 if( empty(data_get($postedData, $this->id.'-installment'))) 
                 {
-                    wc_add_notice(  __( "<strong>Card CVC</strong> is required.", 'moka-woocommerce' ), 'error' );
+                    wc_add_notice(  __( "<strong>Installment</strong> is required.", 'moka-woocommerce' ), 'error' );
                     return false;
                 }
             }
-            
+
             return true;
         }
         
