@@ -130,10 +130,16 @@ class Optimisthub_Ajax
         } 
     }
 
+    /**
+     * Render html installment template
+     *
+     * @param [array] $params
+     * @return void
+     */
     private function renderedHtml( $params )
     {
         global $woocommerce;
-        $total = $woocommerce->cart->total; 
+        $total = data_get($woocommerce, 'cart.total'); 
         $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
         $installmentRates = data_get($params, 'installments.rates');
 
@@ -156,6 +162,14 @@ class Optimisthub_Ajax
         return $formHtml;
     }
 
+    /**
+     * Calculate comisssion rates for installment information
+     *
+     * @param [int] $total
+     * @param [int] $percent
+     * @param [int] $installment
+     * @return void
+     */
     private function calculateComissionRate( $total, $percent, $installment )
     {
         $total = ( ( ($total*$percent)/100) + $total);
