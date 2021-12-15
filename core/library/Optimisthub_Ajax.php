@@ -33,7 +33,7 @@ class Optimisthub_Ajax
             return wp_send_json_error( $error );
         }
 
-        $binNumber = data_get($postData, 'binNumber');
+        $binNumber = substr(data_get($postData, 'binNumber'),0,6);
 
         $mokaPay = new MokaPayment();
         $response = $mokaPay->requestBin(['binNumber' => $binNumber]);
@@ -143,6 +143,7 @@ class Optimisthub_Ajax
         $total = data_get($woocommerce, 'cart.total'); 
         $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
         $installmentRates = data_get($params, 'installments.rates');
+        $orderTotal = $total;
 
         ### Disable rate for 1 installment
         $installmentRates[1]=[
@@ -152,6 +153,10 @@ class Optimisthub_Ajax
         ### Disable rate for 1 installment
 
         $formHtml = ''; 
+        $formHtml.='<input type="hidden" name="mokapay-order-total" value="'.$orderTotal.'">';
+        $formHtml.='<input type="hidden" name="mokapay-installment-rates" value="'.urlencode(json_encode($installmentRates)).'">';
+ 
+        
         if(!$this->enableInstallment)
         {
             return $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
@@ -160,7 +165,7 @@ class Optimisthub_Ajax
         if($installmentRates)
         {
             $formHtml .='<fieldset style="padding-bottom:30px"><p class="form-row form-row-wide">';
-                $formHtml .= '<img class="aligncenter" src="'.data_get($params, 'card.CardTemplate').'" />';
+                #$formHtml .= '<img class="aligncenter" src="'.data_get($params, 'card.CardTemplate').'" />';
                 $formHtml .= '<label for="mokapay-installment">'.__( "Installment Shopping", 'moka-woocommerce' ).'</label>';
                 $formHtml .= '<select name="mokapay-installment" class="input-select">';
                 foreach(range(1,$maxInstallment) as $perInstallmentKey)
@@ -178,8 +183,7 @@ class Optimisthub_Ajax
         if(!$installmentRates)
         {
             return $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
-        }
-
+        } 
         return $formHtml;
     }
 

@@ -25,6 +25,12 @@
     display:table;
 }
 
+.wc_payment_method .payment_box.payment_method_mokapay select{
+    width:100% !important;
+}
+.woocommerce #payment .form-row select, .woocommerce-page #payment .form-row select {
+    width:100% !important;
+}
 /*
 .payment_method_mokapay .form-row-first {width:100% !important;;}
 .payment_method_mokapay .form-row-last {width:100% !important;}*/

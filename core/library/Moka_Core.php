@@ -20,9 +20,48 @@ class MokaPayment
         
     }
 
-    public function initializePayment() {}
+    public function initializePayment( $params ) 
+    {
+        $method = self::payWith($this->mokaOptions);
 
-    public function payWith( $params ) {}
+        global $mokaKey;
+
+        $postParams = [
+            'PaymentDealerAuthentication' => 
+            [
+                'DealerCode'=> data_get($this->mokaOptions, 'company_code'),
+                'Username'  => data_get($this->mokaOptions, 'api_username'),
+                'Password'  => data_get($this->mokaOptions, 'api_password'),
+                'CheckKey'  => $mokaKey,
+            ],
+            'PaymentDealerRequest' => $params
+        ]; 
+
+
+        $paymentRequest = self::doRequest($method, $postParams);
+        if(data_get($paymentRequest, 'response.code') && data_get($paymentRequest, 'response.code') == 200)
+        {
+            $responseBody = data_get($paymentRequest, 'body');
+            $responseBody = json_decode($responseBody, true);
+            $responseBody = data_get($responseBody, 'Data');
+            dd($responseBody);
+        }
+        // TODO :: Will generate order status result page. 
+
+   
+    }
+
+    /**
+     * Decide payment type
+     *
+     * @param [type] $params
+     * @return void
+     */
+    public function payWith( $params ) 
+    {
+        $isEnable3D = 'yes' === data_get($params, 'enable_3d');
+        return $isEnable3D ? '/PaymentDealer/DoDirectPaymentThreeD' : '/PaymentDealer/DoDirectPaymentThreeD';
+    }
 
     /**
      * Request Bin number for card details
@@ -252,10 +291,7 @@ class MokaPayment
         $return.= '</table></div>';  
         return $return;
     }
-
-    private function without3dPayment( $params ) {}
-    private function with3dPayment( $params ) {}
-    private function getPaymentOptions() {} 
+  
 
     /**
      * Generate Moka Key Hash

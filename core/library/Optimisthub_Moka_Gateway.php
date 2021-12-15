@@ -333,11 +333,43 @@ function initOptimisthubGatewayClass()
         /**
          * Process payment
          *
+         * Desc : Error complex : https://hotexamples.com/examples/-/WC_order/add_order_note/php-wc_order-add_order_note-method-examples.html
          * @param [type] $order_id
          * @return void
          */
-        public function process_payment( $order_id ) 
+        public function process_payment( $orderId ) 
         {
+            $order              = new WC_order($orderId);
+            $orderDetails       = self::formatOrder($orderId); 
+            $currentTotal       = data_get($orderDetails, 'Amount');
+            $installmentNumber  = data_get($orderDetails, 'InstallmentNumber');
+            $currency           = $order->get_currency();
+
+            
+            if($order->get_total() < $currentTotal)
+            {
+                self::saveComissionDecision( [
+                    'orderId' => $orderId,
+                    'orderTotal' => $order->get_total(),
+                    'currentOrderTotal' => $currentTotal,
+
+                ]); 
+
+                $order->add_order_note( 
+                    sprintf( 
+                        __( 'Sipariş Tutarında, taksitli alışveriş talep edildiğinden dolayı güncelleme yapıldı. %s', 'moka-woocommerce' ), 
+                        $currentTotal. ' '.$currency. ' ['.$installmentNumber.' Taksit]'
+                    )
+                ); 
+
+                    //$order->get_currency() 
+            }
+
+            dd('ok');
+
+            $payOrder = $this->optimisthubMoka->initializePayment($orderDetails);
+            dd($payOrder);
+
         }
             
         public function webhook() 
@@ -398,6 +430,159 @@ function initOptimisthubGatewayClass()
                 ]);
 
             }
+        }
+
+        /**
+         * Fromat Order Data
+         *
+         * @param [type] $orderId
+         * @return void
+         */
+        private function formatOrder( $orderId )
+        {
+
+            global $woocommerce; 
+            $postData = $_POST;
+ 
+            $order = self::fetchOrder($orderId);
+
+            if (version_compare(get_bloginfo('version'), '4.5', '>=')) {
+                $userInfo = wp_get_current_user();
+            } else {
+                $userInfo = get_currentuserinfo();
+            }
+
+            $orderIdTrx = $orderId;
+            $orderId    = 'OPTIMIST-'.$orderId.'-'.time();
+            $expriyDate = self::formatExperyDate(data_get($postData, $this->id.'-card-expiry'));
+            $rates      = data_get($postData, $this->id.'-installment-rates'); 
+            $rates      = urldecode($rates);
+            $rates      = json_decode($rates);
+            
+            $selectedInstallment    = data_get($postData, $this->id.'-installment');
+            $currentComission       = data_get($rates, $selectedInstallment.'.value'); 
+ 
+            $orderData = [
+                'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
+                'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
+                'ExpMonth'              => (string) data_get($expriyDate,'month' ),
+                'ExpYear'               => (string) '20'.data_get($expriyDate,'year' ),
+                'CvcNumber'             => (string) data_get($postData, $this->id.'-card-cvc'),
+                'Amount'                => (string) self::calculateComissionRate(data_get($postData, $this->id.'-order-total'),$currentComission),
+                'Currency'              => (string) $order->get_currency() == 'TRY' ? 'TL' : $order->get_currency() ,
+                'InstallmentNumber'     => (int) $selectedInstallment,
+                'ClientIP'              => (string) self::getUserIp(),
+                'RedirectUrl'           => (string) $order->get_checkout_payment_url(true),
+                'OtherTrxCode'          => (string) $orderId,
+                'Software'              => (string) strtoupper('OHUB-WooCommerce-'.get_bloginfo('version')),
+                'ReturnHash'            => (int) 1,
+                'SubMerchantName'       => ""
+            ];
+
+            return $orderData;
+
+        }
+
+        /**
+         * User IP Adress
+         *
+         * @return void
+         */
+        private function getUserIp()
+        {
+            if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+                    $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+                    $_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+            }
+            $client  = @$_SERVER['HTTP_CLIENT_IP'];
+            $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
+            $remote  = $_SERVER['REMOTE_ADDR'];
+
+            if(filter_var($client, FILTER_VALIDATE_IP))
+            {
+                $ip = $client;
+            }
+            elseif(filter_var($forward, FILTER_VALIDATE_IP))
+            {
+                $ip = $forward;
+            }
+            else
+            {
+                $ip = $remote;
+            }
+
+            return $ip;
+        }
+
+        /**
+         * Format Cart number
+         *
+         * @param [type] $string
+         * @return void
+         */
+        private function formatCartNumber($string)
+        {
+            return preg_replace('/\s+/', '',strip_tags(trim(ltrim(rtrim($string)))));
+        }
+
+        /**
+         * Format Credit Cart Expiyr
+         *
+         * @param [type] $string
+         * @return void
+         */
+        private function formatExperyDate($string)
+        {
+            $date = explode('/', $string);
+            return [
+                'month' => ltrim(rtrim(trim(current($date)))),
+                'year' => ltrim(rtrim(trim(last($date)))),
+            ]; 
+        }
+
+        /**
+         * Calculate comisssion rates for installment information
+         *
+         * @param [int] $total
+         * @param [int] $percent
+         * @param [int] $installment
+         * @return void
+         */
+        private function calculateComissionRate( $total, $percent )
+        {
+            $total = ( ( ((int)$total*(int)$percent)/100) + (int)$total);
+            return number_format($total,2,'.', '');
+        }
+
+        /**
+         * Fetch Order by ID
+         *
+         * @param [type] $orderId
+         * @return void
+         */
+        private function fetchOrder($orderId)
+        {
+            return wc_get_order( $orderId );
+        }
+        
+        private function saveComissionDecision( $params )
+        {
+            $installmentFee = data_get($params, 'currentOrderTotal') - data_get($params, 'orderTotal'); 
+            
+            $order = self::fetchOrder(data_get($params, 'orderId'));
+            
+            $orderFee = new stdClass();
+            $orderFee->id = $this->id.'-installment-fee';
+            $orderFee->name = __('Installment Fee', 'moka-woocommerce');
+            $orderFee->amount = $installmentFee;
+            $orderFee->taxable = false;
+            $orderFee->tax = 0;
+            $orderFee->tax_data = array();
+            $orderFee->tax_class = '';
+            
+            $order->add_fee($orderFee);
+            $order->calculate_totals(true);
+            $order->save();
         }
         
     }
