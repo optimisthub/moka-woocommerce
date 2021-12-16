@@ -42,13 +42,12 @@ function initOptimisthubGatewayClass()
             
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
- 
-    
+
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
-            add_action( 'admin_head', [$this, 'admin_css']);     
-
+            add_action( 'admin_head', [$this, 'admin_css']);   
+            add_action( 'woocommerce_receipt_'.$this->id, [$this, 'receipt_page']);  
 
             self::__saveRates();
         }
@@ -344,6 +343,7 @@ function initOptimisthubGatewayClass()
          */
         public function process_payment( $orderId ) 
         {
+            session_start();
             $order              = new WC_order($orderId);
             $orderDetails       = self::formatOrder($orderId); 
             $currentTotal       = data_get($orderDetails, 'Amount');
@@ -365,40 +365,31 @@ function initOptimisthubGatewayClass()
                         __( 'Sipariş Tutarında, taksitli alışveriş talep edildiğinden dolayı güncelleme yapıldı. %s', 'moka-woocommerce' ), 
                         $currentTotal. ' '.$currency. ' ['.$installmentNumber.' Taksit]'
                     )
-                ); 
-
-                    //$order->get_currency() 
-            }
-
-            dd('ok');
+                );  
+            } 
 
             $payOrder = $this->optimisthubMoka->initializePayment($orderDetails);
-            dd($payOrder);
+            
+            $callbackUrl        = data_get($payOrder, 'Data.Url');
+            $callbackHash       = data_get($payOrder, 'Data.CodeForHash');
+            $callbackResult     = data_get($payOrder, 'ResultCode');
+            $callbackMessage    = data_get($payOrder, 'ResultMessage');
+            $callbackException  = data_get($payOrder, 'Exception');
+            
+            $_SESSION['CodeForHash'] = $callbackHash;
 
+            dd($payOrder,$callbackHash,$_SESSION['CodeForHash']);
+
+        }
+
+        public function receipt_page( $orderId )
+        {
+
+            dd($orderId,$_POST,self::validatePayment());
         }
             
         public function webhook() 
         {
-        }
-
-        /**
-         * Save Installment Rates to DB
-         *
-         * @return void
-         */
-        private function __saveRates()
-        {
-            $optionKey = 'woocommerce_mokapay-installments';
-
-            if(data_get($_POST, $optionKey))
-            {  
-                if (self::option_exists($optionKey))
-                {
-                    delete_option($optionKey); 
-                }
-
-                return $this->optimisthubMoka->setInstallments($_POST[$optionKey]);
-            }
         }
 
         /**
@@ -477,7 +468,7 @@ function initOptimisthubGatewayClass()
                 'Currency'              => (string) $order->get_currency() == 'TRY' ? 'TL' : $order->get_currency() ,
                 'InstallmentNumber'     => (int) $selectedInstallment,
                 'ClientIP'              => (string) self::getUserIp(),
-                'RedirectUrl'           => (string) $order->get_checkout_payment_url(true),
+                'RedirectUrl'           => (string) self::checkoutPaymentUrl($orderIdTrx),
                 'OtherTrxCode'          => (string) $orderId,
                 'Software'              => (string) strtoupper('OHUB-WooCommerce-'.get_bloginfo('version')),
                 'ReturnHash'            => (int) 1,
@@ -570,6 +561,12 @@ function initOptimisthubGatewayClass()
             return wc_get_order( $orderId );
         }
         
+        /**
+         * Installment Fees
+         *
+         * @param [type] $params
+         * @return void
+         */
         private function saveComissionDecision( $params )
         {
             $installmentFee = data_get($params, 'currentOrderTotal') - data_get($params, 'orderTotal'); 
@@ -590,5 +587,57 @@ function initOptimisthubGatewayClass()
             $order->save();
         }
         
+
+        /**
+         * Checkout Payment url
+         *
+         * @param [type] $orderId
+         * @return void
+         */
+        private function checkoutPaymentUrl($orderId)
+        {
+            $order = self::fetchOrder($orderId);
+
+            return version_compare(WOOCOMMERCE_VERSION, '2.1.0', '>=') ? $order->get_checkout_payment_url(true) : get_permalink(get_option('woocommerce_pay_page_id')); 
+        }
+        
+        /**
+         * Validte payment With Stored Hash
+         *
+         * @return void
+         */
+        private function validatePayment()
+        {
+            session_start();   
+            $postData       = $_POST;
+            $hashValue      = data_get($postData, 'hashValue');
+            $hashSession    = hash("sha256", $_SESSION['CodeForHash']."T");
+
+            if ($hashValue == $hashSession) {
+                dd(true,$hashValue,$hashValue,$postData);
+            } else {
+                dd(false,$hashValue,$hashValue,$postData);
+            }
+        }
+
+        /**
+         * Save Installment Rates to DB
+         *
+         * @return void
+         */
+        private function __saveRates()
+        {
+            $optionKey = 'woocommerce_mokapay-installments';
+
+            if(data_get($_POST, $optionKey))
+            {  
+                if (self::option_exists($optionKey))
+                {
+                    delete_option($optionKey); 
+                }
+
+                return $this->optimisthubMoka->setInstallments($_POST[$optionKey]);
+            }
+        }
     }
 }

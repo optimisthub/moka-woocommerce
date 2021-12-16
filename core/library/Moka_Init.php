@@ -56,8 +56,6 @@ function isNewVersionAvaliable()
 	}
 }
 
-
-
 /**
  * Moka Gateway Init.
  *
@@ -71,6 +69,5 @@ function addOptimisthubMokaGateway( $gateways ) {
 
 add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
 add_shortcode( 'moka-taksit-tablosu', 'installments_shortcode' );
-
 add_action( 'admin_notices', 'isNewVersionAvaliable');
 
