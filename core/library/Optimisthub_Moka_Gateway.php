@@ -42,6 +42,7 @@ function initOptimisthubGatewayClass()
             
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
+            $this->userInformation = self::getUserInformationData();
 
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
@@ -349,7 +350,6 @@ function initOptimisthubGatewayClass()
             $currentTotal       = data_get($orderDetails, 'Amount');
             $installmentNumber  = data_get($orderDetails, 'InstallmentNumber');
             $currency           = $order->get_currency();
-
             
             if($order->get_total() < $currentTotal)
             {
@@ -368,18 +368,50 @@ function initOptimisthubGatewayClass()
                 );  
             } 
 
-            $payOrder = $this->optimisthubMoka->initializePayment($orderDetails);
-            
+            $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
             $callbackUrl        = data_get($payOrder, 'Data.Url');
             $callbackHash       = data_get($payOrder, 'Data.CodeForHash');
             $callbackResult     = data_get($payOrder, 'ResultCode');
             $callbackMessage    = data_get($payOrder, 'ResultMessage');
             $callbackException  = data_get($payOrder, 'Exception');
             
-            $_SESSION['CodeForHash'] = $callbackHash;
+            $_SESSION['CodeForHash']    = $callbackHash;
+            $_SESSION['orderDetails']   = $orderDetails;
+            $_SESSION['orderDetails']['orderId']   = $orderId;
+            $_SESSION['orderDetails']['userInfo']  = $this->userInformation;
 
-            dd($payOrder,$callbackHash,$_SESSION['CodeForHash']);
+            $recordParams = 
+            [
+                'id_cart'       => data_get($_SESSION,'orderDetails.orderId'),
+                'id_customer'   => data_get($_SESSION,'orderDetails.userInfo.ID'),
+                'optimist_id'   => data_get($_SESSION,'orderDetails.OtherTrxCode'),
+                'amount'        => data_get($_SESSION,'orderDetails.Amount'),
+                'amount_paid'   => data_get($_SESSION,'orderDetails.Amount'),
+                'installment'   => data_get($_SESSION,'orderDetails.InstallmentNumber'),
+                'result_code'   => $callbackResult,
+                'result_message'=> self::mokaPosErrorMessages($callbackResult),
+                'result'        => 1, // 1 False 0 True
+                'created_at'    => date('Y-m-d H:i:s'), 
+            ];
+            
 
+            ## Display Error on Checkout
+            if($callbackResult != 'Success')
+            {
+                wc_add_notice(self::mokaPosErrorMessages($callbackResult), 'error' );
+                self::saveRecord($recordParams);
+            }
+
+            ## Redirect to Reciepent Scenario when Successfully Validated Card Information
+            if($callbackResult == 'Success')
+            {
+                $recordParams['result_message'] = 'Kart Bilgileri Başarılı Bir Şekilde Doğrulandı.';
+                self::saveRecord($recordParams);
+                return [
+                    'result' => 'success',
+                    'redirect' => $callbackUrl,
+                ];
+            }
         }
 
         public function receipt_page( $orderId )
@@ -441,12 +473,6 @@ function initOptimisthubGatewayClass()
             $postData = $_POST;
  
             $order = self::fetchOrder($orderId);
-
-            if (version_compare(get_bloginfo('version'), '4.5', '>=')) {
-                $userInfo = wp_get_current_user();
-            } else {
-                $userInfo = get_currentuserinfo();
-            }
 
             $orderIdTrx = $orderId;
             $orderId    = 'OPTIMIST-'.$orderId.'-'.time();
@@ -621,6 +647,62 @@ function initOptimisthubGatewayClass()
         }
 
         /**
+         * Service Error Translation
+         *
+         * @param [type] $string
+         * @return void
+         */
+        private function mokaPosErrorMessages($string)
+        {
+            $errorOutput = '';
+            switch ($string) {
+                case "PaymentDealer.CheckPaymentDealerAuthentication.InvalidRequest":
+                    $errorOutput = "Hatalı hash bilgisi";
+                    break;
+                case "PaymentDealer.RequiredFields.AmountRequired":
+                    $errorOutput = "Tutar Göndermek Zorunludur.";
+                    break;
+                case "PaymentDealer.RequiredFields.ExpMonthRequired":
+                    $errorOutput = "Son Kullanım Tarihi Gönderme Zorunludur.";
+                    break;
+
+                case "PaymentDealer.CheckPaymentDealerAuthentication.InvalidAccount":
+                    $errorOutput = "Böyle bir bayi bulunamadı";
+                    break;
+                case "PaymentDealer.CheckPaymentDealerAuthentication.VirtualPosNotFound":
+                    $errorOutput = "Bu bayi için sanal pos tanımı yapılmamış";
+                    break;
+                case "PaymentDealer.CheckDealerPaymentLimits.DailyDealerLimitExceeded":
+                    $errorOutput = "Bayi için tanımlı günlük limitlerden herhangi biri aşıldı";
+                    break;
+                case "PaymentDealer.CheckDealerPaymentLimits.DailyCardLimitExceeded":
+                    $errorOutput = "Gün içinde bu kart kullanılarak daha fazla işlem yapılamaz";
+
+                case "PaymentDealer.CheckCardInfo.InvalidCardInfo":
+                    $errorOutput = "Kart bilgilerinde hata var lütfen doğru bilgileri işleyiniz";
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.InstallmentNotAvailableForForeignCurrencyTransaction":
+
+                    $errorOutput = "Yabancı para ile taksit yapılamaz";
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForDealer":
+                    $errorOutput = "Bu taksit sayısı bu bayi için yapılamaz";
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.InvalidInstallmentNumber":
+                    $errorOutput = "Taksit sayısı 2 ile 9 arasıdır";
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForVirtualPos":
+                    $errorOutput = "Sanal Pos bu taksit sayısına izin vermiyor";
+                    break;
+
+                default:
+                    $errorOutput = "Beklenmeyen bir hata oluştu";
+            }
+
+            return $errorOutput;
+        }
+
+        /**
          * Save Installment Rates to DB
          *
          * @return void
@@ -639,5 +721,23 @@ function initOptimisthubGatewayClass()
                 return $this->optimisthubMoka->setInstallments($_POST[$optionKey]);
             }
         }
+
+        /**
+         * Fetch User Information
+         *
+         * @return void
+         */
+        private function getUserInformationData()
+        {
+            return version_compare(get_bloginfo('version'), '4.5', '>=') ? wp_get_current_user() : get_currentuserinfo();
+        }
+
+        private function saveRecord($params)
+        {
+            global $wpdb;
+            $tableName = $wpdb->prefix . 'moka_transactions';
+            return $wpdb->insert($tableName, $params);
+        }
+        
     }
 }
