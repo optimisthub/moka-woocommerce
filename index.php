@@ -18,6 +18,12 @@ require __DIR__ . '/vendor/autoload.php';
 
 define('OPTIMISTHUB_MOKA_PAY_VERSION', '2.0');
 
+require __DIR__ . "/core/library/Moka_Init.php";
+require __DIR__ . "/core/library/OptimistHub_Moka_Gateway.php";
+require __DIR__ . "/core/library/Optimisthub_Update_Checker.php";
+require __DIR__ . "/core/library/Moka_Core.php";
+require __DIR__ . "/core/library/Optimisthub_Ajax.php";
+
 /**
  * Plugin translation hook
  *
