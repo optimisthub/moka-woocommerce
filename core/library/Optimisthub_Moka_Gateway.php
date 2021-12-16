@@ -10,6 +10,11 @@ add_action( 'plugins_loaded', 'initOptimisthubGatewayClass' );
 function initOptimisthubGatewayClass() 
 { 
 	
+    if(!class_exists('WC_Payment_Gateway'))
+    {
+        return;
+    }
+    
     class OptimistHub_Moka_Gateway extends WC_Payment_Gateway {
 
         public function __construct() 
