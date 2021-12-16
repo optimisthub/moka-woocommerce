@@ -20,7 +20,7 @@ class MokaPayment
         
     }
 
-    public function initializePayment( $params ) 
+    public function initializePayment($params) 
     {
         $method = self::payWith($this->mokaOptions);
 
@@ -43,12 +43,8 @@ class MokaPayment
         {
             $responseBody = data_get($paymentRequest, 'body');
             $responseBody = json_decode($responseBody, true);
-            $responseBody = data_get($responseBody, 'Data');
-            dd($responseBody);
+            return $responseBody;
         }
-        // TODO :: Will generate order status result page. 
-
-   
     }
 
     /**
@@ -57,7 +53,7 @@ class MokaPayment
      * @param [type] $params
      * @return void
      */
-    public function payWith( $params ) 
+    public function payWith($params) 
     {
         $isEnable3D = 'yes' === data_get($params, 'enable_3d');
         return $isEnable3D ? '/PaymentDealer/DoDirectPaymentThreeD' : '/PaymentDealer/DoDirectPaymentThreeD';
@@ -70,7 +66,7 @@ class MokaPayment
      * @param [type] $params
      * @return void
      */
-    public function requestBin( $params ) 
+    public function requestBin($params) 
     {
         global $mokaKey;
 
@@ -155,7 +151,7 @@ class MokaPayment
      * @param [type] $params
      * @return void
      */
-    public function setInstallments( $params )
+    public function setInstallments($params)
     {
         update_option('woocommerce_mokapay-installments', $params); 
     }
@@ -166,7 +162,7 @@ class MokaPayment
      * @param [type] $params
      * @return void
      */
-    public function generateInstallmentsTableHtml( $params )
+    public function generateInstallmentsTableHtml($params)
     {
 
         $storedData = get_option( 'woocommerce_mokapay-installments' );
@@ -334,7 +330,7 @@ class MokaPayment
      */
     private function doRequest($method, $params)
     {
-        return wp_remote_post( $this->apiHost.$method,
+        return wp_remote_post($this->apiHost.$method,
             [
                 'method'      => 'POST',
                 'timeout'     => 45,
