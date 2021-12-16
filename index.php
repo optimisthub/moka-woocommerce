@@ -54,7 +54,7 @@ function moka_activate()
 	$sql = "CREATE TABLE $tableName (
 		`id` int unsigned NOT NULL AUTO_INCREMENT,
 		`id_cart` text,
-		`id_costomer` int DEFAULT NULL,
+		`id_customer` int DEFAULT NULL,
 		`optimist_id` text,
 		`amount` decimal(10,2) DEFAULT '0.00',
 		`amount_paid` decimal(10,2) DEFAULT '0.00',
