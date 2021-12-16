@@ -23,7 +23,7 @@ return array(
     'fe62ba7e10580d903cc46d808b5961a4' => $vendorDir . '/tightenco/collect/src/Collect/Support/helpers.php',
     'caf31cc6ec7cf2241cb6f12c226c3846' => $vendorDir . '/tightenco/collect/src/Collect/Support/alias.php',
     '87a441cc0a9becb56112f465a238f99e' => $baseDir . '/core/library/Moka_Init.php',
-    '1b6562fe88c9ab897f399641e5770f51' => $baseDir . '/core/library/OptimistHub_Moka_Gateway.php',
+    '26744785a0b9c45a7b57bb9d66a61060' => $baseDir . '/core/library/Moka_Gateway.php',
     '9339c423427a46c6a4b1eb06acd29212' => $baseDir . '/core/library/Optimisthub_Update_Checker.php',
     '59cf957801c02b59a7fed8baaea9c4a0' => $baseDir . '/core/library/Moka_Core.php',
     '80d12e38c70a623c2f4b076af5ece48e' => $baseDir . '/core/library/Optimisthub_Ajax.php',
