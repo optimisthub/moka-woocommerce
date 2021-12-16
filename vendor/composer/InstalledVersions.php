@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '893353817ed134b67b890fdee29650c50dbb9fd2',
+    'reference' => '1469338730c7bad4a27dd9be454a8f6a0f234a3e',
     'name' => 'optimisthub/moka-woocommerce',
   ),
   'versions' => 
@@ -77,7 +77,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '893353817ed134b67b890fdee29650c50dbb9fd2',
+      'reference' => '1469338730c7bad4a27dd9be454a8f6a0f234a3e',
     ),
     'psr/container' => 
     array (
