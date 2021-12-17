@@ -268,11 +268,7 @@ function initOptimisthubGatewayClass()
             $cc_form->supports = $this->supports; 
             $cc_form->form();
 
-            echo '<div id="ajaxify-installment-table" class="installment-table"></div>';
-
-            #$binRequest = $this->optimisthubMoka->requestBin(['binNumber' => '531389']);
-            #dd($binRequest);
- 
+            echo '<div id="ajaxify-installment-table" class="installment-table"></div>'; 
             do_action( 'woocommerce_credit_card_form_end', $this->id );  
         }
  
@@ -345,7 +341,6 @@ function initOptimisthubGatewayClass()
          */
         public function process_payment( $orderId ) 
         {
-            session_start();
             $order              = new WC_order($orderId);
             $orderDetails       = self::formatOrder($orderId); 
             $currentTotal       = data_get($orderDetails, 'Amount');
@@ -377,21 +372,28 @@ function initOptimisthubGatewayClass()
             $callbackMessage    = data_get($payOrder, 'ResultMessage');
             $callbackException  = data_get($payOrder, 'Exception');
 
-            session_start();
-            $_SESSION['CodeForHash']    = $callbackHash;
-            $_SESSION['orderDetails']   = $orderDetails;
-            $_SESSION['orderDetails']['orderId']   = $orderId;
-            $_SESSION['orderDetails']['userInfo']  = $this->userInformation;
+            $orderDetails['orderId']   = $orderId;
+            $orderDetails['userInfo']  = $this->userInformation;
+
+            self::saveHash(
+                [
+                    'id_hash'       => $callbackHash,
+                    'id_order'      => $orderId,
+                    'order_details' => json_encode($orderDetails), 
+                    'optimist_id'   => data_get($orderDetails,'orderDetails.OtherTrxCode'), 
+                    'created_at'    => date('Y-m-d H:i:s'),      
+                ]
+            );
 
             
             $recordParams = 
             [
-                'id_cart'       => data_get($_SESSION,'orderDetails.orderId'),
-                'id_customer'   => data_get($_SESSION,'orderDetails.userInfo.ID'),
-                'optimist_id'   => data_get($_SESSION,'orderDetails.OtherTrxCode'),
-                'amount'        => data_get($_SESSION,'orderDetails.Amount'),
+                'id_cart'       => data_get($orderDetails,'orderId'),
+                'id_customer'   => data_get($orderDetails,'userInfo.ID'),
+                'optimist_id'   => data_get($orderDetails,'OtherTrxCode'),
+                'amount'        => data_get($orderDetails,'Amount'),
                 'amount_paid'   => 0,
-                'installment'   => data_get($_SESSION,'orderDetails.InstallmentNumber'),
+                'installment'   => data_get($orderDetails,'InstallmentNumber'),
                 'result_code'   => $callbackResult,
                 'result_message'=> self::mokaPosErrorMessages($callbackResult),
                 'result'        => 1, // 1 False 0 True
@@ -421,16 +423,19 @@ function initOptimisthubGatewayClass()
         public function receipt_page( $orderId )
         {
 
-            global $woocommerce;
+            global $woocommerce; 
+
+            $fetchData = self::getHash(['orderId' => $orderId]);
+            $orderDetails = json_decode( data_get($fetchData, 'order_details'), true );
 
             $recordParams = 
             [
-                'id_cart'       => data_get($_SESSION,'orderDetails.orderId'),
-                'id_customer'   => data_get($_SESSION,'orderDetails.userInfo.ID'),
-                'optimist_id'   => data_get($_SESSION,'orderDetails.OtherTrxCode'),
-                'amount'        => data_get($_SESSION,'orderDetails.Amount'),
+                'id_cart'       => data_get($fetchData, 'id_order'),
+                'id_customer'   => data_get($orderDetails,'userInfo.ID'),
+                'optimist_id'   => data_get($orderDetails,'OtherTrxCode'),
+                'amount'        => data_get($orderDetails,'Amount'),
                 'amount_paid'   => 0,
-                'installment'   => data_get($_SESSION,'orderDetails.InstallmentNumber'),
+                'installment'   => data_get($orderDetails,'InstallmentNumber'),
                 'result_code'   => data_get($_POST, 'resultMessage'),
                 'result_message'=> self::mokaPosErrorMessages(data_get($_POST, 'resultCode')),
                 'result'        => 1, // 1 False 0 True
@@ -438,12 +443,12 @@ function initOptimisthubGatewayClass()
             ];
 
             $order = new WC_order($orderId);
-            $isCompleted = self::validatePayment();
+            $isCompleted = self::validatePayment(data_get($fetchData, 'id_hash'));
 
             if($isCompleted)
             {
-                $total = data_get($_SESSION,'orderDetails.Amount');
-                $currency = data_get($_SESSION,'orderDetails.Currency');
+                $total = data_get($orderDetails,'Amount');
+                $currency = data_get($orderDetails,'Currency');
 
                 
                 $order->update_status('processing', __('Payment is processing via Moka Pay.', 'moka-woocommerce'));
@@ -453,7 +458,7 @@ function initOptimisthubGatewayClass()
                 
                 $woocommerce->cart->empty_cart();
                 
-                $recordParams['amount_paid'] = data_get($_SESSION,'orderDetails.Amount');
+                $recordParams['amount_paid'] = data_get($orderDetails,'Amount');
                 $recordParams['result'] = 0;
                 $recordParams['result_message'] = __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency;
                 self::saveRecord($recordParams);
@@ -682,11 +687,11 @@ function initOptimisthubGatewayClass()
          *
          * @return void
          */
-        private function validatePayment()
+        private function validatePayment($hash)
         {
             $postData       = $_POST;
             $hashValue      = data_get($postData, 'hashValue');
-            $hashSession    = hash("sha256", $_SESSION['CodeForHash']."T");
+            $hashSession    = hash("sha256", $hash."T");
 
             if ($hashValue == $hashSession) {
                 return true;
@@ -781,11 +786,44 @@ function initOptimisthubGatewayClass()
             return version_compare(get_bloginfo('version'), '4.5', '>=') ? wp_get_current_user() : get_currentuserinfo();
         }
 
+        /**
+         * Store All History 
+         *
+         * @param [type] $params
+         * @return void
+         */
         private function saveRecord($params)
         {
             global $wpdb;
             $tableName = $wpdb->prefix . 'moka_transactions';
             return $wpdb->insert($tableName, $params);
+        }
+
+        /**
+         * Save Returned Hash
+         *
+         * @param [type] $params
+         * @return void
+         */
+        private function saveHash($params)
+        {
+            global $wpdb;
+            $tableName = $wpdb->prefix . 'moka_transactions_hash';
+            return $wpdb->insert($tableName, $params);            
+        }
+
+        /**
+         * Fetch last hash
+         *
+         * @param [type] $params
+         * @return void
+         */
+        private function getHash($params)
+        {
+            global $wpdb;
+            $orderId = data_get($params, 'orderId');
+            $tableName = $wpdb->prefix . 'moka_transactions_hash';
+            return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $tableName WHERE id_order = $orderId ORDER BY id DESC" ), ARRAY_A );       
         }
         
     }

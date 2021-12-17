@@ -43,12 +43,13 @@ $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
  *
  * @return void
  */
-function moka_activate() 
+function mokaPaySqlTables() 
 {
 	global $wpdb;
 	global $mokaVersion;
 
 	$tableName = $wpdb->prefix . 'moka_transactions';
+	$tableNameHash = $wpdb->prefix . 'moka_transactions_hash';
 	
 	$charsetCollate = $wpdb->get_charset_collate();
 
@@ -67,41 +68,24 @@ function moka_activate()
 		PRIMARY KEY (`id`)
 	) $charsetCollate;";
 
-	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	$sqlHash = "CREATE TABLE $tableNameHash (
+		`id` int unsigned NOT NULL AUTO_INCREMENT,
+		`id_hash` text,
+		`id_order` int DEFAULT NULL,
+		`order_details` text,
+		`optimist_id` text,
+		`created_at` timestamp NULL DEFAULT NULL,
+		PRIMARY KEY (`id`)
+	) $charsetCollate;";
+
+	require( ABSPATH . 'wp-admin/includes/upgrade.php' );
 	dbDelta( $sql );
+	dbDelta( $sqlHash );
 
 	add_option( 'moka_transactions', $mokaVersion );
 }
 
-register_activation_hook(__FILE__, 'moka_activate');
+register_activation_hook(__FILE__, 'mokaPaySqlTables');
 
 add_action( 'plugins_loaded', 'loadOptimisthubMokaTranslations' ); 
 
-function generateSessionHandler()
-{
-	if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
-		if(function_exists('session_status') && session_status() == PHP_SESSION_NONE) {
-			session_start(array(
-			'cache_limiter' => 'private_no_expire',
-			'read_and_close' => false,
-		));
-		}
-	}
-	else if (version_compare(PHP_VERSION, '5.4.0') >= 0)
-	{
-		if (function_exists('session_status') && session_status() == PHP_SESSION_NONE) {
-			session_cache_limiter('private_no_expire');
-			session_start();
-		}
-	}
-	else
-	{
-		if(session_id() == '') {
-			if(version_compare(PHP_VERSION, '4.0.0') >= 0){
-				session_cache_limiter('private_no_expire');
-			}
-			session_start();
-		}
-	}
-}
-add_action("init", "generateSessionHandler", 1);
