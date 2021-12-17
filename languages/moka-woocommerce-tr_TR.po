@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2021-12-17 04:00+0300\n"
+"PO-Revision-Date: 2021-12-18 02:19+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -122,3 +122,15 @@ msgstr "Moka Pay ile ödeme işlemi tamamlanıyor."
 
 msgid "Waiting for user payment."
 msgstr "Kullanıcının ödeme yapması bekleniyor."
+
+msgid "Moka Payment History"
+msgstr "Moka Ödeme Geçmişi"
+
+msgid "Order Id"
+msgstr "Sipariş Id"
+
+msgid "Customer Id"
+msgstr "Müşteri Id"
+
+msgid "Transaction Id"
+msgstr "İşlem Id"

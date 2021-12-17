@@ -37,6 +37,8 @@ This version is developed by Optimist Hub.
 
 ### Changelog 
 
+- Version 2.0.1 
+  - Added, Moka Pay History to WC Settings Tab Area. 
 - Version 2.0 Released
 
 ### Older version
