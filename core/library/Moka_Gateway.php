@@ -368,8 +368,7 @@ function initOptimisthubGatewayClass()
                     )
                 );  
             } 
-
-            global $callbackHash;
+ 
 
             $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
             $callbackUrl        = data_get($payOrder, 'Data.Url');
@@ -377,23 +376,21 @@ function initOptimisthubGatewayClass()
             $callbackResult     = data_get($payOrder, 'ResultCode');
             $callbackMessage    = data_get($payOrder, 'ResultMessage');
             $callbackException  = data_get($payOrder, 'Exception');
-            
-            $orderDetails['orderId']    = $orderId;
-            $orderDetails['userInfo']   = $this->userInformation;
 
-            
-            WC()->session->set( 'CodeForHash', $callbackHash );
-            WC()->session->set( 'orderDetails', $orderDetails );
+            $_SESSION['CodeForHash']    = $callbackHash;
+            $_SESSION['orderDetails']   = $orderDetails;
+            $_SESSION['orderDetails']['orderId']   = $orderId;
+            $_SESSION['orderDetails']['userInfo']  = $this->userInformation;
 
             
             $recordParams = 
             [
-                'id_cart'       => data_get(WC()->session->get( 'orderDetails'),'orderId'),
-                'id_customer'   => data_get(WC()->session->get( 'orderDetails'),'userInfo.ID'),
-                'optimist_id'   => data_get(WC()->session->get( 'orderDetails'),'OtherTrxCode'),
-                'amount'        => data_get(WC()->session->get( 'orderDetails'),'Amount'),
+                'id_cart'       => data_get($_SESSION,'orderDetails.orderId'),
+                'id_customer'   => data_get($_SESSION,'orderDetails.userInfo.ID'),
+                'optimist_id'   => data_get($_SESSION,'orderDetails.OtherTrxCode'),
+                'amount'        => data_get($_SESSION,'orderDetails.Amount'),
                 'amount_paid'   => 0,
-                'installment'   => data_get(WC()->session->get( 'orderDetails'),'InstallmentNumber'),
+                'installment'   => data_get($_SESSION,'orderDetails.InstallmentNumber'),
                 'result_code'   => $callbackResult,
                 'result_message'=> self::mokaPosErrorMessages($callbackResult),
                 'result'        => 1, // 1 False 0 True
@@ -427,14 +424,14 @@ function initOptimisthubGatewayClass()
 
             $recordParams = 
             [
-                'id_cart'       => data_get(WC()->session->get( 'orderDetails'),'orderId'),
-                'id_customer'   => data_get(WC()->session->get( 'orderDetails'),'userInfo.ID'),
-                'optimist_id'   => data_get(WC()->session->get( 'orderDetails'),'OtherTrxCode'),
-                'amount'        => data_get(WC()->session->get( 'orderDetails'),'Amount'),
+                'id_cart'       => data_get($_SESSION,'orderDetails.orderId'),
+                'id_customer'   => data_get($_SESSION,'orderDetails.userInfo.ID'),
+                'optimist_id'   => data_get($_SESSION,'orderDetails.OtherTrxCode'),
+                'amount'        => data_get($_SESSION,'orderDetails.Amount'),
                 'amount_paid'   => 0,
-                'installment'   => data_get(WC()->session->get( 'orderDetails'),'InstallmentNumber'),
-                'result_code'   => $callbackResult,
-                'result_message'=> self::mokaPosErrorMessages($callbackResult),
+                'installment'   => data_get($_SESSION,'orderDetails.InstallmentNumber'),
+                'result_code'   => data_get($_POST, 'resultMessage'),
+                'result_message'=> self::mokaPosErrorMessages(data_get($_POST, 'resultCode')),
                 'result'        => 1, // 1 False 0 True
                 'created_at'    => date('Y-m-d H:i:s'), 
             ];
@@ -444,8 +441,9 @@ function initOptimisthubGatewayClass()
 
             if($isCompleted)
             {
-                $total = data_get(WC()->session->get( 'orderDetails'),'Amount');
-                $currency = data_get(WC()->session->get( 'orderDetails'),'Currency');
+                $total = data_get($_SESSION,'orderDetails.Amount');
+                $currency = data_get($_SESSION,'orderDetails.Currency');
+
                 
                 $order->update_status('processing', __('Payment is processing via Moka Pay.', 'moka-woocommerce'));
                 $order->add_order_note( __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency , true );
@@ -454,7 +452,7 @@ function initOptimisthubGatewayClass()
                 
                 $woocommerce->cart->empty_cart();
                 
-                $recordParams['amount_paid'] = data_get(WC()->session->get( 'orderDetails'),'Amount');
+                $recordParams['amount_paid'] = data_get($_SESSION,'orderDetails.Amount');
                 $recordParams['result'] = 0;
                 $recordParams['result_message'] = __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency;
                 self::saveRecord($recordParams);
@@ -687,7 +685,7 @@ function initOptimisthubGatewayClass()
             global $callbackHash;
             $postData       = $_POST;
             $hashValue      = data_get($postData, 'hashValue');
-            $hashSession    = hash("sha256", $callbackHash."T");
+            $hashSession    = hash("sha256", $_SESSION['CodeForHash']."T");
 
             if ($hashValue == $hashSession) {
                 return true;
