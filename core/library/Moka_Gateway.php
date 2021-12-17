@@ -461,32 +461,11 @@ function initOptimisthubGatewayClass()
                 exit;
 
             } else {
+                $order = new WC_order($orderId);
                 $order->update_status('pending', __('Waiting for user payment.', 'moka-woocommerce'));
                 $recordParams['result_message'] = __('Waiting for user payment.', 'moka-woocommerce');
                 self::saveRecord($recordParams);
-                
-                if ( $this->description ) { 
-                    if ( $this->testmode ) {
-                        $this->description .=  __( "TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href='#''>documentation</a>", 'moka-woocommerce' );
-                        $this->description  = trim( $this->description );
-                    } 
-                    echo wpautop( wp_kses_post( $this->description ) ).'<br>';
-                } 
-                
-                do_action( 'woocommerce_credit_card_form_start', $this->id );
-                
-                $cc_form           = new WC_Payment_Gateway_CC();
-                $cc_form->id       = $this->id;
-                $cc_form->supports = $this->supports; 
-                $cc_form->form();
-
-                echo '<div id="ajaxify-installment-table" class="installment-table"></div>';
-
-                #$binRequest = $this->optimisthubMoka->requestBin(['binNumber' => '531389']);
-                #dd($binRequest);
-    
-                do_action( 'woocommerce_credit_card_form_end', $this->id );  
-
+                wp_redirect(wc_get_checkout_url());
             }
             
         }
