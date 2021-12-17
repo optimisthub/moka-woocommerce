@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://optimisthub.com?ref=demillus.com&param=github">
+  <a href="https://optimisthub.com?ref=github.com&param=moka-woocommerce">
     <img alt="Optimisthub.com" src="https://optimisthub.com/copyright/optimisthub.svg" height="120px" style="height:120px">
   </a> 
 </p>
