@@ -369,6 +369,8 @@ function initOptimisthubGatewayClass()
                 );  
             } 
 
+            global $callbackHash;
+
             $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
             $callbackUrl        = data_get($payOrder, 'Data.Url');
             $callbackHash       = data_get($payOrder, 'Data.CodeForHash');
@@ -376,9 +378,10 @@ function initOptimisthubGatewayClass()
             $callbackMessage    = data_get($payOrder, 'ResultMessage');
             $callbackException  = data_get($payOrder, 'Exception');
             
-            $orderDetails['orderId'] = $orderId;
-            $orderDetails['userInfo'] = $this->userInformation;
+            $orderDetails['orderId']    = $orderId;
+            $orderDetails['userInfo']   = $this->userInformation;
 
+            
             WC()->session->set( 'CodeForHash', $callbackHash );
             WC()->session->set( 'orderDetails', $orderDetails );
 
@@ -681,9 +684,10 @@ function initOptimisthubGatewayClass()
         private function validatePayment()
         {
    
+            global $callbackHash;
             $postData       = $_POST;
             $hashValue      = data_get($postData, 'hashValue');
-            $hashSession    = hash("sha256", WC()->session->get( 'CodeForHash')."T");
+            $hashSession    = hash("sha256", $callbackHash."T");
 
             if ($hashValue == $hashSession) {
                 return true;
