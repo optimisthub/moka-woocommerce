@@ -4,7 +4,7 @@
   </a> 
 </p>
 
-## Important Note
+## Version 2.0
 
 This version is still under development. Follow the link below to download and install the version developed by Kahve Digital.
 

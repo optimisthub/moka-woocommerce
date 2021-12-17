@@ -50,7 +50,7 @@ function isNewVersionAvaliable()
 	{
 		if(data_get($body,'data.older_versions'))
 		{
-			echo '<div class="notice notice-error is-dismissible"> <p><strong>Moka PAY Security Alert : </strong>'.data_get($body, 'data.message').'.<br><a href="'.current(data_get($body, 'data.older_versions')).'" target="_blank">Download Latest Version</a></p> </div>';
+			echo '<div class="notice notice-error is-dismissible"> <p><strong>Moka PAY WooCommerce Güvenlik Güncellemesi : </strong>'.data_get($body, 'data.message').'.<br><a href="'.current(data_get($body, 'data.older_versions')).'" target="_blank">Son Versiyonu Sunucudan İndir</a></p> </div>';
 		}
 
 	}
@@ -68,6 +68,6 @@ function addOptimisthubMokaGateway( $gateways ) {
 }
 
 add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
-add_shortcode( 'moka-taksit-tablosu', 'installments_shortcode' );
 add_action( 'admin_notices', 'isNewVersionAvaliable');
+add_shortcode( 'moka-taksit-tablosu', 'installments_shortcode' );
 
