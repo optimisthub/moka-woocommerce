@@ -23,7 +23,6 @@ class Optimisthub_Ajax
      */
     public function validate_bin($params)
     {
- 
         $postData = $params;
         $action = data_get($postData, 'action');
 

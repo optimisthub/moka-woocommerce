@@ -20,6 +20,12 @@ class MokaPayment
         
     }
 
+    /**
+     * Initialize Payment
+     *
+     * @param [type] $params
+     * @return void
+     */
     public function initializePayment($params) 
     {
         $method = self::payWith($this->mokaOptions);
@@ -287,7 +293,6 @@ class MokaPayment
         $return.= '</table></div>';  
         return $return;
     }
-  
 
     /**
      * Generate Moka Key Hash

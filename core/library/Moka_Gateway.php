@@ -667,8 +667,7 @@ function initOptimisthubGatewayClass()
             $order->calculate_totals(true);
             $order->save();
         }
-        
-
+    
         /**
          * Checkout Payment url
          *
