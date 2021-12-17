@@ -19,6 +19,7 @@ function initOptimisthubGatewayClass()
 
         public function __construct() 
         {  
+            session_start();
             $this->id = 'mokapay';  
             $this->icon = ''; // TODO : Moka Icon
             $this->has_fields = true; 
@@ -386,7 +387,7 @@ function initOptimisthubGatewayClass()
                 'id_customer'   => data_get($_SESSION,'orderDetails.userInfo.ID'),
                 'optimist_id'   => data_get($_SESSION,'orderDetails.OtherTrxCode'),
                 'amount'        => data_get($_SESSION,'orderDetails.Amount'),
-                'amount_paid'   => data_get($_SESSION,'orderDetails.Amount'),
+                'amount_paid'   => 0,
                 'installment'   => data_get($_SESSION,'orderDetails.InstallmentNumber'),
                 'result_code'   => $callbackResult,
                 'result_message'=> self::mokaPosErrorMessages($callbackResult),
@@ -404,7 +405,13 @@ function initOptimisthubGatewayClass()
 
             ## Redirect to Reciepent Scenario when Successfully Validated Card Information
             if($callbackResult == 'Success')
-            {
+            {   
+            
+                $_SESSION['CodeForHash']    = $callbackHash;
+                $_SESSION['orderDetails']   = $orderDetails;
+                $_SESSION['orderDetails']['orderId']   = $orderId;
+                $_SESSION['orderDetails']['userInfo']  = $this->userInformation;
+
                 $recordParams['result_message'] = 'Kart Bilgileri Başarılı Bir Şekilde Doğrulandı.';
                 self::saveRecord($recordParams);
                 return [
@@ -416,8 +423,51 @@ function initOptimisthubGatewayClass()
 
         public function receipt_page( $orderId )
         {
+            session_start();
+            global $woocommerce;
 
-            dd($orderId,$_POST,self::validatePayment());
+            $recordParams = 
+            [
+                'id_cart'       => data_get($_SESSION,'orderDetails.orderId'),
+                'id_customer'   => data_get($_SESSION,'orderDetails.userInfo.ID'),
+                'optimist_id'   => data_get($_SESSION,'orderDetails.OtherTrxCode'),
+                'amount'        => data_get($_SESSION,'orderDetails.Amount'),
+                'amount_paid'   => 0,
+                'installment'   => data_get($_SESSION,'orderDetails.InstallmentNumber'),
+                'result_code'   => data_get($_POST, 'resultMessage'),
+                'result_message'=> self::mokaPosErrorMessages(data_get($_POST, 'resultCode')),
+                'result'        => 1, // 1 False 0 True
+                'created_at'    => date('Y-m-d H:i:s'), 
+            ];
+
+            $order = new WC_order($orderId);
+            $isCompleted = self::validatePayment();
+
+            if($isCompleted)
+            {
+                $total = data_get($_SESSION,'orderDetails.Amount');
+                $currency = data_get($_SESSION,'orderDetails.Currency');
+                
+                $order->update_status('processing', __('Payment is processing via Moka Pay.', 'moka-woocommerce'));
+                $order->add_order_note( __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency , true );
+                $order->payment_complete();
+			    $order->reduce_order_stock();
+                
+                $woocommerce->cart->empty_cart();
+                
+                $recordParams['amount_paid'] = data_get($_SESSION,'orderDetails.Amount');
+                $recordParams['result'] = 0;
+                $recordParams['result_message'] = __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency;
+                self::saveRecord($recordParams);
+                wp_redirect($this->get_return_url());
+                exit;
+
+            } else {
+                $order->update_status('pending', __('Waiting for user payment.', 'moka-woocommerce'));
+                $recordParams['result_message'] = __('Waiting for user payment.', 'moka-woocommerce');
+                self::saveRecord($recordParams);
+            }
+            
         }
             
         public function webhook() 
@@ -640,9 +690,9 @@ function initOptimisthubGatewayClass()
             $hashSession    = hash("sha256", $_SESSION['CodeForHash']."T");
 
             if ($hashValue == $hashSession) {
-                dd(true,$hashValue,$hashValue,$postData);
+                return true;
             } else {
-                dd(false,$hashValue,$hashValue,$postData);
+                return false;
             }
         }
 
