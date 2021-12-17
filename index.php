@@ -76,3 +76,16 @@ function moka_activate()
 register_activation_hook(__FILE__, 'moka_activate');
 
 add_action( 'plugins_loaded', 'loadOptimisthubMokaTranslations' ); 
+
+function generateSessionHandler()
+{
+    if (!session_id())
+        session_start();
+}
+add_action("init", "generateSessionHandler", 1);
+
+add_action( 'woocommerce_init', function(){
+    if ( ! WC()->session->has_session() ) {
+        WC()->session->set_customer_session_cookie( true );
+    }
+} );
