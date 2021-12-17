@@ -19,7 +19,7 @@ function initOptimisthubGatewayClass()
 
         public function __construct() 
         {  
-            session_start();
+
             $this->id = 'mokapay';  
             $this->icon = ''; // TODO : Moka Icon
             $this->has_fields = true; 
@@ -345,7 +345,7 @@ function initOptimisthubGatewayClass()
          */
         public function process_payment( $orderId ) 
         {
-            session_start();
+
             $order              = new WC_order($orderId);
             $orderDetails       = self::formatOrder($orderId); 
             $currentTotal       = data_get($orderDetails, 'Amount');
@@ -423,7 +423,7 @@ function initOptimisthubGatewayClass()
 
         public function receipt_page( $orderId )
         {
-            session_start();
+
             global $woocommerce;
 
             $recordParams = 
@@ -684,7 +684,7 @@ function initOptimisthubGatewayClass()
          */
         private function validatePayment()
         {
-            session_start();   
+   
             $postData       = $_POST;
             $hashValue      = data_get($postData, 'hashValue');
             $hashSession    = hash("sha256", $_SESSION['CodeForHash']."T");
