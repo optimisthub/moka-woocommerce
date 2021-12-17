@@ -71,3 +71,9 @@ add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
 add_shortcode( 'moka-taksit-tablosu', 'installments_shortcode' );
 add_action( 'admin_notices', 'isNewVersionAvaliable');
 
+function generateSessionHandler()
+{
+    if (!session_id())
+        session_start();
+}
+add_action("init", "generateSessionHandler", 1);
