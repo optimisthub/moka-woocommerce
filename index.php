@@ -79,7 +79,29 @@ add_action( 'plugins_loaded', 'loadOptimisthubMokaTranslations' );
 
 function generateSessionHandler()
 {
-    if (!session_id())
-        session_start();
+	if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
+		if(function_exists('session_status') && session_status() == PHP_SESSION_NONE) {
+			session_start(array(
+			'cache_limiter' => 'private_no_expire',
+			'read_and_close' => false,
+		));
+		}
+	}
+	else if (version_compare(PHP_VERSION, '5.4.0') >= 0)
+	{
+		if (function_exists('session_status') && session_status() == PHP_SESSION_NONE) {
+			session_cache_limiter('private_no_expire');
+			session_start();
+		}
+	}
+	else
+	{
+		if(session_id() == '') {
+			if(version_compare(PHP_VERSION, '4.0.0') >= 0){
+				session_cache_limiter('private_no_expire');
+			}
+			session_start();
+		}
+	}
 }
 add_action("init", "generateSessionHandler", 1);

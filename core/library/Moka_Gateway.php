@@ -461,11 +461,11 @@ function initOptimisthubGatewayClass()
                 exit;
 
             } else {
+                wc_add_notice('Ödemeniz tahsil edilemedi. Lütfen yeniden deneyiniz.', 'error' );
                 $order = new WC_order($orderId);
                 $order->update_status('pending', __('Waiting for user payment.', 'moka-woocommerce'));
                 $recordParams['result_message'] = __('Waiting for user payment.', 'moka-woocommerce');
-                self::saveRecord($recordParams);
-                wp_redirect(wc_get_checkout_url());
+                self::saveRecord($recordParams); 
             }
             
         }
