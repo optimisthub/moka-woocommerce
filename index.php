@@ -83,9 +83,3 @@ function generateSessionHandler()
         session_start();
 }
 add_action("init", "generateSessionHandler", 1);
-
-add_action( 'woocommerce_init', function(){
-    if ( ! WC()->session->has_session() ) {
-        WC()->session->set_customer_session_cookie( true );
-    }
-} );
