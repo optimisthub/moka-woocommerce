@@ -36,27 +36,6 @@ function installments_shortcode()
 }
 
 /**
- * Check new version avalibiality
- *
- * @return boolean
- */
-function isNewVersionAvaliable()
-{
- 	$update = new OptimisthubUpdateChecker();
-	$versionControl = $update->check();
-	$body = json_decode( data_get($versionControl, 'body') );
- 
-	if(data_get($versionControl, 'response.code') &&  data_get($versionControl, 'response.code') == 200)
-	{
-		if(data_get($body,'data.older_versions'))
-		{
-			echo '<div class="notice notice-error is-dismissible"> <p><strong>Moka PAY WooCommerce Güvenlik Güncellemesi : </strong>'.data_get($body, 'data.message').'.<br><a href="'.current(data_get($body, 'data.older_versions')).'" target="_blank">Son Versiyonu Sunucudan İndir</a></p> </div>';
-		}
-
-	}
-}
-
-/**
  * Moka Gateway Init.
  *
  * @param [type] $gateways
@@ -68,6 +47,5 @@ function addOptimisthubMokaGateway( $gateways ) {
 }
 
 add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
-add_action( 'admin_notices', 'isNewVersionAvaliable');
 add_shortcode( 'moka-taksit-tablosu', 'installments_shortcode' );
 
