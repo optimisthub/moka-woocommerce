@@ -15,10 +15,10 @@ class OptimisthubUpdateChecker
 
     public function __construct()
     {
-        $this->plugin_slug = 'moka-woocommerce';
-        $this->version = '2.1';
-        $this->cache_key = 'moka_update_worker';
-        $this->cache_allowed = false;
+        $this->plugin_slug = 'moka-woocommerce-master';
+        $this->version = '2.0';
+        $this->cache_key = 'moka_update_w';
+        $this->cache_allowed = true;
         $this->endpoint = 'https://moka.wooxup.com/check';
         $this->platform = 'wordpress'; 
         
@@ -141,14 +141,14 @@ class OptimisthubUpdateChecker
         ) {
             $res = new stdClass();
             $res->slug = $this->plugin_slug;
-            $res->plugin = 'moka-woocommerce/index.php'; 
+            $res->plugin = 'moka-woocommerce-master/index.php'; 
             $res->new_version = $remote->version;
             $res->tested = $remote->tested;
             $res->package = $remote->download_url;
 
             $transient->response[ $res->plugin ] = $res;
 
-        }
+        } 
 
         return $transient;
     }
