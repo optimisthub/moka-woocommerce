@@ -198,7 +198,7 @@ class MokaPayment
         {
        
             $return.='<tr>';
-                $imagePath =  plugins_url( 'moka-woocommerce/assets/img/cards/banks/' );
+                $imagePath =  plugins_url( 'moka-woocommerce-master/assets/img/cards/banks/' );
        
                 $return.= '<tr>';
                 $cardImageSlug = data_get($perStoredInstallment, 'groupName');
@@ -271,7 +271,7 @@ class MokaPayment
         {
           
             $return.='<tr>';
-                $imagePath =  plugins_url( 'moka-woocommerce/assets/img/cards/banks/' );
+                $imagePath =  plugins_url( 'moka-woocommerce-master/assets/img/cards/banks/' );
                 $cardImageSlug = data_get($perStoredInstallment, 'groupName');
                 $cardSymbol = '<img style="width:100px !important;max-width:unset;" src="'.$imagePath.$cardImageSlug.'.svg" />';
                 if(!$cardImageSlug)

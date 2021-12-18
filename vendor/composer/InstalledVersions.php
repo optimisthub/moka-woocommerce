@@ -29,20 +29,11 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '751aed48bc53a586dbe19b762540cfa8a256abbb',
+    'reference' => '87de34fb8b0447cfce613bc057dfc18114756556',
     'name' => 'optimisthub/moka-woocommerce',
   ),
   'versions' => 
   array (
-    'nesbot/carbon' => 
-    array (
-      'pretty_version' => '2.55.2',
-      'version' => '2.55.2.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '8c2a18ce3e67c34efc1b29f64fe61304368259a2',
-    ),
     'optimisthub/moka-woocommerce' => 
     array (
       'pretty_version' => 'dev-master',
@@ -50,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '751aed48bc53a586dbe19b762540cfa8a256abbb',
+      'reference' => '87de34fb8b0447cfce613bc057dfc18114756556',
     ),
     'rappasoft/laravel-helpers' => 
     array (
@@ -60,15 +51,6 @@ private static $installed = array (
       array (
       ),
       'reference' => '39fc647c27db358c535919cda2040e89b51344af',
-    ),
-    'symfony/deprecation-contracts' => 
-    array (
-      'pretty_version' => 'v2.5.0',
-      'version' => '2.5.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '6f981ee24cf69ee7ce9736146d1c57c2780598a8',
     ),
     'symfony/polyfill-mbstring' => 
     array (
@@ -87,31 +69,6 @@ private static $installed = array (
       array (
       ),
       'reference' => '1100343ed1a92e3a38f9ae122fc0eb21602547be',
-    ),
-    'symfony/translation' => 
-    array (
-      'pretty_version' => 'v5.4.1',
-      'version' => '5.4.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => '8c82cd35ed861236138d5ae1c78c0c7ebcd62107',
-    ),
-    'symfony/translation-contracts' => 
-    array (
-      'pretty_version' => 'v2.5.0',
-      'version' => '2.5.0.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'd28150f0f44ce854e942b671fc2620a98aae1b1e',
-    ),
-    'symfony/translation-implementation' => 
-    array (
-      'provided' => 
-      array (
-        0 => '2.3',
-      ),
     ),
     'symfony/var-dumper' => 
     array (
