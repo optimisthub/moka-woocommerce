@@ -134,11 +134,11 @@ function initOptimisthubGatewayClass()
             global $pagenow; 
             if($pagenow == 'admin.php' && isset($_GET['tab']) && isset($_GET['section']) && $_GET['section'] == 'mokapay')
             {
-                wp_register_style( 'moka-pay-admin',  plugins_url( 'moka-woocommerce/assets/moka-admin.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+                wp_register_style( 'moka-pay-admin',  plugins_url( 'moka-woocommerce-master/assets/moka-admin.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
                 wp_enqueue_style ( 'moka-pay-admin' );
             } 
 
-            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce/assets/moka-admin.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce-master/assets/moka-admin.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
             wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
 
@@ -152,7 +152,7 @@ function initOptimisthubGatewayClass()
             ?>
                 <div class="moka-admin-interface">
                     <div class="left">
-                        <img src="<?php echo plugins_url( 'moka-woocommerce/assets/img/mokapos.png' ); ?>" alt="">
+                        <img src="<?php echo plugins_url( 'moka-woocommerce-master/assets/img/mokapos.png' ); ?>" alt="">
                         <h2><?php _e('Moka Pos Settings','moka-woocommerce'); ?></h2>
 
                         <table class="form-table">
@@ -279,9 +279,9 @@ function initOptimisthubGatewayClass()
          */
         public function payment_scripts() 
         { 
-            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce/assets/moka.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce-master/assets/moka.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
             
-            wp_register_style( 'moka-pay-card_css',  plugins_url( 'moka-woocommerce/assets/moka.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_register_style( 'moka-pay-card_css',  plugins_url( 'moka-woocommerce-master/assets/moka.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
             wp_enqueue_style ( 'moka-pay-card_css' );
 
             wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
