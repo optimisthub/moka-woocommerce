@@ -3,24 +3,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
  
-class OptimisthubUpdateChecker 
+/**
+ * Update Plugin Width Self Hosted Zip File
+ * @version 1.0.0
+ * @author Fatih Toprak
+ */
+class Optimisthub_Update_Checker 
 {
-
     public $plugin_slug;
     public $version;
     public $cache_key;
     public $cache_allowed;
 
-
-
     public function __construct()
     {
-        $this->plugin_slug = 'moka-woocommerce-master';
-        $this->version = '2.2';
-        $this->cache_key = 'moka_update_w';
-        $this->cache_allowed = true;
-        $this->endpoint = 'https://moka.wooxup.com/check';
-        $this->platform = 'wordpress'; 
+        $this->plugin_slug      = 'moka-woocommerce-master';
+        $this->version          = '2.2';
+        $this->cache_key        = 'moka_worker_update_check';
+        $this->cache_allowed    = true;
+        $this->endpoint         = 'https://moka.wooxup.com/check';
+        $this->platform         = 'wordpress'; 
         
         add_filter( 'plugins_api', [$this, 'info' ], 20, 3 );
         add_filter( 'site_transient_update_plugins', [$this, 'update' ] );
@@ -34,7 +36,6 @@ class OptimisthubUpdateChecker
      */
     public function request() 
     { 
-
         $remote = get_transient( $this->cache_key );
         if( false === $remote || ! $this->cache_allowed ) 
         {    
@@ -69,25 +70,33 @@ class OptimisthubUpdateChecker
 
         $remote = json_decode( wp_remote_retrieve_body( $remote ) );
         $remote = data_get($remote,'data');
+
+        if( ! $remote ) 
+        {
+            return false;
+        }
+
         return $remote;
     }
 
-    public function info( $res, $action, $args ) {
-
-        // print_r( $action );
-        // print_r( $args );
-
-        // do nothing if you're not getting plugin information right now
+    /**
+     * Format Plugin information
+     *
+     * @param [object] $res
+     * @param [string] $action
+     * @param [array] $args
+     * @return void
+     */
+    public function info( $res, $action, $args ) 
+    {
         if( 'plugin_information' !== $action ) {
             return false;
         }
-
-        // do nothing if it is not our plugin
+        
         if( $this->plugin_slug !== $args->slug ) {
             return false;
         }
-
-        // get updates
+        
         $remote = $this->request();
 
         if( ! $remote ) {
@@ -107,14 +116,7 @@ class OptimisthubUpdateChecker
         $res->trunk = $remote->download_url;
         $res->requires_php = $remote->requires_php;
         $res->last_updated = $remote->last_updated;
-
- 
-
-        $res->sections = array(
-            'description' => $remote->sections->description,
-            'installation' => $remote->sections->installation,
-            'changelog' => $remote->sections->changelog
-        );
+        $res->sections = $remote->sections; 
 
         if( ! empty( $remote->banners ) ) {
             $res->banners = array(
@@ -124,9 +126,14 @@ class OptimisthubUpdateChecker
         }
 
         return $res;
-
     }
 
+    /**
+     * Update Plugin
+     *
+     * @param [type] $transient
+     * @return void
+     */
     public function update( $transient ) {
 
         if ( empty($transient->checked ) ) {
@@ -164,8 +171,6 @@ class OptimisthubUpdateChecker
         }
 
     }
-
-
 }
 
-new OptimisthubUpdateChecker();
+new Optimisthub_Update_Checker();

@@ -3,7 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
  
-
 class MokaPayment
 {
     private $mokaOptions            = [];
