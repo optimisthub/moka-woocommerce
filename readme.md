@@ -31,10 +31,6 @@ Moka Pos, Moka Pay plugin;
 
 - Moka Pay WooCommerce Plugin Download ZIP file and then Install with wordpress extension installer page.
 
-## Version 2.0
-
-This version is developed by Optimist Hub.
-
 ### Changelog 
 
 ###### Version 2.3
@@ -45,6 +41,9 @@ This version is developed by Optimist Hub.
 ###### Version 2.2
 - Added, Moka Pay History to WC Settings Tab Area. 
 
+###### Version 2.0
+
+- This version is developed by Optimist Hub.
 
 ### Older version
 
