@@ -26,12 +26,12 @@ define('OPTIMISTHUB_MOKA_PAY_VERSION', '2.2');
  */
 function loadOptimisthubMokaTranslations() 
 {
+	$reformatDirName = str_replace('-master','',dirname( plugin_basename(__FILE__)));
     $path = dirname( plugin_basename(__FILE__)) . '/languages';
-    $result = load_plugin_textdomain( dirname( plugin_basename(__FILE__)), false, $path );
-	
+    $result = load_plugin_textdomain( $reformatDirName, false, $path );
     if (!$result) {
-        $locale = apply_filters('plugin_locale', get_locale(), dirname( plugin_basename(__FILE__)));
-        dd("Could not find $path/" . dirname( plugin_basename(__FILE__)) . "-$locale.mo.");
+        $locale = apply_filters('plugin_locale', get_locale(), $reformatDirName);
+        dd("Could not find $path/" . $reformatDirName . "-$locale.mo.");
     }
 }
 

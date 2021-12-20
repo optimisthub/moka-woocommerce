@@ -1,0 +1,139 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
+"PO-Revision-Date: 2021-12-20 22:28+0300\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.0\n"
+"X-Domain: languages\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
+"Language: en_US\n"
+
+msgid "Moka by Isbank WooCommerce Gateway"
+msgstr "Moka by Isbank WooCommerce Gateway"
+
+msgid "Enable/Disable"
+msgstr "Enable/Disable"
+
+msgid "Enable Moka Pay Gateway?"
+msgstr "Enable Moka Pay Gateway?"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "This controls the title which the user sees during checkout."
+msgstr "This controls the title which the user sees during checkout."
+
+msgid "Credit Card"
+msgstr "Credit Card"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "This controls the description which the user sees during checkout."
+msgstr "This controls the description which the user sees during checkout."
+
+msgid "Pay with your credit card via our super-cool payment gateway."
+msgstr "Pay with your credit card via our super-cool payment gateway."
+
+msgid "Enable Test Mode?"
+msgstr "Enable Test Mode?"
+
+msgid "Place the payment gateway in test mode using test API keys."
+msgstr "Place the payment gateway in test mode using test API keys."
+
+msgid "Company Code"
+msgstr "Company Code"
+
+msgid "Company Name"
+msgstr "Company Name"
+
+msgid "Api Username"
+msgstr "Api Username"
+
+msgid "Api Password"
+msgstr "Api Password"
+
+msgid "Installement"
+msgstr "Installement"
+
+msgid "Enable/Disable Installement ?"
+msgstr "Enable/Disable Installement ?"
+
+msgid "Name On Card"
+msgstr "Name On Card"
+
+msgid "Card Number"
+msgstr "Card Number"
+
+msgid "Card Code"
+msgstr "Card Code"
+
+msgid ""
+"TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a "
+"href='#''>documentation</a>"
+msgstr ""
+"TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a "
+"href='#''>documentation</a>"
+
+msgid "Enable 3D"
+msgstr "Enable 3D"
+
+msgid "Enable 3d Payment?"
+msgstr "Enable 3d Payment?"
+
+msgid "Moka Pos Settings"
+msgstr "Moka Pos Settings"
+
+msgid "<strong>Card holder</strong> is required."
+msgstr "<strong>Card holder</strong> is required."
+
+msgid "<strong>Installment</strong> is required."
+msgstr "<strong>Installment</strong> is required."
+
+msgid "<strong>Card Number</strong> is required."
+msgstr "<strong>Card Number</strong> is required."
+
+msgid "<strong>Card Expiry</strong> is required."
+msgstr "<strong>Card Expiry</strong> is required."
+
+msgid "<strong>Card CVC</strong> is required."
+msgstr "<strong>Card CVC</strong> is required."
+
+msgid "Installment Shopping"
+msgstr "Installment Shopping"
+
+msgid "Installment"
+msgstr "Installment"
+
+msgid "Cash In Advence"
+msgstr "Cash In Advence"
+
+msgid "Installment Fee"
+msgstr "Installment Fee"
+
+msgid "Hey, the order is paid by Moka Pay!"
+msgstr "Hey, the order is paid by Moka Pay!"
+
+msgid "Payment is processing via Moka Pay."
+msgstr "Payment is processing via Moka Pay."
+
+msgid "Waiting for user payment."
+msgstr "Waiting for user payment."
+
+msgid "Moka Payment History"
+msgstr "Moka Payment History"
+
+msgid "Order Id"
+msgstr "Order Id"
+
+msgid "Customer Id"
+msgstr "Customer Id"
+
+msgid "Transaction Id"
+msgstr "Transaction Id"
