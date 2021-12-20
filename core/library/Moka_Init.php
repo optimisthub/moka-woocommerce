@@ -1,51 +1,46 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
- * Installment Table Shortcode suport
- *
- * @return void
+ * Init Moka POS Confiuration and Gateway Class for WooCommerce
+ * @since 2.2
  */
-function installments_shortcode()
+class Moka_Init
 {
-	?>
-		<style>
- 
-			#comission-rates {
-				font-family: Arial, Helvetica, sans-serif;
-				border-collapse: collapse;
-				width: 100%;
-				font-size:12px;
-			}
+	public function __construct()
+	{
+		add_filter( 'woocommerce_payment_gateways', [$this, 'addOptimisthubMokaGateway'] );
+		add_shortcode( 'moka-taksit-tablosu', [$this, 'installments_shortcode'] );
+	}
 
-			#comission-rates td, #comission-rates th { 
-			} 
- 
+	/**
+	 * Installment Table Shortcode suport
+	 *
+	 * @return void
+	 */
+	public function installments_shortcode()
+	{
+		$return = '<style>#comission-rates{font-family:Arial,Helvetica,sans-serif;border-collapse:collapse;width:100%;font-size:12px}#comission-rates th{padding-top:12px;padding-bottom:12px;text-align:left;background-color:#04aa6d;color:#fff}#comission-rates .img{width:190px!important}</style>';
+		$table = new MokaPayment();
+		$return.=$table->generateInstallmentsTableShortcode();
+		return $return;
+	}
 
-			#comission-rates th {
-				padding-top: 12px;
-				padding-bottom: 12px;
-				text-align: left;
-				background-color: #04AA6D;
-				color: white;
-			} 
-			#comission-rates .img {width:190px !important;}
-		</style>
-	<?php
-	$table = new MokaPayment();
-	return $table->generateInstallmentsTableShortcode();
+	/**
+	 * Moka Gateway Init.
+	 *
+	 * @param [type] $gateways
+	 * @return void
+	 */
+	public function addOptimisthubMokaGateway( $gateways ) {
+		$gateways[] = 'OptimistHub_Moka_Gateway'; 
+		return $gateways;
+	}
 }
 
-/**
- * Moka Gateway Init.
- *
- * @param [type] $gateways
- * @return void
- */
-function addOptimisthubMokaGateway( $gateways ) {
-	$gateways[] = 'OptimistHub_Moka_Gateway'; 
-	return $gateways;
-}
+new Moka_Init();
 
-add_filter( 'woocommerce_payment_gateways', 'addOptimisthubMokaGateway' );
-add_shortcode( 'moka-taksit-tablosu', 'installments_shortcode' );
+
 
