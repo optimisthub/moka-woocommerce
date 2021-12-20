@@ -17,8 +17,9 @@ class Optimisthub_Update_Checker
 
     public function __construct()
     {
+        global $mokaVersion;  
         $this->plugin_slug      = 'moka-woocommerce-master';
-        $this->version          = '2.2';
+        $this->version          = $mokaVersion;
         $this->cache_key        = 'moka_worker_update_check';
         $this->cache_allowed    = true;
         $this->endpoint         = 'https://moka.wooxup.com/check';
