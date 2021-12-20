@@ -16,9 +16,6 @@ if (!defined('ABSPATH')) {
 
 require __DIR__ . '/vendor/autoload.php';    
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '2.2');
-
-
 /**
  * Plugin translation hook
  *
@@ -35,8 +32,6 @@ function loadOptimisthubMokaTranslations()
     }
 }
 
-global $mokaVersion;
-$mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
 
 /**
  * Generate Moka Transaction Table For Transaction Logs
