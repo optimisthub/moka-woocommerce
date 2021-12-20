@@ -33,15 +33,15 @@ Moka Pos, Moka Pay plugin;
 
 ### Changelog 
 
-###### Version 2.3
+#### Version 2.3
 - Issue : Created new class for all constants. 
 - Issue : Localization problem fixed, for default en_US.po file. 
 - Hotfix : Moka POS init for Payment Gateways with OOP.
 
-###### Version 2.2
+#### Version 2.2
 - Added, Moka Pay History to WC Settings Tab Area. 
 
-###### Version 2.0
+#### Version 2.0
 
 - This version is developed by Optimist Hub.
 
