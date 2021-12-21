@@ -14,9 +14,7 @@ class MokaPayment
     {
         $this->mokaOptions  = get_option('woocommerce_mokapay_settings');
         $this->apiHost      = self::apiHost($this->mokaOptions);
-
         self::mokaKey($this->mokaOptions);  
-        
     }
 
     /**
