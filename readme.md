@@ -34,6 +34,7 @@ Moka Pos, Moka Pay plugin;
 ### Changelog 
 
 #### Version 2.3
+- Hotfix : Security issue fixed on wpdb::prepare . 
 - Issue : WooCommerce Thank You page with message issue fixed. 
 - Issue : Tested up with WooCommerce 6.0.0. 
 - Issue : Admin panel settings tab screen resulation issues fixed. 

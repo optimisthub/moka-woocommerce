@@ -36,7 +36,7 @@ class Optimisthub_Transaction_History
     public function transactionHistory()
     {
         global $wpdb;
-        $results = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $this->tableName ORDER BY id DESC LIMIT 0,1000" ), ARRAY_A ); 
+        $results = $wpdb->get_results("SELECT * FROM $this->tableName ORDER BY id DESC LIMIT 0,1000" ); 
         return self::__renderHtml($results);
     }
 
@@ -60,8 +60,6 @@ class Optimisthub_Transaction_History
             }
 
             $color = $errorMessage ? ' color:red ': '';
-            
-
 
             $output .= '<div class="per-log '.$extra.'">';
                 $output .= '<strong>'.__("Order Id", "moka-woocommerce" ).' : </strong>' . data_get($perLog, 'id_cart'). ' - ';
