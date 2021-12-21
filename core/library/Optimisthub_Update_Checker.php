@@ -99,31 +99,36 @@ class Optimisthub_Update_Checker
         }
         
         $remote = $this->request();
-
+        
         if( ! $remote ) {
             return false;
         }
-
+         
         $res = new stdClass();
 
-        $res->name = $remote->name;
-        $res->slug = $remote->slug;
-        $res->version = $remote->version;
-        $res->tested = $remote->tested;
-        $res->requires = $remote->requires;
-        $res->author = $remote->author;
-        $res->author_profile = $remote->author_profile;
-        $res->download_link = $remote->download_url;
-        $res->trunk = $remote->download_url;
-        $res->requires_php = $remote->requires_php;
-        $res->last_updated = $remote->last_updated;
-        $res->sections = $remote->sections; 
+        $res->name          = data_get($remote, 'name');
+        $res->slug          = data_get($remote, 'slug');
+        $res->version       = data_get($remote, 'version');
+        $res->tested        = data_get($remote, 'tested');
+        $res->requires      = data_get($remote, 'requires');
+        $res->author        = data_get($remote, 'author');
+        $res->author_profile= data_get($remote, 'author_profile');
+        $res->download_link = data_get($remote, 'download_link');
+        $res->trunk         = data_get($remote, 'download_url');
+        $res->requires_php  = data_get($remote, 'requires_php');
+        $res->last_updated  = data_get($remote, 'last_updated');
+
+        $res->sections = [
+            'description'   => data_get($remote, 'sections.description'),
+            'changelog'     => data_get($remote, 'sections.changelog')
+        ];  
+ 
 
         if( ! empty( $remote->banners ) ) {
-            $res->banners = array(
-                'low' => $remote->banners->low,
-                'high' => $remote->banners->high
-            );
+            $res->banners = [
+                'low'   => data_get($remote, 'banners.low'),
+                'high'  => data_get($remote, 'banners.high'),
+            ]; 
         }
 
         return $res;
@@ -148,11 +153,11 @@ class Optimisthub_Update_Checker
             && version_compare( $this->version, $remote->version, '<' )
         ) {
             $res = new stdClass();
-            $res->slug = $this->plugin_slug;
-            $res->plugin = 'moka-woocommerce-master/index.php'; 
-            $res->new_version = $remote->version;
-            $res->tested = $remote->tested;
-            $res->package = $remote->download_url;
+            $res->slug          = $this->plugin_slug;
+            $res->plugin        = 'moka-woocommerce-master/index.php'; 
+            $res->new_version   = data_get($remote, 'version');
+            $res->tested        = data_get($remote, 'tested');
+            $res->package       = data_get($remote, 'download_url');
 
             $transient->response[ $res->plugin ] = $res;
 
