@@ -34,10 +34,11 @@ Moka Pos, Moka Pay plugin;
 ### Changelog 
 
 #### Version 2.3
+- Issue : Admin panel settings tab screen resulation issues fixed. 
 - Issue : Created new class for all constants. 
 - Issue : Localization problem fixed, for default en_US.po file. 
+- Issue : Optimisthub Ajax validate_bin request issues fixed.
 - Hotfix : Moka POS init for Payment Gateways with OOP.
-- Hotfix : Optimisthub Ajax validate_bin request issues fixed..
 
 #### Version 2.2
 - Added, Moka Pay History to WC Settings Tab Area. 
