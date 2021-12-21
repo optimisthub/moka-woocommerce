@@ -1,4 +1,4 @@
-    .moka-admin-interface{display:flex;justify-content:center;flex-direction:row}  
+    .moka-admin-interface{display:flex;justify-content:center;flex-direction:column}  
     .moka-admin-interface .left{width:100%;}  
     .moka-admin-interface .right{width:100%;margin-top:20px;}  
     .moka-admin-interface .right .optimist{background:#fff;padding:40px;border-radius:4px;}   
