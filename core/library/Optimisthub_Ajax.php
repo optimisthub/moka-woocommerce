@@ -37,11 +37,6 @@ class Optimisthub_Ajax
         $mokaPay = new MokaPayment();
         $response = $mokaPay->requestBin(['binNumber' => $binNumber]);
 
-        if(!$response)
-        {
-            $error = new WP_Error( '002', 'Response Could Not Fetched.' );
-            return wp_send_json_error( $error );
-        }
 
         ## installments
         $bankCode = mb_strtolower(data_get($response, 'BankCode')); 
@@ -61,12 +56,25 @@ class Optimisthub_Ajax
             } 
         }   
         ## installments
+
  
         $data= [
             'cardInformation' => $response, 
             'installments' => $avaliableInstallment,
             'renderedHtml' => self::renderedHtml(['card' => $response, 'installments' => $avaliableInstallment]),
         ];  
+
+        if(!$response)
+        {
+            $error = new WP_Error( '002', 'Response Could Not Fetched.' );
+
+            $data['error_message'] = $error; 
+            wp_send_json_error( [
+                'binNumber' => $binNumber, 
+                'time' => time(), 
+                'data' => $data,
+            ] );
+        }
 
         wp_send_json_success( [
             'binNumber' => $binNumber, 
