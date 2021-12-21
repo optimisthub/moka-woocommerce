@@ -125,7 +125,6 @@ class MokaPayment
 
         $response = self::doRequest('/Dealer/GetDealer',$postParams);
 
-        
         if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {
             $responseBody = data_get($response, 'body');
@@ -171,7 +170,6 @@ class MokaPayment
         $storedData = get_option( 'woocommerce_mokapay-installments' );
         $avaliableInstallmentsCount = data_get($params, 'maxInstallment');
         $paymentId = data_get($params, 'paymentGatewayId');
- 
 
         if(!$storedData)
         {
@@ -179,7 +177,6 @@ class MokaPayment
             $installments = data_get($installments, 'CommissionList');
             $installments = self::formatInstallmentResponse($installments);  
             $storedData = $installments;
-            
         } 
 
         $return = '<div class="center-title"> <h2><span>Taksit Tablosu</span> <a class="js-update-comission-rates">Taksit oranlarını Moka üzerinden güncelle</a></h2> <table id="comission-rates"> <thead> <tr><td>Kart</td>';
@@ -285,8 +282,6 @@ class MokaPayment
             $return.='</tr>';
         }
  
-
-
         $return.= '</table></div>';  
         return $return;
     }
