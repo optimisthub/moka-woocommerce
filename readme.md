@@ -34,6 +34,7 @@ Moka Pos, Moka Pay plugin;
 ### Changelog 
 
 #### Version 2.3
+- Issue : WooCommerce Thank You page with message issue fixed. 
 - Issue : Tested up with WooCommerce 6.0.0. 
 - Issue : Admin panel settings tab screen resulation issues fixed. 
 - Issue : Created new class for all constants. 

@@ -341,7 +341,7 @@ function initOptimisthubGatewayClass()
          */
         public function process_payment( $orderId ) 
         {
-            $order              = new WC_order($orderId);
+            $order              = new WC_order($orderId); 
             $orderDetails       = self::formatOrder($orderId); 
             $currentTotal       = data_get($orderDetails, 'Amount');
             $installmentNumber  = data_get($orderDetails, 'InstallmentNumber');
@@ -450,7 +450,6 @@ function initOptimisthubGatewayClass()
                 $total = data_get($orderDetails,'Amount');
                 $currency = data_get($orderDetails,'Currency');
 
-                
                 $order->update_status('processing', __('Payment is processing via Moka Pay.', 'moka-woocommerce'));
                 $order->add_order_note( __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency , true );
                 $order->payment_complete();
@@ -462,7 +461,13 @@ function initOptimisthubGatewayClass()
                 $recordParams['result'] = 0;
                 $recordParams['result_message'] = __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency;
                 self::saveRecord($recordParams);
-                wp_redirect($this->get_return_url());
+
+                $checkoutOrderUrl = $order->get_checkout_order_received_url();
+                $redirectUrl = add_query_arg([
+                    'msg' => 'Thank You', 'type' => 'woocommerce-message'
+                ], $checkoutOrderUrl); 
+                
+                wp_redirect($redirectUrl);
                 exit;
 
             } else {
