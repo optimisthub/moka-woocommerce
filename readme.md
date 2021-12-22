@@ -34,6 +34,7 @@ Moka Pos, Moka Pay plugin;
 ### Changelog 
 
 #### Version 2.3
+- Hotfix : Added installment table shortcode for other languages. 
 - Hotfix : Security issue fixed on wpdb::prepare . 
 - Issue : WooCommerce Thank You page with message issue fixed. 
 - Issue : Tested up with WooCommerce 6.0.0. 

@@ -17,7 +17,10 @@ class Moka_Init
 	public function __construct()
 	{
 		add_filter( 'woocommerce_payment_gateways', [$this, 'addOptimisthubMokaGateway'] );
-		add_shortcode( 'moka-taksit-tablosu', [$this, 'installments_shortcode'] );
+		add_action( 'wp_dashboard_setup', [$this, 'optimisthubDashBoardWidgetInit']);
+
+		add_shortcode( 'moka-taksit-tablosu', [$this, 'installmentShortcode'] );
+		add_shortcode( 'moka-installment-table', [$this, 'installmentShortcode'] );
 	}
 
 	/**
@@ -25,7 +28,7 @@ class Moka_Init
 	 *
 	 * @return void
 	 */
-	public function installments_shortcode()
+	public function installmentShortcode()
 	{
 		$return = '<style>#comission-rates{font-family:Arial,Helvetica,sans-serif;border-collapse:collapse;width:100%;font-size:12px}#comission-rates th{padding-top:12px;padding-bottom:12px;text-align:left;background-color:#04aa6d;color:#fff}#comission-rates .img{width:190px!important}</style>';
 		$table = new MokaPayment();
@@ -43,6 +46,28 @@ class Moka_Init
 		$gateways[] = 'OptimistHub_Moka_Gateway'; 
 		return $gateways;
 	}
+
+	/**
+	 * Add Dashboard Information Box Widget Init.
+	 *
+	 * @return void
+	 */
+	public function optimisthubDashBoardWidgetInit() 
+	{
+		global $wp_meta_boxes;
+		wp_add_dashboard_widget('custom_help_widget', 'Moka POS by Optimist Hub', [$this,'recentNewsByOptimisthub']);
+	}
+ 
+	/**
+	 * Dashboard Widget Content
+	 *
+	 * @return void
+	 */
+	public function recentNewsByOptimisthub() 
+	{
+		echo '<p><strong>Ücretsiz</strong> Moka POS WooCommerce Eklentisi Optimist Hub Bünyesinde geliştirilmiştir. Açık kaynak kodlu eklentiye sizlerde katkıda bulunabilirsiniz. <a href="https://github.com/optimisthub/moka-woocommerce">></a></p> <p style="display:flex;justify-content:center;align-items:center"> <a href="https://optimisthub.com/?ref='. get_bloginfo("wpurl").'&source=moka-woocommerce" target="_blank"> <img style="width:220px" src="'.plugins_url( 'moka-woocommerce-master/assets/img/optimisthub.svg' ).'" alt=""> </a> </p>'; 
+	}
+
 }
 
 new Moka_Init();

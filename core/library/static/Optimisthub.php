@@ -1,3 +1,6 @@
+<style>
+  .moka-admin-interface{display:flex;justify-content:center;flex-direction:column}.moka-admin-interface .left{width:100%}.moka-admin-interface .right{width:100%;margin-top:20px}.moka-admin-interface .right .optimist{background:#fff;padding:40px;border-radius:4px}.moka-admin-interface .right .optimist .accordion{background-color:#eee;color:#444;cursor:pointer;padding:18px;border:0;text-align:left;outline:0;font-size:15px;transition:.4s;display:block;border-bottom:1px solid #fff}.moka-admin-interface .right .optimist .accordion:hover,.moka-admin-interface .right .optimist .active{background-color:#ccc}.moka-admin-interface .right .optimist .accordion:after{content:"+";color:#777;font-weight:700;float:right;margin-left:5px}.moka-admin-interface .right .optimist .active:after{content:"−"}.moka-admin-interface .right .optimist .panel{background-color:#fff;max-height:0;overflow:hidden;transition:max-height .2s ease-out}#comission-rates{font-family:Arial,Helvetica,sans-serif;border-collapse:collapse;width:100%}#comission-rates td{padding:8px}#comission-rates td,#comission-rates th{border:1px solid #ddd}#comission-rates thead{background-color:#333;color:#fff}#comission-rates tr:nth-child(even){background-color:#f2f2f2}#comission-rates tr:hover{background-color:#ddd}#comission-rates th{padding:12px 8px;text-align:left;background-color:#04aa6d;color:#fff}#comission-rates input[type=number]{width:59px!important;font-size:11px}#comission-rates img{width:100px}.center-title h2{display:flex;justify-content:space-between}.center-title h2 a{color:#fff;background:#333!important;padding:10px;cursor:pointer;font-size:12px}.center-title h2 a:hover{background:#d00!important}
+</style>
 <h3>Kurulum ve Kullanım Kılavuzu</h3>
 
 <a class="accordion">Eklenti Kurulumu ve Ayarlar</a>
@@ -27,7 +30,7 @@
     <p>
         <strong style="color:blue">Taksit Tablosunu Temanızda Gösterme</strong>
         <br>
-        Taksit tablosunu temanızın ya da içeriklerinizin istediğiniz alanında, <strong>[moka-taksit-tablosu]</strong> kısa kodu ile gösterebilirsiniz.
+        Taksit tablosunu temanızın ya da içeriklerinizin istediğiniz alanında, <strong>[moka-taksit-tablosu]</strong> veya <strong>[moka-installment-table]</strong> kısa kodu ile gösterebilirsiniz.
     </p>
 </div>
 
