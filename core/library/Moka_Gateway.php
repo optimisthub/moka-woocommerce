@@ -19,7 +19,7 @@ function initOptimisthubGatewayClass()
 
         public function __construct() 
         {  
-
+ 
             $this->id = 'mokapay';  
             $this->icon = ''; // TODO : Moka Icon
             $this->has_fields = true; 
@@ -40,7 +40,7 @@ function initOptimisthubGatewayClass()
             $this->company_name = $this->get_option( 'company_name' );
             $this->api_username = $this->get_option( 'api_username' );
             $this->api_password = $this->get_option( 'api_password' );
-            $this->order_prefix = $this->get_option( 'trx_code_prefix' );
+            $this->order_prefix = $this->get_option( 'order_prefix' );
             
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
@@ -108,7 +108,6 @@ function initOptimisthubGatewayClass()
                 ],
                 'order_prefix' => [
                     'title'       => __( 'Order Prefix', 'moka-woocommerce' ),
-                    'label'       => __( 'This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)', 'moka-woocommerce' ),
                     'type'        => 'text',
                     'description' => __( 'This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)', 'moka-woocommerce' ),
                     'default'     => self::generateDefaultOrderPrefix(),
@@ -375,6 +374,7 @@ function initOptimisthubGatewayClass()
  
 
             $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
+            dd($payOrder);
             $callbackUrl        = data_get($payOrder, 'Data.Url');
             $callbackHash       = data_get($payOrder, 'Data.CodeForHash');
             $callbackResult     = data_get($payOrder, 'ResultCode');
@@ -383,7 +383,7 @@ function initOptimisthubGatewayClass()
 
             $orderDetails['orderId']   = $orderId;
             $orderDetails['userInfo']  = $this->userInformation;
-
+        
             self::saveHash(
                 [
                     'id_hash'       => $callbackHash,
@@ -532,6 +532,7 @@ function initOptimisthubGatewayClass()
         /**
          * Fromat Order Data
          *
+         * WC_Order : https://woocommerce.github.io/code-reference/classes/WC-Order.html
          * @param [type] $orderId
          * @return void
          */
@@ -541,8 +542,8 @@ function initOptimisthubGatewayClass()
             global $woocommerce; 
             $postData = $_POST;
  
-            $order = self::fetchOrder($orderId);
-
+            $order = self::fetchOrder($orderId);   
+ 
             $orderIdTrx = $orderId;
             $orderId    = $orderId.'-'.time();
             $expriyDate = self::formatExperyDate(data_get($postData, $this->id.'-card-expiry'));
@@ -567,9 +568,19 @@ function initOptimisthubGatewayClass()
                 'OtherTrxCode'          => (string) $this->order_prefix.'-OPT-'.$orderId,
                 'Software'              => (string) strtoupper('OPT-WpWoo-'.get_bloginfo('version').'-'.WC_VERSION),
                 'ReturnHash'            => (int) 1,
-                'SubMerchantName'       => ""
-            ];
+                'SubMerchantName'       => "",
+                'BuyerInformation'      => 
+                [
+                    "BuyerFullName"     => (string) $order->get_billing_first_name(). ' '.$order->get_billing_last_name(),
+                    "BuyerGsmNumber"    => (string) $order->get_billing_phone(),
+                    "BuyerEmail"        => (string) $order->get_billing_email(),
+                    "BuyerAddress"      => (string) $order->get_billing_address_1(). ' ' .$order->get_billing_address_2(). ' ' .$order->get_billing_city(),
+                ],
 
+                // TODO : Basket Product Details
+                //'BasketProduct'         => self::formatBaksetProducts($order), 
+            ]; 
+             
             return $orderData;
 
         }
@@ -847,6 +858,36 @@ function initOptimisthubGatewayClass()
         private function generateDefaultOrderPrefix()
         {
             return substr(strtoupper(hash('sha256',str_replace(['http://', 'https://'],'  ', get_bloginfo('wpurl') ))), 0, 8);
+        }
+
+        /**
+         * Format Order Items
+         *
+         * Reference : https://stackoverflow.com/a/40715347/1137492
+         * @return array
+         */
+        private function formatBaksetProducts( $order )
+        {
+            $output = [];
+
+            if($order)
+            {
+                foreach ($order->get_items() as $item_id => $item ) 
+                {
+                    $product = $item->get_product(); 
+                    $productName = $item->get_name(); 
+                    $itemQuantity = $item->get_quantity();
+                    $itemTotal     = $item->get_total(); 
+                    $output[] = [
+                        //'ProductId' => $product->get_id(),
+                        'ProductCode' => $productName,
+                        'UnitPrice' => $itemTotal,
+                        'Quantity' => $itemQuantity,
+                    ];
+                } 
+            }
+
+            return $output;
         }
         
     }
