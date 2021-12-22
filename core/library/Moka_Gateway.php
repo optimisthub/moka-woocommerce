@@ -40,6 +40,7 @@ function initOptimisthubGatewayClass()
             $this->company_name = $this->get_option( 'company_name' );
             $this->api_username = $this->get_option( 'api_username' );
             $this->api_password = $this->get_option( 'api_password' );
+            $this->order_prefix = $this->get_option( 'trx_code_prefix' );
             
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
@@ -104,6 +105,13 @@ function initOptimisthubGatewayClass()
                     'type'        => 'checkbox',
                     'description' => '',
                     'default'     => 'yes'
+                ],
+                'order_prefix' => [
+                    'title'       => __( 'Order Prefix', 'moka-woocommerce' ),
+                    'label'       => __( 'This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)', 'moka-woocommerce' ),
+                    'type'        => 'text',
+                    'description' => __( 'This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)', 'moka-woocommerce' ),
+                    'default'     => self::generateDefaultOrderPrefix(),
                 ],
                 'company_code' => [
                     'title'       => __( 'Company Code', 'moka-woocommerce' ),
@@ -536,7 +544,7 @@ function initOptimisthubGatewayClass()
             $order = self::fetchOrder($orderId);
 
             $orderIdTrx = $orderId;
-            $orderId    = 'OPTIMIST-'.$orderId.'-'.time();
+            $orderId    = $orderId.'-'.time();
             $expriyDate = self::formatExperyDate(data_get($postData, $this->id.'-card-expiry'));
             $rates      = data_get($postData, $this->id.'-installment-rates'); 
             $rates      = urldecode($rates);
@@ -556,8 +564,8 @@ function initOptimisthubGatewayClass()
                 'InstallmentNumber'     => (int) $selectedInstallment,
                 'ClientIP'              => (string) self::getUserIp(),
                 'RedirectUrl'           => (string) self::checkoutPaymentUrl($orderIdTrx),
-                'OtherTrxCode'          => (string) $orderId,
-                'Software'              => (string) strtoupper('OHUB-WooCommerce-'.get_bloginfo('version')),
+                'OtherTrxCode'          => (string) $this->order_prefix.'-OPT-'.$orderId,
+                'Software'              => (string) strtoupper('OPT-WpWoo-'.get_bloginfo('version').'-'.WC_VERSION),
                 'ReturnHash'            => (int) 1,
                 'SubMerchantName'       => ""
             ];
@@ -829,6 +837,16 @@ function initOptimisthubGatewayClass()
             $orderId = data_get($params, 'orderId');
             $tableName = $wpdb->prefix . 'moka_transactions_hash';
             return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $tableName WHERE id_order = $orderId ORDER BY id DESC" ), ARRAY_A );       
+        }
+
+        /**
+         * Generate Default Order Prefix
+         *
+         * @return void
+         */
+        private function generateDefaultOrderPrefix()
+        {
+            return substr(strtoupper(hash('sha256',str_replace(['http://', 'https://'],'  ', get_bloginfo('wpurl') ))), 0, 8);
         }
         
     }
