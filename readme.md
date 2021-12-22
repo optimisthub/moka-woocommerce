@@ -33,6 +33,10 @@ Moka Pos, Moka Pay plugin;
 
 ### Changelog 
 
+#### Version 2.4
+- Feature : Added Order Prefix for multiple domain usage.
+- Feature : Added Order Items for Moka POS requests.
+
 #### Version 2.3
 - Hotfix : Added installment table shortcode for other languages. 
 - Hotfix : Security issue fixed on wpdb::prepare . 
