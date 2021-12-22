@@ -374,7 +374,6 @@ function initOptimisthubGatewayClass()
  
 
             $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
-            dd($payOrder);
             $callbackUrl        = data_get($payOrder, 'Data.Url');
             $callbackHash       = data_get($payOrder, 'Data.CodeForHash');
             $callbackResult     = data_get($payOrder, 'ResultCode');
