@@ -132,6 +132,7 @@ function initOptimisthubGatewayClass()
         public function admin_css()
         {
             global $pagenow; 
+
             if($pagenow == 'admin.php' && isset($_GET['tab']) && isset($_GET['section']) && $_GET['section'] == 'mokapay')
             {
                 wp_register_style( 'moka-pay-admin',  plugins_url( 'moka-woocommerce-master/assets/moka-admin.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
