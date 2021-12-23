@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2021-12-22 22:55+0300\n"
+"PO-Revision-Date: 2021-12-23 17:32+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -137,6 +137,9 @@ msgstr "İşlem Id"
 
 msgid "Order Prefix"
 msgstr "Sipariş Öneki"
+
+msgid "Payment Completed"
+msgstr "Ödeme tamamlandı"
 
 msgid "This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)"
 msgstr "Bu alan birden çok sitede kullanılan Moka POS modülü için raporlama esnasında siparişlerin ayrıştırılmasında kolaylık sağlar. (Opsiyonel)"

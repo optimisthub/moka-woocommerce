@@ -455,7 +455,7 @@ function initOptimisthubGatewayClass()
             if($isCompleted)
             {
                 $total = data_get($orderDetails,'Amount');
-                $currency = data_get($orderDetails,'Currency');
+                $currency = data_get($orderDetails,'Currency'); 
 
                 $order->update_status('processing', __('Payment is processing via Moka Pay.', 'moka-woocommerce'));
                 $order->add_order_note( __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency , true );
@@ -463,6 +463,10 @@ function initOptimisthubGatewayClass()
 			    $order->reduce_order_stock();
                 
                 $woocommerce->cart->empty_cart();
+
+                ### Set Completed 
+                $order->update_status('completed', __('Payment Completed', 'moka-woocommerce'). ' Moka Payment Id : '.data_get($orderDetails,'OtherTrxCode'));
+                ### Set Completed 
                 
                 $recordParams['amount_paid'] = data_get($orderDetails,'Amount');
                 $recordParams['result'] = 0;
