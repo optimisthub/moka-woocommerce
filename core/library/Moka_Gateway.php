@@ -371,8 +371,7 @@ function initOptimisthubGatewayClass()
                     )
                 );  
             } 
- 
-
+  
             $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
             $callbackUrl        = data_get($payOrder, 'Data.Url');
             $callbackHash       = data_get($payOrder, 'Data.CodeForHash');
@@ -557,7 +556,7 @@ function initOptimisthubGatewayClass()
                 'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
                 'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
                 'ExpMonth'              => (string) data_get($expriyDate,'month' ),
-                'ExpYear'               => (string) '20'.data_get($expriyDate,'year' ),
+                'ExpYear'               => (string) self::formatExpiryDate(data_get($expriyDate,'year' )),
                 'CvcNumber'             => (string) data_get($postData, $this->id.'-card-cvc'),
                 'Amount'                => (string) self::calculateComissionRate(data_get($postData, $this->id.'-order-total'),$currentComission),
                 'Currency'              => (string) $order->get_currency() == 'TRY' ? 'TL' : $order->get_currency() ,
@@ -887,6 +886,24 @@ function initOptimisthubGatewayClass()
             }
 
             return $output;
+        }
+
+        /**
+         * Format Card expriyDate
+         *
+         * @param [type] $str
+         * @return void
+         */
+        private function formatExpiryDate($str)
+        {
+            $output = $str;
+            $lenght = strlen($str);
+            if($lenght>=3)
+            {
+                $output = substr($str,-2);
+            }
+
+            return '20'.$output;
         }
         
     }
