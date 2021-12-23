@@ -33,6 +33,9 @@ Moka Pos, Moka Pay plugin;
 
 ### Changelog 
 
+#### Version 2.5
+- Issue : Card Expiry Date validation issue fixed. 
+
 #### Version 2.4
 - Feature : Added Order Prefix for multiple domain usage. 
 
