@@ -36,7 +36,7 @@
 
 <hr>
 <h3>Açık Kaynak</h3>
-<p>Sizlerde GitHub üzerinden kodun geliştirmesine katkıda bulunabilirsiniz.</p>
+<p>Sizler de GitHub üzerinden kodun geliştirmesine katkıda bulunabilirsiniz.</p>
 <a href="https://github.com/optimisthub/moka-woocommerce">
   <img src="https://img.shields.io/github/last-commit/optimisthub/moka-woocommerce?label=Recent%20Update&style=for-the-badge" alt=""> 
 </a>
