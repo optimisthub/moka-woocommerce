@@ -350,7 +350,7 @@ function initOptimisthubGatewayClass()
         public function process_payment( $orderId ) 
         {
             $order              = new WC_order($orderId); 
-            $orderDetails       = self::formatOrder($orderId); 
+            $orderDetails       = self::formatOrder($orderId);  
             $currentTotal       = data_get($orderDetails, 'Amount');
             $installmentNumber  = data_get($orderDetails, 'InstallmentNumber');
             $currency           = $order->get_currency();
@@ -551,7 +551,7 @@ function initOptimisthubGatewayClass()
             
             $selectedInstallment    = data_get($postData, $this->id.'-installment');
             $currentComission       = data_get($rates, $selectedInstallment.'.value'); 
- 
+         
             $orderData = [
                 'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
                 'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
@@ -650,7 +650,7 @@ function initOptimisthubGatewayClass()
          */
         private function calculateComissionRate( $total, $percent )
         {
-            $total = ( ( ((int)$total*(int)$percent)/100) + (int)$total);
+            $total = ( ( ($total*$percent)/100) + $total); 
             return number_format($total,2,'.', '');
         }
 
