@@ -190,7 +190,6 @@ class MokaPayment
  
         foreach($storedData as $perStoredInstallmentKey => $perStoredInstallment)
         {
-       
             $return.='<tr>';
                 $imagePath =  plugins_url( 'moka-woocommerce-master/assets/img/cards/banks/' );
        
@@ -349,7 +348,7 @@ class MokaPayment
      * @param [array] $response
      * @return void
      */
-    private function formatInstallmentResponse($response)
+    public function formatInstallmentResponse($response)
     {
         $output = [];
 
