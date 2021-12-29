@@ -7,8 +7,9 @@ class Optimisthub_Ajax
 {
     public function __construct() 
     {
+        $this->mokaPayRequest = new MokaPayment();
         $this->mokaOptions  = get_option('woocommerce_mokapay_settings');
-        $this->installments = get_option('woocommerce_mokapay-installments');
+        $this->installments = get_option('woocommerce_mokapay-installments') ? get_option('woocommerce_mokapay-installments') : self::generateDynamicInstallmentData();
         $this->currency = get_option('woocommerce_currency');
         $this->enableInstallment = 'yes' === data_get($this->mokaOptions, 'installment');
  
@@ -37,16 +38,15 @@ class Optimisthub_Ajax
         $mokaPay = new MokaPayment();
         $response = $mokaPay->requestBin(['binNumber' => $binNumber]);
 
-
         ## installments
         $bankCode = mb_strtolower(data_get($response, 'BankCode')); 
         $bankGroup = mb_strtolower(data_get($response, 'GroupName')); 
- 
+
         $installments = self::fetchInstallment();
+        
         $avaliableInstallment = null;
         if($bankGroup)
         { 
-          
             foreach($installments as $perInstallment)
             {
                 if($perInstallment['groupName'] == $bankGroup)
@@ -54,10 +54,9 @@ class Optimisthub_Ajax
                     $avaliableInstallment = $perInstallment;
                 }
             } 
-        }   
-        ## installments
+        }    
 
- 
+        ## installments
         $data= [
             'cardInformation' => $response, 
             'installments' => $avaliableInstallment,
@@ -206,6 +205,23 @@ class Optimisthub_Ajax
     {
         $total = ( ( ($total*$percent)/100) + $total);
         return number_format(($total/$installment),2);
+    }
+
+    /**
+     * Set dynamic installment table from live server
+     *
+     * @return void
+     */
+    private function generateDynamicInstallmentData()
+    {
+        $list = $this->mokaPayRequest->getInstallments();
+        $list = data_get($list, 'CommissionList');
+
+        if(!$list)
+        {
+            return false;
+        }
+        return $this->mokaPayRequest->formatInstallmentResponse($list);
     }
 
 }
