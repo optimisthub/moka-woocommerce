@@ -72,6 +72,17 @@ Moka Pos, Moka Pay plugin;
 
 ### Changelog 
 
+#### Version 2.9
+- Security : `$wpdb` security and performence issues.
+- Feature : Added `DfxWooRoleChanger` Plugin Support.
+- Information : Added, composer.json tag details.
+
+#### Version 2.8
+- Issue : Installment Issues.  
+
+#### Version 2.7
+- Issue : Typo Issues.  
+
 #### Version 2.6
 - Issue : Test cards added to readme file. 
 - Issue : Payment Status set completed after successfully payment. 

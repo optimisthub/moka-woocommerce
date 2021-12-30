@@ -460,6 +460,11 @@ function initOptimisthubGatewayClass()
                 $order->update_status('processing', __('Payment is processing via Moka Pay.', 'moka-woocommerce'));
                 $order->add_order_note( __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency , true );
                 $order->payment_complete();
+
+                ## User Role Changer Support
+                self::userRoleChangerSupport($orderId);
+                ## User Role Changer Support
+
 			    $order->reduce_order_stock();
                 
                 $woocommerce->cart->empty_cart();
@@ -745,7 +750,6 @@ function initOptimisthubGatewayClass()
                 case "PaymentDealer.RequiredFields.ExpMonthRequired":
                     $errorOutput = "Son Kullanım Tarihi Gönderme Zorunludur.";
                     break;
-
                 case "PaymentDealer.CheckPaymentDealerAuthentication.InvalidAccount":
                     $errorOutput = "Böyle bir bayi bulunamadı";
                     break;
@@ -757,12 +761,10 @@ function initOptimisthubGatewayClass()
                     break;
                 case "PaymentDealer.CheckDealerPaymentLimits.DailyCardLimitExceeded":
                     $errorOutput = "Gün içinde bu kart kullanılarak daha fazla işlem yapılamaz";
-
                 case "PaymentDealer.CheckCardInfo.InvalidCardInfo":
                     $errorOutput = "Kart bilgilerinde hata var lütfen doğru bilgileri işleyiniz";
                     break;
                 case "PaymentDealer.DoDirectPayment3dRequest.InstallmentNotAvailableForForeignCurrencyTransaction":
-
                     $errorOutput = "Yabancı para ile taksit yapılamaz";
                     break;
                 case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForDealer":
@@ -774,7 +776,6 @@ function initOptimisthubGatewayClass()
                 case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForVirtualPos":
                     $errorOutput = "Sanal Pos bu taksit sayısına izin vermiyor";
                     break;
-
                 default:
                     $errorOutput = "Beklenmeyen bir hata oluştu";
             }
@@ -849,7 +850,7 @@ function initOptimisthubGatewayClass()
             global $wpdb;
             $orderId = data_get($params, 'orderId');
             $tableName = $wpdb->prefix . 'moka_transactions_hash';
-            return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $tableName WHERE id_order = $orderId ORDER BY id DESC" ), ARRAY_A );       
+            return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $tableName WHERE id_order = %d ORDER BY id DESC", $orderId ), ARRAY_A );       
         }
 
         /**
@@ -908,6 +909,21 @@ function initOptimisthubGatewayClass()
             }
 
             return '20'.$output;
+        }
+
+        /**
+         * User Role Change Plugin Support
+         *
+         * @param [type] $orderId 
+         */
+        private function userRoleChangerSupport($orderId)
+        {
+            if(class_exists('DfxWooRoleChanger'))
+            {  
+                $roleChanger = DfxWooRoleChanger::get_instance();
+                $roleChanger->role_assignment($orderId); 
+            }
+
         }
         
     }
