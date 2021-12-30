@@ -1,8 +1,21 @@
 {
     "name": "optimisthub/moka-woocommerce",
-    "type": "project",
+    "type": "wordpress-plugin",
     "license": "MIT",
     "description": "Moka Payment Gateway for WooCommerce",
+    "keywords": [
+        "woocommerce",
+        "woocommerce-isbankasi",
+        "woocommerce-moka",
+        "woocommerce-moka-pos",
+        "is-bankasi",
+        "is-bankasi-3d",
+        "isbankasi",
+        "isbankasi-sanalpos",
+        "optimisthub",
+        "optimisthub-moka-pos",
+        "optimisthub-moka"
+    ],
     "homepage": "https://optimisthub.com/",
     "authors": [
         {
@@ -11,6 +24,9 @@
             "homepage": "https://github.com/optimisthub"
         } 
     ],
+    "support": {
+        "email": "hi@optimisthub.com"
+    },
     "require": {
         "php": ">=7.1",
         "rappasoft/laravel-helpers": "^2.0",
