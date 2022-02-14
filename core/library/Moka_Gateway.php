@@ -405,8 +405,7 @@ function initOptimisthubGatewayClass()
                 'result_message'=> self::mokaPosErrorMessages($callbackResult),
                 'result'        => 1, // 1 False 0 True
                 'created_at'    => date('Y-m-d H:i:s'), 
-            ];
-            
+            ]; 
 
             ## Display Error on Checkout
             if($callbackResult != 'Success')
@@ -560,14 +559,15 @@ function initOptimisthubGatewayClass()
             
             $selectedInstallment    = data_get($postData, $this->id.'-installment');
             $currentComission       = data_get($rates, $selectedInstallment.'.value'); 
-         
+            $getAmount = $order->get_total();
+
             $orderData = [
                 'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
                 'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
                 'ExpMonth'              => (string) data_get($expriyDate,'month' ),
                 'ExpYear'               => (string) self::formatExpiryDate(data_get($expriyDate,'year' )),
                 'CvcNumber'             => (string) data_get($postData, $this->id.'-card-cvc'),
-                'Amount'                => (string) self::calculateComissionRate(data_get($postData, $this->id.'-order-total'),$currentComission),
+                'Amount'                => (string) self::calculateComissionRate($getAmount,$currentComission),
                 'Currency'              => (string) $order->get_currency() == 'TRY' ? 'TL' : $order->get_currency() ,
                 'InstallmentNumber'     => (int) $selectedInstallment,
                 'ClientIP'              => (string) self::getUserIp(),
@@ -658,7 +658,7 @@ function initOptimisthubGatewayClass()
          * @return void
          */
         private function calculateComissionRate( $total, $percent )
-        {
+        { 
             $total = ( ( ($total*$percent)/100) + $total); 
             return number_format($total,2,'.', '');
         }
@@ -670,7 +670,7 @@ function initOptimisthubGatewayClass()
          * @return void
          */
         private function fetchOrder($orderId)
-        {
+        { 
             return wc_get_order( $orderId );
         }
         

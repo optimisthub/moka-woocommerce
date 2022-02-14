@@ -23,7 +23,7 @@ class Optimisthub_Ajax
      * @return void
      */
     public function validate_bin($params)
-    {
+    { 
         $postData = $params;
         $action = data_get($postData, 'action');
 
@@ -55,7 +55,7 @@ class Optimisthub_Ajax
                 }
             } 
         }    
-
+        
         ## installments
         $data= [
             'cardInformation' => $response, 
