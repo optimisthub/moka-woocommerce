@@ -72,6 +72,10 @@ Moka Pos, Moka Pay plugin;
 
 ### Changelog 
 
+#### Version 2.9.2
+- Issue : Installment issues.
+- Feature : Added, ray package for remote debugging.
+
 #### Version 2.9.1
 - Issue : Amount Issues Fixed.
 

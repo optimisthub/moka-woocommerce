@@ -30,7 +30,8 @@
     "require": {
         "php": ">=7.1",
         "rappasoft/laravel-helpers": "^2.0",
-        "tightenco/collect": "^8.68"
+        "tightenco/collect": "^8.68",
+        "spatie/ray": "^1.33"
     },
     "autoload": {
         "files": [ 

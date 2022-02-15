@@ -145,8 +145,12 @@ class Optimisthub_Ajax
      */
     private function renderedHtml( $params )
     {
-        global $woocommerce;
-        $total = data_get($woocommerce, 'cart.total'); 
+        global $woocommerce; 
+        
+        $orderId = $woocommerce->session->order_awaiting_payment;
+        $order = new WC_Order($orderId);
+
+        $total = $order->get_total(); 
         $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
         $installmentRates = data_get($params, 'installments.rates');
         $orderTotal = $total;
