@@ -195,7 +195,34 @@ function initOptimisthubGatewayClass()
          */
         public function payment_form_fields($cc_fields , $payment_id)
         {
+      
+            global $woocommerce;
+            $referer = is_wc_endpoint_url( 'order-pay' ) ? 'order-pay' : 'checkout'; 
+            $total = data_get($woocommerce, 'cart.total'); 
+
+            if ( get_query_var('order-pay') ) {
+                $order = wc_get_order(get_query_var('order-pay'));
+                $total = $order->get_total();  
+            } 
+
             $cc_fields = [
+                'current-step-of-payment' => '
+                    <p class="form-row form-row-wide">
+                        <input 
+                            id="'.$payment_id.'-current-step-of-payment" 
+                            class="current-step-of-payment" 
+                            type="hidden"  
+                            value="'.$referer.'"
+                            name="' .$payment_id. '-current-step-of-payment" 
+                        />
+                        <input 
+                            id="'.$payment_id.'-current-order-total" 
+                            class="current-order-total" 
+                            type="hidden"  
+                            value="'.$total.'"
+                            name="' .$payment_id. '-current-order-total" 
+                        />
+                    </p>',
                 'name-on-card' => '
                     <p class="form-row form-row-wide">
                         <label for="'. $payment_id.'-card-holder">' . __('Name On Card','moka-woocommerce') . ' <span class="required">*</span></label>

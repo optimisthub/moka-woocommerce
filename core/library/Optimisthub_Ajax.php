@@ -25,6 +25,7 @@ class Optimisthub_Ajax
     public function validate_bin($params)
     { 
         $postData = $params;
+ 
         $action = data_get($postData, 'action');
 
         if(!$action)
@@ -60,7 +61,7 @@ class Optimisthub_Ajax
         $data= [
             'cardInformation' => $response, 
             'installments' => $avaliableInstallment,
-            'renderedHtml' => self::renderedHtml(['card' => $response, 'installments' => $avaliableInstallment]),
+            'renderedHtml' => self::renderedHtml(['card' => $response, 'installments' => $avaliableInstallment, 'total' => data_get($postData, 'total')]),
         ];  
 
         if(!$response)
@@ -145,12 +146,7 @@ class Optimisthub_Ajax
      */
     private function renderedHtml( $params )
     {
-        global $woocommerce; 
-        
-        $orderId = $woocommerce->session->order_awaiting_payment;
-        $order = new WC_Order($orderId);
-
-        $total = $order->get_total(); 
+        $total = data_get($params, 'total');
         $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
         $installmentRates = data_get($params, 'installments.rates');
         $orderTotal = $total;

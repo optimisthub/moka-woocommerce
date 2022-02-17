@@ -9,6 +9,7 @@ $(document).ready(function () {
      */
     $(document).on('keyup','input#mokapay-card-number',function( e ) {  
         let binValue = $(this).val();
+        let total = $('#mokapay-current-order-total').val();
         binValue = binValue.replace(/\s/g, '');
         if(binValue.length >= 6) {
             $.ajax({
@@ -19,6 +20,7 @@ $(document).ready(function () {
                     action : 'optimisthub_ajax',
                     method : 'validate_bin',
                     binNumber : binValue,
+                    total : total 
                 },
                 success: function(response){
                     $('#ajaxify-installment-table').html('');
