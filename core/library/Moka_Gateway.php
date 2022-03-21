@@ -25,7 +25,7 @@ function initOptimisthubGatewayClass()
             $this->has_fields = true; 
             $this->method_title = 'Moka by Isbank';
             $this->method_description = __('Moka by Isbank WooCommerce Gateway','moka-woocommerce');
-            $this->supports = ['products'];
+            $this->supports = ['products', 'refunds'];
     
             $this->init_form_fields();  
             $this->init_settings();
@@ -525,6 +525,40 @@ function initOptimisthubGatewayClass()
         public function webhook() 
         {
         }
+
+        public function process_refund($orderId, $amount = null, $reason = '')
+        {
+
+            $postData = $_REQUEST;
+
+            $refundReason = data_get($postData, 'refund_reason');
+
+            if(!$orderId)
+            {
+                return false;
+            }
+
+            $order = wc_get_order($orderId);
+            $maxRefundAmount = wc_format_decimal($order->get_total() - $order->get_total_refunded());
+        
+            if (!$maxRefundAmount) {
+                return;
+            }  
+ 
+            // Create the refund object
+            $refund = wc_create_refund(
+                [   
+                    'amount'    => $max_refund, 
+                    'reason' => $refundReason, 
+                    'order_id'   => $oderId, 
+                    'line_items' => []
+                ]
+            );
+            wc_delete_shop_order_transients($oderId); 
+
+            return true;
+        }
+
 
         /**
          * Check isOption Has on Db.
