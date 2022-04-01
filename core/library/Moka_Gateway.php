@@ -41,6 +41,7 @@ function initOptimisthubGatewayClass()
             $this->api_username = $this->get_option( 'api_username' );
             $this->api_password = $this->get_option( 'api_password' );
             $this->order_prefix = $this->get_option( 'order_prefix' );
+            $this->order_status = $this->get_option( 'order_status' );
             
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
@@ -53,6 +54,7 @@ function initOptimisthubGatewayClass()
             add_action( 'woocommerce_receipt_'.$this->id, [$this, 'receipt_page']);  
 
             self::__saveRates();
+            
         }
         
         /**
@@ -111,6 +113,13 @@ function initOptimisthubGatewayClass()
                     'type'        => 'text',
                     'description' => __( 'This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)', 'moka-woocommerce' ),
                     'default'     => self::generateDefaultOrderPrefix(),
+                ],
+                'order_status' => [
+                    'title'       => __( 'Order Status', 'moka-woocommerce' ),
+                    'type'        => 'select',
+                    'description' => __( 'You can choose what the status of the order will be when your payments are successfully completed.', 'moka-woocommerce' ),
+                    'options'     => self::getOrderStatuses(),
+                    'default'     => 'wc-completed',
                 ],
                 'company_code' => [
                     'title'       => __( 'Company Code', 'moka-woocommerce' ),
@@ -395,7 +404,9 @@ function initOptimisthubGatewayClass()
                     sprintf( 
                         __( 'Sipariş Tutarında, taksitli alışveriş talep edildiğinden dolayı güncelleme yapıldı. %s', 'moka-woocommerce' ), 
                         $currentTotal. ' '.$currency. ' ['.$installmentNumber.' Taksit]'
-                    )
+                    ), 
+                    false,
+                    true
                 );  
             } 
   
@@ -484,7 +495,7 @@ function initOptimisthubGatewayClass()
                 $currency = data_get($orderDetails,'Currency'); 
 
                 $order->update_status('processing', __('Payment is processing via Moka Pay.', 'moka-woocommerce'));
-                $order->add_order_note( __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency , true );
+                $order->add_order_note( __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency , false,false );
                 $order->payment_complete();
 
                 ## User Role Changer Support
@@ -496,7 +507,7 @@ function initOptimisthubGatewayClass()
                 $woocommerce->cart->empty_cart();
 
                 ### Set Completed 
-                $order->update_status('completed', __('Payment Completed', 'moka-woocommerce'). ' Moka Payment Id : '.data_get($orderDetails,'OtherTrxCode'));
+                $order->update_status($this->order_status, __('Payment Completed', 'moka-woocommerce'). ' Moka Payment Id : '.data_get($orderDetails,'OtherTrxCode'));
                 ### Set Completed 
                 
                 $recordParams['amount_paid'] = data_get($orderDetails,'Amount');
@@ -951,6 +962,16 @@ function initOptimisthubGatewayClass()
                 $roleChanger->role_assignment($orderId); 
             }
 
+        }
+
+        /**
+         * Get WC order statuses
+         *
+         * @return void
+         */
+        private function getOrderStatuses()
+        {
+            return wc_get_order_statuses();
         }
         
     }

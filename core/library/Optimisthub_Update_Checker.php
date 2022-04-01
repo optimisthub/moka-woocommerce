@@ -168,6 +168,7 @@ class Optimisthub_Update_Checker
 
     public function purge()
     {
+        global $options;
         if (
             $this->cache_allowed
             && 'update' === $options['action']
