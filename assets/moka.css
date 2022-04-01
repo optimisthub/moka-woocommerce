@@ -3,22 +3,23 @@
 */
 #mokapay-card-number {
     background-size: 10% auto !important;
-    background-position: right 10px bottom 0px !important;
+    background-position: right 10px bottom 5px !important;
     display: flex;
     justify-content: center;
     padding-right:10px !important;
+    background-size:40px auto !important;
 }
 #mokapay-card-number.visa { 
-    background: url('img/cards/visa.png') top right no-repeat;
+    background: url('img/cards/visa.png') center right no-repeat;
 }
 #mokapay-card-number.mastercard { 
-    background: url('img/cards/mastercard.png') top right no-repeat;
+    background: url('img/cards/mastercard.png') center right no-repeat;
 }
 #mokapay-card-number.amex { 
-    background: url('img/cards/amex.png') top right no-repeat;
+    background: url('img/cards/amex.png') center right no-repeat;
 }
 #mokapay-card-number.discover { 
-    background: url('img/cards/discover.png') top right no-repeat;
+    background: url('img/cards/discover.png') center right no-repeat;
 } 
 
 .wc_payment_method .payment_box.payment_method_mokapay fieldset {
