@@ -72,6 +72,9 @@ Moka Pos, Moka Pay plugin;
 
 ### Changelog 
 
+#### Version 2.9.5
+- Issues : Moka api errors on reciept page. 
+
 #### Version 2.9.4
 - Feature : You can choose what the status of the order will be when your payments are successfully completed.
 - Issue : Customer notes replaced system notes in order notes. 
