@@ -468,6 +468,7 @@ function initOptimisthubGatewayClass()
         {
 
             global $woocommerce; 
+      
 
             $fetchData = self::getHash(['orderId' => $orderId]);
             $orderDetails = json_decode( data_get($fetchData, 'order_details'), true );
@@ -524,11 +525,22 @@ function initOptimisthubGatewayClass()
                 exit;
 
             } else {
-                wc_add_notice('Ödemeniz tahsil edilemedi. Lütfen yeniden deneyiniz.', 'error' );
+
                 $order = new WC_order($orderId);
                 $order->update_status('pending', __('Waiting for user payment.', 'moka-woocommerce'));
-                $recordParams['result_message'] = __('Waiting for user payment.', 'moka-woocommerce');
-                self::saveRecord($recordParams); 
+
+                if(isset($_POST) && data_get($_POST, 'resultCode') && data_get($_POST, 'hashValue'))
+                { 
+                    wc_add_notice('Ödemeniz tahsil edilemedi. Lütfen yeniden deneyiniz.', 'notice' );
+                    echo '<div class="woocommerce-notices-wrapper"><ul class="woocommerce-error" role="alert"><li class="">'.self::errorMessagesWithErrorCodes(data_get($_POST, 'resultCode')).' : <a class="moka-continue-checkout" href="'.wc_get_checkout_url().'">'.get_the_title(wc_get_page_id('checkout')).'</a></li></ul></div>'; 
+                    $recordParams['result_message'] = self::errorMessagesWithErrorCodes(data_get($_POST, 'resultCode'));
+                    self::saveRecord($recordParams);  
+
+                } else {
+                    wc_add_notice('Ödemeniz tahsil edilemedi. Lütfen yeniden deneyiniz.', 'notice' );
+                    $recordParams['result_message'] = __('Waiting for user payment.', 'moka-woocommerce');
+                    self::saveRecord($recordParams);  
+                }
             }
             
         }
@@ -782,6 +794,9 @@ function initOptimisthubGatewayClass()
                 case "PaymentDealer.CheckPaymentDealerAuthentication.InvalidRequest":
                     $errorOutput = "Hatalı hash bilgisi";
                     break;
+                case "Limit is insufficient":
+                    $errorOutput = "Kart limitiniz yetersiz.";
+                    break;
                 case "PaymentDealer.RequiredFields.AmountRequired":
                     $errorOutput = "Tutar Göndermek Zorunludur.";
                     break;
@@ -819,6 +834,53 @@ function initOptimisthubGatewayClass()
             }
 
             return $errorOutput;
+        }
+
+        /**
+         * Error Codes
+         *
+         * @param [string] $code 
+         */
+        private function errorMessagesWithErrorCodes($code)
+        {
+            $codes =  [
+                '000' => 'Genel Hata',
+                '001' => 'Kart Sahibi Onayı Alınamadı',
+                '002' => 'Kartınızın limiti yetersiz.',
+                '003' => 'Kredi Kartı Numarası Geçerli Formatta Değil',
+                '004' => 'Genel Red',
+                '005' => 'Kart Sahibine Açık Olmayan İşlem',
+                '006' => 'Kartın Son Kullanma Tarihi Hatali',
+                '007' => 'Geçersiz İşlem',
+                '008' => 'Bankaya Bağlanılamadı',
+                '009' => 'Tanımsız Hata Kodu',
+                '010' => 'Banka SSL Hatası',
+                '011' => 'Manual Onay İçin Bankayı Arayınız',
+                '012' => 'Kart Bilgileri Hatalı - Kart No veya CVV2',
+                '013' => 'Visa MC Dışındaki Kartlar 3D Secure Desteklemiyor',
+                '014' => 'Geçersiz Hesap Numarası',
+                '015' => 'Geçersiz CVV',
+                '016' => 'Onay Mekanizması Mevcut Değil',
+                '017' => 'Sistem Hatası',
+                '018' => 'Çalıntı Kart',
+                '019' => 'Kayıp Kart',
+                '020' => 'Kısıtlı Kart',
+                '021' => 'Zaman Aşımı',
+                '022' => 'Geçersiz İşyeri',
+                '023' => 'Sahte Onay',
+                '024' => '3D Onayı Alındı Ancak Para Karttan Çekilemedi',
+                '025' => '3D Onay Alma Hatası',
+                '026' => 'Kart Sahibi Banka veya Kart 3D-Secure Üyesi Değil',
+                '027' => 'Kullanıcı Bu İşlemi Yapmaya Yetkili Değil',
+                '028' => 'Fraud Olasılığı',
+                '029' => 'Kartınız e-ticaret İşlemlerine Kapalıdır',                
+            ];
+
+            if(in_array($code, array_keys($codes))) {
+                return $codes[$code];
+            } else {
+                return 'Beklenmeyen bir hata oluştu';
+            }
         }
 
         /**
