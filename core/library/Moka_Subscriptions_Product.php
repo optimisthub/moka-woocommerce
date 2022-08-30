@@ -27,6 +27,3 @@ function addSubscriptionProductType () {
         }
     }
 }
- 
- 
- 

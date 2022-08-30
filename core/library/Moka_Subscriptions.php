@@ -27,8 +27,12 @@ class MokaSubscription
         add_action( 'woocommerce_single_product_summary', [$this, 'addToCartButtonProductSummary'], 20 );
 
 
+        // Display custom cart item meta data (in cart and checkout)
+        add_filter( 'woocommerce_get_item_data', [$this,'displayCartItemCustomMetaData'], 10, 2 );
+        // Save cart item custom meta as order item meta data and display it everywhere on orders and email notifications.
+        #add_action( 'woocommerce_checkout_create_order_line_item', [$this,'saveCartItemCustomMetaAsOrderItemMeta'], 10, 4 );
 
-        
+
         add_action( 'woocommerce_new_product', [$this,'syncOnProductSave'], 10, 1 );
         add_action( 'woocommerce_update_product', [$this,'syncOnProductSave'], 10, 1 );
     }
@@ -201,18 +205,34 @@ class MokaSubscription
         global $product;
 
         if ( $this->productType == $product->get_type() ) {
-            do_action( 'woocommerce_before_add_to_cart_button' ); ?>
+            do_action( 'woocommerce_before_add_to_cart_button' ); 
+                $productId = $product->get_id(); 
+                $period = get_post_meta($productId);
+                $periodString = data_get($period, '_period_per.0'). ' ' .data_get($period,'_period_in.0');       
+            ?>
    
             <p class="cart">
                 <a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" rel="nofollow" class="single_add_to_cart_button button alt">
                     <?php echo __("Subscribe", "moka-woocommerce"); ?>
                 </a>
             </p>
-
+            <p><?php echo "<br>".__('Renewal Period', 'moka-woocommerce').' : '.__($periodString, 'moka-woocommerce'); ?></p>
             <?php do_action( 'woocommerce_after_add_to_cart_button' );
         }
     }
 
+    public function displayCartItemCustomMetaData( $itemData, $cartItem ) 
+    {
+        $productId = data_get($cartItem, 'product_id');
+        $period = get_post_meta($productId);
+        $periodString = data_get($period, '_period_per.0'). ' ' .data_get($period,'_period_in.0');
+        $itemData[] = [
+            'key' => __('Renewal Period', 'moka-woocommerce'), 
+            'value' => __($periodString, 'moka-woocommerce'), 
+            'display' => '',
+        ];
+        return $itemData;
+    }  
 }
 
 new MokaSubscription();
