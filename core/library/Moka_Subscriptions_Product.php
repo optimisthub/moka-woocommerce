@@ -3,16 +3,30 @@
 /**
  * Advanced Product Type
  */
-class WC_Moka_Subscriptions_Product extends WC_Product_Simple {
-    
-    /**
-     * Return the product type
-     * @return string
-     */
-    public function get_type() {
-        return 'subscription';
+
+add_action( 'plugins_loaded', 'addSubscriptionProductType' );
+
+function addSubscriptionProductType () {
+
+	class WC_Product_Subscription extends WC_Product 
+    {
+
+        public function __construct( $product ) {
+            $this->product_type = 'subscription';  
+            parent::__construct( $product ); 
+        }
+
+        /**
+         * Add to cart url for summary.
+         *
+         * @return void
+         */
+        public function add_to_cart_url() {
+            $url = $this->is_purchasable() && $this->is_in_stock() ? remove_query_arg( 'added-to-cart', add_query_arg( 'add-to-cart', $this->id ) ) : get_permalink( $this->id );
+            return apply_filters( 'woocommerce_product_add_to_cart_url', $url, $this );
+        }
     }
-
 }
-
-new WC_Moka_Subscriptions_Product();
+ 
+ 
+ 

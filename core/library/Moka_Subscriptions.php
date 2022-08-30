@@ -8,6 +8,7 @@ class MokaSubscription
 
     public $mokaOptions;
     public $isSubscriptionsEnabled;
+    public $productType = 'subscription';
 
     public function __construct()
     {
@@ -22,6 +23,10 @@ class MokaSubscription
         add_filter( 'woocommerce_product_data_tabs', array( $this, 'registerSubscriptionProductTab' ), 0 );
         add_action( 'woocommerce_product_data_panels', array( $this, 'registerSubscriptionProductTabContent' ) );
         add_action( 'woocommerce_process_product_meta_subscription', array( $this, 'saveSubscriptionSettings' ) );
+        add_filter( 'woocommerce_product_add_to_cart_text', [$this, 'changeAddToCartText'], 20, 2 ); 
+        add_action( 'woocommerce_single_product_summary', [$this, 'addToCartButtonProductSummary'], 20 );
+
+
 
         
         add_action( 'woocommerce_new_product', [$this,'syncOnProductSave'], 10, 1 );
@@ -36,6 +41,17 @@ class MokaSubscription
      */
     public function syncOnProductSave($productId)
     {
+        $metas      = get_post_meta($productId);
+        $product    = wc_get_product( $productId );
+        $type       = $product->get_type(); 
+        $price      = data_get($metas, '_subscription_price.0');
+ 
+        
+        if($type == $this->productType) {
+            update_post_meta($productId,'_stock_status', 'instock');
+            update_post_meta($productId,'_regular_price', $price);
+            update_post_meta($productId,'_sold_individually', 'yes');
+        }
     }
 
     /**
@@ -58,7 +74,6 @@ class MokaSubscription
     {
     }
 
-
     /**
      * addOrUpdateDealerCustomer function
      *
@@ -79,7 +94,7 @@ class MokaSubscription
 
     public function addProductTyepSelectorOnBackend($types)
     {
-        $types['subscription'] = __( 'Abonelikler', 'moka-woocommerce' );
+        $types[$this->productType] = __( 'Abonelikler', 'moka-woocommerce' );
         return $types;
     }
 
@@ -91,19 +106,18 @@ class MokaSubscription
         }
     }
  
-
     public function displaySubscriptionProductMetas()
     {
-        echo '<div class="options_group show_if_subscription clear"></div>';
+        echo '<div class="options_group show_if_'.$this->productType.' clear"></div>';
     }
  
     public function registerSubscriptionProductTab($tabs)
     {
-        $tabs['general']['class'] = 'hide_if_grouped hide_if_subscription';
-        $tabData['subscription'] = [
+        $tabs['general']['class'] = 'hide_if_grouped hide_if_'.$this->productType;
+        $tabData[$this->productType] = [
             'label'    => __( 'Abonelik Özellikleri', 'moka-woocommerce' ),
-            'target' => 'subscription_type_product_options',
-            'class'  => 'show_if_subscription',
+            'target' => $this->productType.'_type_product_options',
+            'class'  => 'show_if_'.$this->productType,
         ]; 
                 
         $tabs = array_merge($tabData, $tabs);
@@ -114,7 +128,7 @@ class MokaSubscription
     {
         global $product_object;
         ?>
-        <div id='subscription_type_product_options' class='panel woocommerce_options_panel hidden'>
+        <div id='<?php echo $this->productType; ?>_type_product_options' class='panel woocommerce_options_panel hidden'>
           <div class='options_group'>
             <?php
                 woocommerce_wp_select(
@@ -169,7 +183,36 @@ class MokaSubscription
         $_period_in = isset( $_POST['_period_in'] ) ? sanitize_text_field( $_POST['_period_in'] ) : '';
         update_post_meta( $postId, '_period_in', $_period_in );
     }
- 
+
+    public function changeAddToCartText($buttonText, $product)
+    {
+        $type = $product->get_type(); 
+        
+        if($type == $this->productType)
+        { 
+            $buttonText = __("Subscribe", "moka-woocommerce");
+        }
+
+        return $buttonText;
+    }
+
+    public function addToCartButtonProductSummary()
+    {
+        global $product;
+
+        if ( $this->productType == $product->get_type() ) {
+            do_action( 'woocommerce_before_add_to_cart_button' ); ?>
+   
+            <p class="cart">
+                <a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" rel="nofollow" class="single_add_to_cart_button button alt">
+                    <?php echo __("Subscribe", "moka-woocommerce"); ?>
+                </a>
+            </p>
+
+            <?php do_action( 'woocommerce_after_add_to_cart_button' );
+        }
+    }
+
 }
 
 new MokaSubscription();
