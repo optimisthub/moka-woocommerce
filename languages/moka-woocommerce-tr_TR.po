@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2022-08-30 16:11+0300\n"
+"PO-Revision-Date: 2022-08-30 16:56+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -152,3 +152,42 @@ msgstr "Ödemeleriniz başarılı bir şekilde tamamlandığında siparişin dur
 
 msgid "Subscribe"
 msgstr "Aboneliği Başlat"
+
+msgid "Renewal Period"
+msgstr "Yenilenme Periyodu"
+
+msgid "her gun"
+msgstr "Günlük"
+
+msgid "her hafta"
+msgstr "Haftalık"
+
+msgid "her ay"
+msgstr "Aylık"
+
+msgid "her_2 gun"
+msgstr "Her iki günde bir"
+
+msgid "her_2 hafta"
+msgstr "Her iki haftada bir"
+
+msgid "her_2 ay"
+msgstr "Her iki ayda bir"
+
+msgid "her_3 gun"
+msgstr "Her üç günde bir"
+
+msgid "her_3 hafta"
+msgstr "Her üç haftada bir"
+
+msgid "her_3 ay"
+msgstr "Her üç ayda bir"
+
+msgid "her_4 gun"
+msgstr "Her dört günde bir"
+
+msgid "her_4 hafta"
+msgstr "Her dört haftada bir"
+
+msgid "her_4 ay"
+msgstr "Her dört ayda bir"
