@@ -25,7 +25,16 @@ function initOptimisthubGatewayClass()
             $this->has_fields = true; 
             $this->method_title = 'Moka by Isbank';
             $this->method_description = __('Moka by Isbank WooCommerce Gateway','moka-woocommerce');
-            $this->supports = ['products'];
+            $this->supports = [
+                'products', 
+                'subscriptions',
+                'subscription_cancellation', 
+                'subscription_suspension', 
+                'subscription_reactivation',
+                'subscription_amount_changes',
+                'subscription_date_changes', 
+                'tokenization',
+            ];
     
             $this->init_form_fields();  
             $this->init_settings();
