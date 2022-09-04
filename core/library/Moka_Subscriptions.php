@@ -91,17 +91,37 @@ class MokaSubscription
 
     }
 
+    /**
+     * Register Subscription Product Type For WooCommerce
+     *
+     * @return void
+     */
     public function registerSubscriptionProductType()
     {
-        require_once __DIR__.'/Moka_Subscriptions_Product.php';
+        if($this->isSubscriptionsEnabled)
+        {
+            require_once __DIR__.'/Moka_Subscriptions_Product.php';
+        }
     }
 
+    /**
+     * Add registered product type if subscription product type option avaliables
+     *
+     * @param [type] $types
+     * @return void
+     */
     public function addProductTyepSelectorOnBackend($types)
     {
+        if($this->isSubscriptionsEnabled)
         $types[$this->productType] = __( 'Abonelikler', 'moka-woocommerce' );
         return $types;
     }
 
+    /**
+     * Add product type tax.
+     *
+     * @return void
+     */
     public function addProductTypeTaxonomy()
     {
         // If there is no advanced product type taxonomy, add it.
@@ -109,12 +129,23 @@ class MokaSubscription
             wp_insert_term( 'advanced', 'product_type' );
         }
     }
- 
+    
+    /**
+     * Display tabs part on admin panel.
+     *
+     * @return void
+     */
     public function displaySubscriptionProductMetas()
     {
         echo '<div class="options_group show_if_'.$this->productType.' clear"></div>';
     }
  
+    /**
+     * Register subscription product tab
+     *
+     * @param [type] $tabs
+     * @return void
+     */
     public function registerSubscriptionProductTab($tabs)
     {
         $tabs['general']['class'] = 'hide_if_grouped hide_if_'.$this->productType;
@@ -128,6 +159,12 @@ class MokaSubscription
         return $tabs;
     }
 
+    /**
+     * Register subscription product tab's content.
+     *
+     * @param [type] $tabs
+     * @return void
+     */
     public function registerSubscriptionProductTabContent($tabs)
     {
         global $product_object;
@@ -178,6 +215,12 @@ class MokaSubscription
         <?php
     }
 
+    /**
+     * Save product's subscription settings
+     *
+     * @param [integer] $postId
+     * @return void
+     */
     public function saveSubscriptionSettings($postId)
     {
         $price = isset( $_POST['_subscription_price'] ) ? sanitize_text_field( $_POST['_subscription_price'] ) : '';
@@ -188,6 +231,13 @@ class MokaSubscription
         update_post_meta( $postId, '_period_in', $_period_in );
     }
 
+    /**
+     * Change add to cart text for subscription product
+     *
+     * @param [string] $buttonText
+     * @param [object] $product
+     * @return void
+     */
     public function changeAddToCartText($buttonText, $product)
     {
         $type = $product->get_type(); 
@@ -200,6 +250,11 @@ class MokaSubscription
         return $buttonText;
     }
 
+    /**
+     * Modifiy addToCart button part  product summary 
+     *
+     * @return void
+     */
     public function addToCartButtonProductSummary()
     {
         global $product;
@@ -221,6 +276,13 @@ class MokaSubscription
         }
     }
 
+    /**
+     * Display some information for cart item meta data.
+     *
+     * @param [object] $itemData
+     * @param [array] $cartItem
+     * @return void
+     */
     public function displayCartItemCustomMetaData( $itemData, $cartItem ) 
     {
         $productId = data_get($cartItem, 'product_id');
