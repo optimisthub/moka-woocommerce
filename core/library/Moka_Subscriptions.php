@@ -143,7 +143,7 @@ class MokaSubscription
     /**
      * Register subscription product tab
      *
-     * @param [type] $tabs
+     * @param [array] $tabs
      * @return void
      */
     public function registerSubscriptionProductTab($tabs)
@@ -162,7 +162,7 @@ class MokaSubscription
     /**
      * Register subscription product tab's content.
      *
-     * @param [type] $tabs
+     * @param [string] $tabs
      * @return void
      */
     public function registerSubscriptionProductTabContent($tabs)
