@@ -240,6 +240,8 @@ class MokaSubscription
      */
     public function changeAddToCartText($buttonText, $product)
     {
+        if($this->isSubscriptionsEnabled)
+
         $type = $product->get_type(); 
         
         if($type == $this->productType)
@@ -257,6 +259,8 @@ class MokaSubscription
      */
     public function addToCartButtonProductSummary()
     {
+        if($this->isSubscriptionsEnabled)
+        
         global $product;
 
         if ( $this->productType == $product->get_type() ) {
