@@ -171,8 +171,8 @@ class Optimisthub_Update_Checker
         global $options;
         if (
             $this->cache_allowed
-            && 'update' === $options['action']
-            && 'plugin' === $options[ 'type' ]
+            && 'update' === data_get($options, 'action') && $options['action']
+            && 'plugin' === data_get($options, 'type') && $options[ 'type' ]
         ) {
             delete_transient( $this->cache_key );
         }
