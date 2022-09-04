@@ -32,7 +32,11 @@ function initOptimisthubGatewayClass()
                 'subscription_suspension', 
                 'subscription_reactivation',
                 'subscription_amount_changes',
-                'subscription_date_changes', 
+                'subscription_date_changes',
+                'subscription_payment_method_change',
+                'subscription_payment_method_change_customer',
+                'subscription_payment_method_change_admin',
+                'multiple_subscriptions',
                 'tokenization',
             ];
     
@@ -51,6 +55,8 @@ function initOptimisthubGatewayClass()
             $this->api_password = $this->get_option( 'api_password' );
             $this->order_prefix = $this->get_option( 'order_prefix' );
             $this->order_status = $this->get_option( 'order_status' );
+            $this->subscriptions = $this->get_option( 'subscriptions' );
+            $this->isSubscriptionsEnabled = 'yes' == $this->subscriptions;
             
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
@@ -102,6 +108,14 @@ function initOptimisthubGatewayClass()
                     'type'        => 'checkbox',
                     'description' => __('Place the payment gateway in test mode using test API keys.', 'moka-woocommerce' ),
                     'default'     => 'yes',
+                    'desc_tip'    => true,
+                ],
+                'subscriptions' => [
+                    'title'       => __( 'Subscription', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
+                    'label'       => __('Enable subscription ?', 'moka-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'description' => __('It allows you to sell products via subscription method on your site.' , 'moka-woocommerce'),
+                    'default'     => 'no',
                     'desc_tip'    => true,
                 ],
                 'installment' => [
