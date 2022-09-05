@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2022-09-04 18:56+0300\n"
+"PO-Revision-Date: 2022-09-05 19:24+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -202,3 +202,27 @@ msgstr "It allows you to sell products via subscription method on your site."
 
 msgid "You have enabled the subscription feature. Moka Pay from İşbank requires <a href=\"https://woocommerce.com/products/woocommerce-subscriptions/\">WooCommerce Subscriptions</a> to be installed and activated. If you do not want to use the Subscription feature, you must turn it off in Moka Pay settings."
 msgstr "You have enabled the subscription feature. Moka Pay from İşbank requires <a href=\"https://woocommerce.com/products/woocommerce-subscriptions/\">WooCommerce Subscriptions</a> to be installed and activated. If you do not want to use the Subscription feature, you must turn it off in Moka Pay settings."
+
+msgid "User ID"
+msgstr "User ID"
+
+msgid "Amount"
+msgstr "Amount"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Period"
+msgstr "Period"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Created At"
+msgstr "Created At"
+
+msgid "Updated At"
+msgstr "Updated At"
+
+msgid "Actions"
+msgstr "Actions"
