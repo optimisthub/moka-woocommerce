@@ -17,6 +17,7 @@ class MokaSubscription
         
         register_activation_hook( __FILE__,[$this, 'addProductTypeTaxonomy' ] );
         
+        ### Subscription Filters and Actions
         add_action( 'woocommerce_loaded',[$this, 'registerSubscriptionProductType' ] );
         add_filter( 'product_type_selector',[$this, 'addProductTyepSelectorOnBackend' ] );
         add_action( 'woocommerce_product_options_general_product_data', [$this, 'displaySubscriptionProductMetas']);
@@ -27,14 +28,18 @@ class MokaSubscription
         add_action( 'woocommerce_single_product_summary', [$this, 'addToCartButtonProductSummary'], 20 );
 
 
-        // Display custom cart item meta data (in cart and checkout)
-        add_filter( 'woocommerce_get_item_data', [$this,'displayCartItemCustomMetaData'], 10, 2 );
-        // Save cart item custom meta as order item meta data and display it everywhere on orders and email notifications.
-        #add_action( 'woocommerce_checkout_create_order_line_item', [$this,'saveCartItemCustomMetaAsOrderItemMeta'], 10, 4 );
-
+        ### Display custom cart item meta data (in cart and checkout)
+        add_filter( 'woocommerce_get_item_data', [$this,'displayCartItemCustomMetaData'], 10, 2 ); 
 
         add_action( 'woocommerce_new_product', [$this,'syncOnProductSave'], 10, 1 );
         add_action( 'woocommerce_update_product', [$this,'syncOnProductSave'], 10, 1 );
+
+        ### My Account Section
+        add_filter( 'woocommerce_account_menu_items', [$this, 'setSubscriptionsPageLink'], 40 );
+        add_action( 'init', [$this, 'addSubscriptionPermalink'] );
+        add_action( 'woocommerce_account_'.$this->productType.'_endpoint',[$this, 'addSubscriptionPermalinkEndpoint'] );
+
+
     }
 
     /**
@@ -299,6 +304,41 @@ class MokaSubscription
         ];
         return $itemData;
     }  
+
+    /**
+     * Set page link to Woocommerce MyAccount Area
+     *
+     * @param [array] $links
+     * @return array
+     */
+    public function setSubscriptionsPageLink($links)
+    {
+        $links = array_slice( $links, 0, 5, true ) 
+        + array( $this->productType => __( 'Subscription', 'moka-woocommerce' ) )
+        + array_slice( $links, 5, NULL, true );
+        
+        return $links;
+    }
+
+    /**
+     * Add Permalink Rewrite for Subscription Endpoint
+     *
+     * @return void
+     */
+    public function addSubscriptionPermalink()
+    {
+        add_rewrite_endpoint( $this->productType, EP_PAGES );
+    }
+
+    /**
+     * Render Subscription Page Content
+     *
+     * @return void
+     */
+    public function addSubscriptionPermalinkEndpoint()
+    {
+        echo 'Here is all subscriptions';
+    }
 }
 
 new MokaSubscription();
