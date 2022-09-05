@@ -39,6 +39,9 @@ class MokaSubscription
         add_action( 'init', [$this, 'addSubscriptionPermalink'] );
         add_action( 'woocommerce_account_'.$this->productType.'_endpoint',[$this, 'addSubscriptionPermalinkEndpoint'] );
 
+        ### Admin Menus
+        add_action( 'admin_menu', [$this, 'addSubscriptionAdminMenuLink']);
+
 
     }
 
@@ -317,7 +320,6 @@ class MokaSubscription
         $links = array_slice( $links, 0, 5, true ) 
         + array( $this->productType => __( 'Subscription', 'moka-woocommerce' ) )
         + array_slice( $links, 5, NULL, true );
-        
         return $links;
     }
 
@@ -341,6 +343,42 @@ class MokaSubscription
     {
         if($this->isSubscriptionsEnabled)
         echo 'Here is all subscriptions';
+    }
+
+    /**
+     * Add Admin menu page.
+     *
+     * @return void
+     */
+    public function addSubscriptionAdminMenuLink()
+    {
+        if($this->isSubscriptionsEnabled)
+        add_menu_page(
+			__( 'Subscription', 'moka-woocommerce' ),
+			__( 'Subscription', 'moka-woocommerce' ),
+			'manage_options',
+			$this->productType,
+			[$this, 'addSubscriptionAdminMenuContent'],
+			'dashicons-schedule',
+			3
+		);
+    }
+
+    /**
+     * Display Admin Menu Content
+     *
+     * @return void
+     */
+    public function addSubscriptionAdminMenuContent()
+    {
+        if($this->isSubscriptionsEnabled)
+        require_once __DIR__.'/Moka_Subscriptions_History.php';
+        $subscriptionsData = new Optimisthub_Moka_Subscriptions_History_List_Tabley();
+        $subscriptionsData->prepare_items();
+        echo sprintf('<div class="wrap"> ');
+        echo sprintf('<h1 class="wp-heading-inline">'.__( 'Subscription', 'moka-woocommerce' ).'</h1>');
+        echo sprintf($subscriptionsData->display());
+        echo sprintf('</div>'); 
     }
 }
 
