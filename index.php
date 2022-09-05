@@ -42,39 +42,63 @@ function mokaPaySqlTables()
 	global $wpdb;
 	global $mokaVersion;
 
-	$tableName = $wpdb->prefix . 'moka_transactions';
-	$tableNameHash = $wpdb->prefix . 'moka_transactions_hash';
+	$tableNames = [
+		$wpdb->prefix . 'moka_transactions',
+		$wpdb->prefix . 'moka_transactions_hash',
+		$wpdb->prefix . 'moka_subscriptions',
+	];
 	
 	$charsetCollate = $wpdb->get_charset_collate();
 
-	$sql = "CREATE TABLE $tableName (
-		`id` int unsigned NOT NULL AUTO_INCREMENT,
-		`id_cart` text,
-		`id_customer` int DEFAULT NULL,
-		`optimist_id` text,
-		`amount` decimal(10,2) DEFAULT '0.00',
-		`amount_paid` decimal(10,2) DEFAULT '0.00',
-		`installment` int DEFAULT '1',
-		`result_code` text,
-		`result_message` text,
-		`result` tinyint DEFAULT '1',
-		`created_at` timestamp NULL DEFAULT NULL,
-		PRIMARY KEY (`id`)
-	) $charsetCollate;";
+	$createTableQuery = [
+		"CREATE TABLE $tableNames[0] (
+			`id` int unsigned NOT NULL AUTO_INCREMENT,
+			`id_cart` text,
+			`id_customer` int DEFAULT NULL,
+			`optimist_id` text,
+			`amount` decimal(10,2) DEFAULT '0.00',
+			`amount_paid` decimal(10,2) DEFAULT '0.00',
+			`installment` int DEFAULT '1',
+			`result_code` text,
+			`result_message` text,
+			`result` tinyint DEFAULT '1',
+			`created_at` timestamp NULL DEFAULT NULL,
+			PRIMARY KEY (`id`)
+		) $charsetCollate;",
 
-	$sqlHash = "CREATE TABLE $tableNameHash (
-		`id` int unsigned NOT NULL AUTO_INCREMENT,
-		`id_hash` text,
-		`id_order` int DEFAULT NULL,
-		`order_details` text,
-		`optimist_id` text,
-		`created_at` timestamp NULL DEFAULT NULL,
-		PRIMARY KEY (`id`)
-	) $charsetCollate;";
+		"CREATE TABLE $tableNames[1] (
+			`id` int unsigned NOT NULL AUTO_INCREMENT,
+			`id_hash` text,
+			`id_order` int DEFAULT NULL,
+			`order_details` text,
+			`optimist_id` text,
+			`created_at` timestamp NULL DEFAULT NULL,
+			PRIMARY KEY (`id`)
+		) $charsetCollate;",
+
+		"CREATE TABLE $tableNames[2] (
+			`id` int unsigned NOT NULL AUTO_INCREMENT,
+			`order_id` text,
+			`order_amount` decimal(10,2) DEFAULT '0.00',
+			`order_details` text,
+			`subscription_status` int DEFAULT '0', 
+			`subscription_period` text,
+			`subscription_next_try` text,
+			`user_id` int DEFAULT NULL,
+			`optimist_id` text,
+			`created_at` timestamp NULL DEFAULT NULL,
+			`updated_at` timestamp NULL DEFAULT NULL,
+			PRIMARY KEY (`id`)
+		) $charsetCollate;",
+
+	];
 
 	require( ABSPATH . 'wp-admin/includes/upgrade.php' );
-	dbDelta( $sql );
-	dbDelta( $sqlHash );
+
+	foreach($createTableQuery as $perQuery )
+	{  
+		dbDelta( $perQuery ); 
+	} 
 
 	add_option( 'moka_transactions', $mokaVersion );
 }
