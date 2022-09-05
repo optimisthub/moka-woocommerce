@@ -96,6 +96,7 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
     {
         $data = [];
         $period = ['Günlük', 'Haftalık', 'Aylık'];
+        $status = ['Aktif', 'İptal Edildi'];
 
         for ($i=0; $i < 120; $i++) { 
             # code...
@@ -104,8 +105,8 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
                 'user_id'               => rand(2882,20000),
                 'order_amount'          => rand(20,298).'.00'. ' ' .get_option('woocommerce_currency'),
                 'order_details'         => 'Detaylar bu kısma gelecek.',
-                'subscription_period'   => 'Haftalık',
-                'subscription_status'   => $period[array_rand($period)],
+                'subscription_period'   => $period[array_rand($period)],
+                'subscription_status'   => $status[array_rand($status)],
                 'created_at'            => rand(1,5).'.'.date('m.Y'), 
                 'actions'               => '
                     <a href="#">Ödeme Yap</a> | 
