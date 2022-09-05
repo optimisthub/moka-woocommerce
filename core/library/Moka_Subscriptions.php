@@ -313,6 +313,7 @@ class MokaSubscription
      */
     public function setSubscriptionsPageLink($links)
     {
+        if($this->isSubscriptionsEnabled)
         $links = array_slice( $links, 0, 5, true ) 
         + array( $this->productType => __( 'Subscription', 'moka-woocommerce' ) )
         + array_slice( $links, 5, NULL, true );
@@ -327,6 +328,7 @@ class MokaSubscription
      */
     public function addSubscriptionPermalink()
     {
+        if($this->isSubscriptionsEnabled)
         add_rewrite_endpoint( $this->productType, EP_PAGES );
     }
 
@@ -337,6 +339,7 @@ class MokaSubscription
      */
     public function addSubscriptionPermalinkEndpoint()
     {
+        if($this->isSubscriptionsEnabled)
         echo 'Here is all subscriptions';
     }
 }
