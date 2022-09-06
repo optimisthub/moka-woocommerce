@@ -62,6 +62,8 @@ function initOptimisthubGatewayClass()
             $this->maxInstallment = range(1,12);
             $this->userInformation = self::getUserInformationData();
 
+            $this->assets = $this->assetDir();
+
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
@@ -336,6 +338,13 @@ function initOptimisthubGatewayClass()
             $cc_form->form();
 
             echo '<div id="ajaxify-installment-table" class="installment-table"></div>'; 
+            if($this->isSubscriptionsEnabled)
+            {
+                echo '<div class="mokapay-save-card-info-message">
+                <p>'.__('Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card.', 'moka-woocommerce').'</p>
+                <img src="'.$this->assets.'/img/Logo-mokapos.svg" />
+                </div>';
+            }
             do_action( 'woocommerce_credit_card_form_end', $this->id );  
         }
  
@@ -346,11 +355,9 @@ function initOptimisthubGatewayClass()
          */
         public function payment_scripts() 
         { 
-            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce-master/assets/moka.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
-            
-            wp_register_style( 'moka-pay-card_css',  plugins_url( 'moka-woocommerce-master/assets/moka.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_enqueue_script( 'moka-pay-corejs', $this->assets .  'moka.js' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
             wp_enqueue_style ( 'moka-pay-card_css' );
-
             wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
             
@@ -413,7 +420,24 @@ function initOptimisthubGatewayClass()
             $currentTotal       = data_get($orderDetails, 'Amount');
             $installmentNumber  = data_get($orderDetails, 'InstallmentNumber');
             $currency           = $order->get_currency();
-            
+
+            $orderItems         = $order->get_items();
+            $hasSubscription    = null;
+
+            if($orderItems)
+            {
+                foreach ( $orderItems as $itemId => $item ) 
+                {
+                    $productId = $item->get_product_id();
+                    $product   = wc_get_product( $productId );
+                    $type      = $product->get_type(); 
+                    if($type === 'subscription')
+                    {
+                        $hasSubscription = true;
+                    }
+                }
+            } 
+ 
             if($order->get_total() < $currentTotal)
             {
                 self::saveComissionDecision( [
@@ -431,6 +455,32 @@ function initOptimisthubGatewayClass()
                     false,
                     true
                 );  
+            } 
+
+            if($this->isSubscriptionsEnabled && $hasSubscription)
+            { 
+                $customer   = $this->optimisthubMoka->addCustomerWithCard($orderDetails);  
+                $cardToken  = data_get($customer, 'CardList.0.CardToken');
+                $savedCard  = data_get($customer, 'CardList.0');
+                $orderDetails['CardToken'] = $cardToken;
+
+                ray($customer);
+                dd('1');
+                
+                $tokenParams = $savedCard;
+                $tokenParams['CardToken'] = $cardToken;
+ 
+                // Has Token ? 
+                $token = WC_Payment_Tokens::get_customer_default_token( get_current_user_id());
+                if(!$token)
+                {
+                    $token = self::generateDefaultToken($tokenParams);
+                } 
+
+                $tokenId    = $token->get_id();
+                $tokenData  = WC_Payment_Tokens::get($tokenId);
+
+                $orderDetails['CardToken'] = $tokenData->get_token();
             } 
   
             $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
@@ -492,7 +542,6 @@ function initOptimisthubGatewayClass()
 
             global $woocommerce; 
       
-
             $fetchData = self::getHash(['orderId' => $orderId]);
             $orderDetails = json_decode( data_get($fetchData, 'order_details'), true );
 
@@ -633,6 +682,7 @@ function initOptimisthubGatewayClass()
             $selectedInstallment    = data_get($postData, $this->id.'-installment');
             $currentComission       = data_get($rates, $selectedInstallment.'.value'); 
             $getAmount = $order->get_total();
+            $customerId = $order->get_user_id();
 
             $orderData = [
                 'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
@@ -656,6 +706,25 @@ function initOptimisthubGatewayClass()
                     "BuyerEmail"        => (string) $order->get_billing_email(),
                     "BuyerAddress"      => (string) $order->get_billing_address_1(). ' ' .$order->get_billing_address_2(). ' ' .$order->get_billing_city(),
                 ],
+                'CustomerDetails'       => [
+                    'CustomerCode' => (string) $this->company_code.'-OPT-'.$customerId,
+                    'FirstName' => (string) $order->get_billing_first_name(),
+                    'LastName' => (string) $order->get_billing_last_name(),
+                    'Gender' => '',
+                    'BirthDate' => '',
+                    'GsmNumber' => (string) $order->get_billing_phone(),
+                    'Email' => (string) $order->get_billing_email(),
+                    'Address' => (string) (string) $order->get_billing_address_1(). ' ' .$order->get_billing_address_2(). ' ' .$order->get_billing_city(),
+                    'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
+                    'ExpMonth'              => (string) data_get($expriyDate,'month' ),
+                    'ExpYear'               => (string) self::formatExpiryDate(data_get($expriyDate,'year' )),
+                    'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
+                    'CardName'              => (string) $order->get_billing_first_name(). '\'s saved card',
+                    'MokaStores'            => [
+                        'orderData'             => $order,
+                        'customerId'            => $customerId,
+                    ]
+                ]
 
                 // TODO : Basket Product Details
                 //'BasketProduct'         => self::formatBaksetProducts($order), 
@@ -1057,6 +1126,16 @@ function initOptimisthubGatewayClass()
         private function getOrderStatuses()
         {
             return wc_get_order_statuses();
+        }
+
+        /**
+         * Define plugin asset files directory
+         *
+         * @return void
+         */
+        private function assetDir()
+        {
+            return str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
         }
         
     }
