@@ -473,7 +473,6 @@ function initOptimisthubGatewayClass()
                 if(!$token)
                 {
                     $token = self::generateDefaultToken($tokenParams);
-                
                 } 
 
                 $tokenId    = $token->get_id();

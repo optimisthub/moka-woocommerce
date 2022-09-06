@@ -459,6 +459,10 @@ class MokaPayment
                 if($cardCount==0)
                 {
                     $responseBody = $this->addCard($postParams); 
+                } else {
+                    $postParams['CardToken'] = data_get($responseBody, 'CardList.0.CardToken');
+                    $this->removeCard($postParams); 
+                    $responseBody = $this->addCard($postParams);  
                 }
             }
 
@@ -529,6 +533,37 @@ class MokaPayment
         ]; 
 
         $response = self::doRequest('/DealerCustomer/AddCard',$postParams);
+        
+        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        {
+            $responseBody = data_get($response, 'body');
+            $responseBody = json_decode($responseBody, true);
+            $responseBody = data_get($responseBody, 'Data');
+            return $responseBody;
+        }
+        
+        return $response; 
+    }
+
+    public function removeCard($params)
+    {
+        global $mokaKey;
+
+        $postParams = [
+            'DealerCustomerAuthentication' => 
+            [
+                'DealerCode'=> data_get($this->mokaOptions, 'company_code'),
+                'Username'  => data_get($this->mokaOptions, 'api_username'),
+                'Password'  => data_get($this->mokaOptions, 'api_password'),
+                'CheckKey'  => $mokaKey,
+            ],
+            'DealerCustomerRequest' => 
+            [
+                'CardToken'  => data_get($params, 'CardToken'), 
+            ]
+        ]; 
+
+        $response = self::doRequest('/DealerCustomer/RemoveCard',$postParams);
         
         if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {
