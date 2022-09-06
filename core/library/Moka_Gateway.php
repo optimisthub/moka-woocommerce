@@ -468,11 +468,12 @@ function initOptimisthubGatewayClass()
                 $tokenParams = $savedCard;
                 $tokenParams['CardToken']   = $cardToken;
                 $tokenParams['OrderId']     = $orderId; 
-
+                $customer['OrderId']        = $orderId; 
+                
                 $token = $this->fetchCardToken($tokenParams);
 
-                $orderDetails['CardToken'] = $token;
-                ray($orderDetails);
+                $this->setCustomerDataToOrderMeta($customer);
+                $orderDetails['CardToken'] = $token; 
             } 
   
             dd('1');
@@ -1146,6 +1147,17 @@ function initOptimisthubGatewayClass()
                 update_post_meta(data_get($params, 'OrderId'), '__card_token', data_get($params, 'CardToken'));
                 return get_post_meta(data_get($params, 'OrderId'), '__card_token', true);
             }
+        }
+
+        /**
+         * Store Dealer Information to Order.
+         *
+         * @param [type] $array
+         * @return void
+         */
+        private function setCustomerDataToOrderMeta($params)
+        {
+            update_post_meta(data_get($params, 'OrderId'), '__moka_customer', json_encode($params));
         }
         
     }
