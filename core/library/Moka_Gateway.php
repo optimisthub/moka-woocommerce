@@ -421,21 +421,7 @@ function initOptimisthubGatewayClass()
             $currency           = $order->get_currency();
 
             $orderItems         = $order->get_items();
-            $hasSubscription    = null;
-
-            if($orderItems)
-            {
-                foreach ( $orderItems as $itemId => $item ) 
-                {
-                    $productId = $item->get_product_id();
-                    $product   = wc_get_product( $productId );
-                    $type      = $product->get_type(); 
-                    if($type === 'subscription')
-                    {
-                        $hasSubscription = true;
-                    }
-                }
-            } 
+            $hasSubscription    = $this->isOrderHasSubscriptionProduct($orderItems);
  
             if($order->get_total() < $currentTotal)
             {
@@ -1217,6 +1203,33 @@ function initOptimisthubGatewayClass()
            
             return json_encode($param,true);
         } 
+
+        /**
+         * Does order has subscription product
+         *
+         * @param [object] $orderItems
+         * @return boolean
+         */
+        private function isOrderHasSubscriptionProduct($orderItems)
+        {
+            $hasSubscription = null;
+
+            if($orderItems)
+            {
+                foreach ( $orderItems as $itemId => $item ) 
+                {
+                    $productId = $item->get_product_id();
+                    $product   = wc_get_product( $productId );
+                    $type      = $product->get_type(); 
+                    if($type === 'subscription')
+                    {
+                        $hasSubscription = true;
+                    }
+                }
+            } 
+
+            return $hasSubscription;
+        }
         
     }
 }
