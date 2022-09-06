@@ -26,6 +26,8 @@ class MokaSubscription
         add_action( 'woocommerce_process_product_meta_subscription', array( $this, 'saveSubscriptionSettings' ) );
         add_filter( 'woocommerce_product_add_to_cart_text', [$this, 'changeAddToCartText'], 20, 2 ); 
         add_action( 'woocommerce_single_product_summary', [$this, 'addToCartButtonProductSummary'], 20 );
+        add_filter( 'woocommerce_order_button_text', [$this, 'changePlaceOrderTextForSubscription'] );
+
 
 
         ### Display custom cart item meta data (in cart and checkout)
@@ -379,6 +381,34 @@ class MokaSubscription
         echo sprintf('<h1 class="wp-heading-inline">'.__( 'Subscription', 'moka-woocommerce' ).'</h1>');
         echo sprintf($subscriptionsData->display());
         echo sprintf('</div>'); 
+    }
+
+
+    /**
+     * Change "Place Order" Button text @ WooCommerce Checkout
+     * @return string 
+     */
+    public function changePlaceOrderTextForSubscription( $buttonText ) 
+    { 
+        $hasSubscription = null;
+
+        foreach (WC()->cart->get_cart() as $itemId => $item ) 
+        {
+            $productId = data_get($item, 'product_id');
+            $product   = wc_get_product( $productId );
+            $type      = $product->get_type(); 
+            if($type === 'subscription')
+            {
+                $hasSubscription = true;
+            }
+        } 
+
+        if($hasSubscription)
+        {
+            return __('Subscribe', 'moka-woocommerce');
+        } else {
+            return $buttonText;
+        }
     }
 }
 
