@@ -435,24 +435,32 @@ class MokaPayment
                 'ExpYear'           => data_get($params, 'ExpYear'), // YYYY
                 'CardName'          => data_get($params, 'CardName'), // Ex : My MasterCard, My Visa, etc
             ]
-        ]; 
+        ];  
         
         $response = self::doRequest('/DealerCustomer/AddCustomerWithCard',$postParams);
+ 
 
         if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {
             $responseBody = data_get($response, 'body');
             $responseBody = json_decode($responseBody, true);
+            $responseBodyResultsCode = data_get($responseBody, 'ResultCode');
             $responseBody = data_get($responseBody, 'Data');
-
+ 
             if(is_null($responseBody)) {
                 $responseBody = $this->getCustomerByCustomerCode($params);
-            }
+            }   
 
-            // Set user meta 
-            $customerId = data_get($params, 'MokaStores.customerId');
-            $mokaSubscription = new MokaSubscription();
-            $mokaSubscription->addOrUpdateDealerCustomer($customerId,$responseBody);
+            if($responseBodyResultsCode == 'DealerCustomer.AddCustomerWithCard.CustomerCodeAlreadyUsing')
+            {
+                $postParams['DealerCustomerId'] = data_get($responseBody, 'DealerCustomer.DealerCustomerId');
+ 
+                $cardCount = data_get($responseBody, 'CardListCount');
+                if($cardCount==0)
+                {
+                    $responseBody = $this->addCard($postParams); 
+                }
+            }
 
             return $responseBody;
         }
@@ -485,6 +493,42 @@ class MokaPayment
         ]; 
 
         $response = self::doRequest('/DealerCustomer/GetCustomer',$postParams);
+        
+        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        {
+            $responseBody = data_get($response, 'body');
+            $responseBody = json_decode($responseBody, true);
+            $responseBody = data_get($responseBody, 'Data');
+            return $responseBody;
+        }
+        
+        return $response; 
+    }
+
+    public function addCard($params)
+    {
+        global $mokaKey;
+
+        $postParams = [
+            'DealerCustomerAuthentication' => 
+            [
+                'DealerCode'=> data_get($this->mokaOptions, 'company_code'),
+                'Username'  => data_get($this->mokaOptions, 'api_username'),
+                'Password'  => data_get($this->mokaOptions, 'api_password'),
+                'CheckKey'  => $mokaKey,
+            ],
+            'DealerCustomerRequest' => 
+            [
+                'DealerCustomerId'  => data_get($params, 'DealerCustomerId'),
+                'CardHolderFullName'=> data_get($params, 'DealerCustomerRequest.CardHolderFullName'),
+                'CardNumber'        => data_get($params, 'DealerCustomerRequest.CardNumber'),
+                'ExpMonth'          => data_get($params, 'DealerCustomerRequest.ExpMonth'), // MM
+                'ExpYear'           => data_get($params, 'DealerCustomerRequest.ExpYear'), // YYYY
+                'CardName'          => data_get($params, 'DealerCustomerRequest.CardName'), // Ex : M
+            ]
+        ]; 
+
+        $response = self::doRequest('/DealerCustomer/AddCard',$postParams);
         
         if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {

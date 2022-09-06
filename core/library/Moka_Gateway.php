@@ -459,30 +459,32 @@ function initOptimisthubGatewayClass()
 
             if($this->isSubscriptionsEnabled && $hasSubscription)
             { 
+                $userId     = get_current_user_id(); 
                 $customer   = $this->optimisthubMoka->addCustomerWithCard($orderDetails);  
                 $cardToken  = data_get($customer, 'CardList.0.CardToken');
                 $savedCard  = data_get($customer, 'CardList.0');
                 $orderDetails['CardToken'] = $cardToken;
-
-                ray($customer);
-                dd('1');
-                
+ 
                 $tokenParams = $savedCard;
                 $tokenParams['CardToken'] = $cardToken;
  
                 // Has Token ? 
-                $token = WC_Payment_Tokens::get_customer_default_token( get_current_user_id());
+                $token = WC_Payment_Tokens::get_customer_default_token( $userId ); 
                 if(!$token)
                 {
                     $token = self::generateDefaultToken($tokenParams);
+                
                 } 
 
                 $tokenId    = $token->get_id();
+                WC_Payment_Tokens::delete( $tokenId );
                 $tokenData  = WC_Payment_Tokens::get($tokenId);
 
                 $orderDetails['CardToken'] = $tokenData->get_token();
+                ray($orderDetails);
             } 
   
+            dd('1');
             $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
             $callbackUrl        = data_get($payOrder, 'Data.Url');
             $callbackHash       = data_get($payOrder, 'Data.CodeForHash');
@@ -1136,6 +1138,30 @@ function initOptimisthubGatewayClass()
         private function assetDir()
         {
             return str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
+        }
+
+        /**
+         * Set or get default token.
+         *
+         * @param [array] $params
+         * @return object
+         */
+        private function generateDefaultToken($params)
+        {
+            // Build the token
+            $token = new WC_Payment_Token_CC();
+            $token->set_token( data_get($params, 'CardToken') ); // Token comes from payment processor
+            $token->set_gateway_id( 'mokapay' );
+            $token->set_last4( data_get($params, 'CardNumberLastFour') );
+            $token->set_expiry_year( data_get($params, 'ExpYear') );
+            $token->set_expiry_month( data_get($params, 'ExpMonth') );
+            $token->set_card_type( data_get($params, 'CardType') );
+            $token->set_user_id( get_current_user_id() );
+            // Save the new token to the database
+            $token->save();
+            // Set this token as the users new default token
+            WC_Payment_Tokens::set_users_default( get_current_user_id(), $token->get_id() );
+            return WC_Payment_Tokens::get_customer_default_token( get_current_user_id());
         }
         
     }
