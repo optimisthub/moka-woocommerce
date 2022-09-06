@@ -68,6 +68,7 @@ function initOptimisthubGatewayClass()
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
             add_action( 'admin_head', [$this, 'admin_css']);   
             add_action( 'woocommerce_receipt_'.$this->id, [$this, 'receipt_page']);  
+            add_filter( 'woocommerce_order_button_text', [$this, 'changePlaceOrderTextForSubscription'] );
 
             self::__saveRates();
             
@@ -413,7 +414,8 @@ function initOptimisthubGatewayClass()
          * @return void
          */
         public function process_payment( $orderId ) 
-        {
+        { 
+
             $order              = new WC_order($orderId); 
             $orderDetails       = self::formatOrder($orderId);  
             $currentTotal       = data_get($orderDetails, 'Amount');
@@ -1229,6 +1231,33 @@ function initOptimisthubGatewayClass()
             } 
 
             return $hasSubscription;
+        }
+
+        /**
+         * Change "Place Order" Button text @ WooCommerce Checkout
+         * @return string 
+         */
+        public function changePlaceOrderTextForSubscription( $buttonText ) 
+        { 
+            $hasSubscription = null;
+ 
+            foreach (WC()->cart->get_cart() as $itemId => $item ) 
+            {
+                $productId = data_get($item, 'product_id');
+                $product   = wc_get_product( $productId );
+                $type      = $product->get_type(); 
+                if($type === 'subscription')
+                {
+                    $hasSubscription = true;
+                }
+            } 
+
+            if($hasSubscription)
+            {
+                return __('Subscribe', 'moka-woocommerce');
+            } else {
+                return $buttonText;
+            }
         }
         
     }
