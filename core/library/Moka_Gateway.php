@@ -474,6 +474,22 @@ function initOptimisthubGatewayClass()
 
                 $this->setCustomerDataToOrderMeta($customer);
                 $orderDetails['CardToken'] = $token; 
+
+                $saveSubsRecord = $this->formatSubsRecord($orderDetails);
+
+                self::saveSubscription(
+                    [
+                        'order_id'      => $orderId,
+                        'order_amount'  => $currentTotal,
+                        'order_details' => $this->formatOrderDetailsForLog($saveSubsRecord), 
+                        'subscription_status'  => '0',
+                        'subscription_period'  => '0',
+                        'subscription_next_try'  => '0',
+                        'user_id'  => $userId,
+                        'optimist_id'   => data_get($orderDetails,'OtherTrxCode'), 
+                        'created_at'    => date('Y-m-d H:i:s'),      
+                    ]
+                );
             } 
   
             dd('1');
@@ -491,13 +507,12 @@ function initOptimisthubGatewayClass()
                 [
                     'id_hash'       => $callbackHash,
                     'id_order'      => $orderId,
-                    'order_details' => json_encode($orderDetails), 
-                    'optimist_id'   => data_get($orderDetails,'orderDetails.OtherTrxCode'), 
+                    'order_details' => $this->formatOrderDetailsForLog($orderDetails), 
+                    'optimist_id'   => data_get($orderDetails,'OtherTrxCode'), 
                     'created_at'    => date('Y-m-d H:i:s'),      
                 ]
             );
 
-            
             $recordParams = 
             [
                 'id_cart'       => data_get($orderDetails,'orderId'),
@@ -1026,6 +1041,19 @@ function initOptimisthubGatewayClass()
         }
 
         /**
+         * Save Subscriptions Data for admin panel
+         *
+         * @param [type] $params
+         * @return void
+         */
+        private function saveSubscription($params)
+        {
+            global $wpdb;
+            $tableName = $wpdb->prefix . 'moka_subscriptions';
+            return $wpdb->insert($tableName, $params);            
+        }
+
+        /**
          * Fetch last hash
          *
          * @param [type] $params
@@ -1159,6 +1187,36 @@ function initOptimisthubGatewayClass()
         {
             update_post_meta(data_get($params, 'OrderId'), '__moka_customer', json_encode($params));
         }
+
+        /**
+         * Format Subs. Record.
+         *
+         * @param [array] $params
+         * @return array
+         */
+        private function formatSubsRecord($params)
+        {  
+            unset($params['CvcNumber']);
+            return $params;
+        }
+
+        /**
+         * Format requests for logging.
+         *
+         * @param [array] $param
+         * @return string
+         */
+        private function formatOrderDetailsForLog($param)
+        { 
+            unset($params['CvcNumber']);
+            unset($params['ExpYear']);
+            if(data_get($param, 'CardNumber'))
+            {
+                $param['CardNumber'] = '**** **** **** '.substr($param['CardNumber'], -4);
+            } 
+           
+            return json_encode($param,true);
+        } 
         
     }
 }
