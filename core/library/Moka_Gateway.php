@@ -1129,7 +1129,9 @@ function initOptimisthubGatewayClass()
 
         /**
          * Get WC order statuses
-         *
+         * @since 2.9.5
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return void
          */
         private function getOrderStatuses()
@@ -1139,7 +1141,9 @@ function initOptimisthubGatewayClass()
 
         /**
          * Define plugin asset files directory
-         *
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return void
          */
         private function assetDir()
@@ -1151,6 +1155,9 @@ function initOptimisthubGatewayClass()
          * Set or get order token.
          *
          * @param [array] $params
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return object
          */
         private function fetchCardToken($params)
@@ -1168,6 +1175,9 @@ function initOptimisthubGatewayClass()
          * Store Dealer Information to Order.
          *
          * @param [type] $array
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return void
          */
         private function setCustomerDataToOrderMeta($params)
@@ -1179,6 +1189,9 @@ function initOptimisthubGatewayClass()
          * Format Subs. Record.
          *
          * @param [array] $params
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return array
          */
         private function formatSubsRecord($params)
@@ -1191,6 +1204,9 @@ function initOptimisthubGatewayClass()
          * Format requests for logging.
          *
          * @param [array] $param
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return string
          */
         private function formatOrderDetailsForLog($param)
@@ -1207,8 +1223,10 @@ function initOptimisthubGatewayClass()
 
         /**
          * Does order has subscription product
-         *
          * @param [object] $orderItems
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return boolean
          */
         private function isOrderHasSubscriptionProduct($orderItems)
