@@ -5,6 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Display Payment History Logs On WC-Settings Tabs
+ * @since 2.6
+ * @copyright 2022 Optimisthub
+ * @author Fatih Toprak 
  */
 class Optimisthub_Transaction_History
 {

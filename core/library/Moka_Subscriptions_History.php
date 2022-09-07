@@ -6,7 +6,10 @@
 
 
 /**
- * Create a new table class that will extend the WP_List_Table
+ * Get Subscriptions Data from Subscriptions History Table with WP_List_Table
+ * @since 3.0
+ * @copyright 2022 Optimisthub
+ * @author Fatih Toprak 
  */
 class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
 {
