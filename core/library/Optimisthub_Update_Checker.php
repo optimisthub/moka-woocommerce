@@ -166,6 +166,14 @@ class Optimisthub_Update_Checker
         return $transient;
     }
 
+    /**
+     * Purge Stored Transients
+     * 
+     * @since 2.4
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return void
+     */
     public function purge()
     {
         global $options;

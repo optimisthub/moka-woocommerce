@@ -2,7 +2,13 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
- 
+/**
+ * Moka POS Subscriptions Add On
+ * @since 3.0
+ * @copyright 2022 Optimisthub
+ * @author Fatih Toprak 
+ */
+
 class MokaSubscription
 {
 
@@ -17,7 +23,7 @@ class MokaSubscription
         
         register_activation_hook( __FILE__,[$this, 'addProductTypeTaxonomy' ] );
         
-        ### Subscription Filters and Actions
+        // Subscription Filters and Actions
         add_action( 'woocommerce_loaded',[$this, 'registerSubscriptionProductType' ] );
         add_filter( 'product_type_selector',[$this, 'addProductTyepSelectorOnBackend' ] );
         add_action( 'woocommerce_product_options_general_product_data', [$this, 'displaySubscriptionProductMetas']);
@@ -28,22 +34,19 @@ class MokaSubscription
         add_action( 'woocommerce_single_product_summary', [$this, 'addToCartButtonProductSummary'], 20 );
         add_filter( 'woocommerce_order_button_text', [$this, 'changePlaceOrderTextForSubscription'] );
 
-
-
-        ### Display custom cart item meta data (in cart and checkout)
+        // Display custom cart item meta data (in cart and checkout)
         add_filter( 'woocommerce_get_item_data', [$this,'displayCartItemCustomMetaData'], 10, 2 ); 
 
         add_action( 'woocommerce_new_product', [$this,'syncOnProductSave'], 10, 1 );
         add_action( 'woocommerce_update_product', [$this,'syncOnProductSave'], 10, 1 );
 
-        ### My Account Section
+        // My Account Section
         add_filter( 'woocommerce_account_menu_items', [$this, 'setSubscriptionsPageLink'], 40 );
         add_action( 'init', [$this, 'addSubscriptionPermalink'] );
         add_action( 'woocommerce_account_'.$this->productType.'_endpoint',[$this, 'addSubscriptionPermalinkEndpoint'] );
 
-        ### Admin Menus
+        // Admin Menus
         add_action( 'admin_menu', [$this, 'addSubscriptionAdminMenuLink']);
-
 
     }
 

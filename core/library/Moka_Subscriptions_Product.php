@@ -1,7 +1,11 @@
 <?php
 
 /**
- * Advanced Product Type
+ * Subscription Product Type
+ * @desc Generates product type to WooCommerce products for subscriptions
+ * @since 3.0
+ * @copyright 2022 Optimisthub
+ * @author Fatih Toprak 
  */
 
 add_action( 'plugins_loaded', 'addSubscriptionProductType' );

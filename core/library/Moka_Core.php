@@ -401,8 +401,10 @@ class MokaPayment
 
     /**
      * Add Customer and Card to Moka 
-     *
-     * @param [array] $postParams
+     * @param [array] $params
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
      * @return array
      */
     public function addCustomerWithCard($params)
@@ -473,11 +475,13 @@ class MokaPayment
     }
 
     /**
-     * Get customer Information
-     *
-     * @param [type] $params
-     * @return void
-     */
+     * Get customer Information 
+     * @param [array] $params
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return array
+     */ 
     public function getCustomerByCustomerCode($params)
     {
         global $mokaKey;
@@ -508,7 +512,14 @@ class MokaPayment
         
         return $response; 
     }
-
+    /**
+     * Add Customer Card
+     * @param [array] $params
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return array
+     */
     public function addCard($params)
     {
         global $mokaKey;
@@ -545,6 +556,14 @@ class MokaPayment
         return $response; 
     }
 
+    /**
+     * Remove Customer Card
+     * @param [array] $params
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return array
+     */
     public function removeCard($params)
     {
         global $mokaKey;

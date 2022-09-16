@@ -175,11 +175,17 @@ function initOptimisthubGatewayClass()
 
             if($pagenow == 'admin.php' && isset($_GET['tab']) && isset($_GET['section']) && $_GET['section'] == 'mokapay')
             {
-                wp_register_style( 'moka-pay-admin',  plugins_url( 'moka-woocommerce-master/assets/moka-admin.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+                wp_register_style( 'moka-pay-admin',  $this->assets.'/moka-admin.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
                 wp_enqueue_style ( 'moka-pay-admin' );
             } 
 
-            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce-master/assets/moka-admin.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            if($pagenow == 'admin.php' && isset($_GET['page']) && $_GET['page'] == 'subscription')
+            {
+                wp_register_style( 'moka-pay-admin',  $this->assets.'/moka-admin.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+                wp_enqueue_style ( 'moka-pay-admin' );
+            } 
+
+            wp_enqueue_script( 'moka-pay-corejs', $this->assets.'/moka-admin.js', false, OPTIMISTHUB_MOKA_PAY_VERSION );
             wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
 
@@ -1129,7 +1135,9 @@ function initOptimisthubGatewayClass()
 
         /**
          * Get WC order statuses
-         *
+         * @since 2.9.5
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return void
          */
         private function getOrderStatuses()
@@ -1139,7 +1147,9 @@ function initOptimisthubGatewayClass()
 
         /**
          * Define plugin asset files directory
-         *
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return void
          */
         private function assetDir()
@@ -1151,6 +1161,9 @@ function initOptimisthubGatewayClass()
          * Set or get order token.
          *
          * @param [array] $params
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return object
          */
         private function fetchCardToken($params)
@@ -1168,6 +1181,9 @@ function initOptimisthubGatewayClass()
          * Store Dealer Information to Order.
          *
          * @param [type] $array
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return void
          */
         private function setCustomerDataToOrderMeta($params)
@@ -1179,6 +1195,9 @@ function initOptimisthubGatewayClass()
          * Format Subs. Record.
          *
          * @param [array] $params
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return array
          */
         private function formatSubsRecord($params)
@@ -1191,15 +1210,25 @@ function initOptimisthubGatewayClass()
          * Format requests for logging.
          *
          * @param [array] $param
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return string
          */
         private function formatOrderDetailsForLog($param)
         { 
             unset($params['CvcNumber']);
             unset($params['ExpYear']);
+            unset($params['ExpMonth']);
+            unset($params['CustomerDetails']['ExpYear']);
+            unset($params['CustomerDetails']['ExpMonth']);
             if(data_get($param, 'CardNumber'))
             {
                 $param['CardNumber'] = '**** **** **** '.substr($param['CardNumber'], -4);
+            } 
+            if(data_get($param, 'CustomerDetails.CardNumber'))
+            {
+                $param['CustomerDetails']['CardNumber'] = '**** **** **** '.substr($param['CustomerDetails']['CardNumber'], -4);
             } 
            
             return json_encode($param,true);
@@ -1207,8 +1236,10 @@ function initOptimisthubGatewayClass()
 
         /**
          * Does order has subscription product
-         *
          * @param [object] $orderItems
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return boolean
          */
         private function isOrderHasSubscriptionProduct($orderItems)

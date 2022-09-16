@@ -6,10 +6,16 @@
 
 
 /**
- * Create a new table class that will extend the WP_List_Table
+ * Get Subscriptions Data from Subscriptions History Table with WP_List_Table
+ * @since 3.0
+ * @copyright 2022 Optimisthub
+ * @author Fatih Toprak 
  */
 class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
 {
+
+    public $tableName = 'moka_subscriptions';
+
     /**
      * Prepare the items for the table to process
      *
@@ -94,27 +100,10 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
      */
     private function table_data()
     {
-        $data = [];
-        $period = ['Günlük', 'Haftalık', 'Aylık'];
-        $status = ['Aktif', 'İptal Edildi'];
-
-        for ($i=0; $i < 120; $i++) { 
-            # code...
-            $data[] = [
-                'order_id'              => rand(2992,29928872),
-                'user_id'               => rand(2882,20000),
-                'order_amount'          => rand(20,298).'.00'. ' ' .get_option('woocommerce_currency'),
-                'order_details'         => 'Detaylar bu kısma gelecek.',
-                'subscription_period'   => $period[array_rand($period)],
-                'subscription_status'   => $status[array_rand($status)],
-                'created_at'            => rand(1,5).'.'.date('m.Y'), 
-                'actions'               => '
-                    <a href="#">Ödeme Yap</a> | 
-                    <a href="#">İptal Et</a>
-                ',
-            ];
-        }
-
+        global  $wpdb;
+        $table  = $wpdb->prefix . $this->tableName;
+        $data   =  $wpdb->get_results( "SELECT * FROM $table ORDER BY id DESC" , ARRAY_A );     
+        $data   = self::formatTableDataResults($data);
         return $data;
     }
 
@@ -152,7 +141,7 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
     {
         // Set defaults
         $orderby = 'order_id';
-        $order = 'asc';
+        $order = 'desc';
 
         // If orderby is set, use this as the sort column
         if(!empty($_GET['orderby']))
@@ -175,5 +164,48 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
         }
 
         return -$result;
+    }
+
+    private function formatTableDataResults($data)
+    {
+        $return = [];
+
+        if($data)
+        {
+            foreach($data as $key => $perRow)
+            {
+
+                $userId         = data_get($perRow, 'user_id', 0);
+                $optimistId     = data_get($perRow, 'optimist_id', 0);
+                $orderId        = data_get($perRow, 'order_id', 0);
+                $userData       = get_user_by( 'id', $userId ); 
+                $orderDetails   = json_decode( data_get($perRow, 'order_details'), true );
+                $currency       = data_get($orderDetails, 'Currency', 0);
+                $status         = data_get($perRow, 'subscription_status', null);
+
+                $return[] = 
+                [
+                    'order_id'      => '<a href="'.esc_url(get_admin_url().'post.php?post='.$orderId).'&action=edit">'.$orderId.'</a><br><span style="font-size:11px">'.$optimistId.'</span>',
+                    'user_id'       => '<a href="'.esc_url(get_admin_url().'users.php?s='.$userData->user_nicename).'">'.$userData->user_nicename.'</a>',
+                    'order_amount'  => esc_html(data_get($perRow, 'order_amount',0.0) . ' ' .$currency),
+                    'order_details' => 
+                    data_get($orderDetails, 'CustomerDetails.FirstName').' '.data_get($orderDetails, 'CustomerDetails.LastName').'<br>'.
+                    '<a href="tel:'.data_get($orderDetails, 'CustomerDetails.GsmNumber').'">'.data_get($orderDetails, 'CustomerDetails.GsmNumber').'</a>'.'<hr>'.
+                        data_get($orderDetails, 'CardNumber').'<br>',
+                    'subscription_period' => data_get($perRow, 'subscription_period', null),
+                    'subscription_status' => $status == 0 ? '<mark class="active_subs">Aktif</mark>' : '<mark class="passive_subs">Pasif</mark>',
+                    'created_at' => date('d.m.Y.H:i:s', strtotime(data_get($perRow, 'created_at', null))),
+                    'actions' => 
+                        ($status == 0) ? '
+                        <span class="subscription-payManually">Ödeme</span>
+                        <span class="subscription-cancelManually">İptal</span>
+                        ' : '
+                        <span class="subscription-noActions">Düzenlenemez</span>'
+                ];
+            }
+        }
+
+        return $return;
+
     }
 }
