@@ -2,6 +2,93 @@
 
 All notable changes to `ray` will be documented in this file
 
+## 1.35.0 - 2022-08-09
+
+### What's Changed
+
+- Sync Laravel sample config `ray.php` with the latest in `laravel-ray` by @squatto in https://github.com/spatie/ray/pull/706
+- Added createFromArray method on SettingsFactory by @doekenorg in https://github.com/spatie/ray/pull/708
+- Update reference.md by @WouterBrouwers in https://github.com/spatie/ray/pull/712
+- Fixed typo showQueries to showDuplicateQueries by @xitox97 in https://github.com/spatie/ray/pull/714
+- Add slow_query_threshold to laravel docs by @fullstackfool in https://github.com/spatie/ray/pull/718
+
+### New Contributors
+
+- @doekenorg made their first contribution in https://github.com/spatie/ray/pull/708
+- @xitox97 made their first contribution in https://github.com/spatie/ray/pull/714
+- @fullstackfool made their first contribution in https://github.com/spatie/ray/pull/718
+
+**Full Changelog**: https://github.com/spatie/ray/compare/1.34.5...1.35.0
+
+## 1.34.5 - 2022-06-03
+
+### What's Changed
+
+- Bug/702 long integers by @Nielsvanpach in https://github.com/spatie/ray/pull/704
+
+**Full Changelog**: https://github.com/spatie/ray/compare/1.34.4...1.34.5
+
+## 1.34.4 - 2022-06-03
+
+- allow v2 of macroable
+
+## 1.34.3 - 2022-05-31
+
+### What's Changed
+
+- Fix small JavaScript related documentations by @Yago in https://github.com/spatie/ray/pull/687
+- Fix tiny typo by @jrmajor in https://github.com/spatie/ray/pull/700
+- Revert version of spatie/macroable to ^1.0 by @SebKay in https://github.com/spatie/ray/pull/703
+
+### New Contributors
+
+- @Yago made their first contribution in https://github.com/spatie/ray/pull/687
+- @jrmajor made their first contribution in https://github.com/spatie/ray/pull/700
+- @SebKay made their first contribution in https://github.com/spatie/ray/pull/703
+
+**Full Changelog**: https://github.com/spatie/ray/compare/1.34.2...1.34.3
+
+## 1.34.2 - 2022-04-08
+
+## What's Changed
+
+- Fix typo by @jeffreyvr in https://github.com/spatie/ray/pull/647
+- Update alpinejs.md by @peterfox in https://github.com/spatie/ray/pull/649
+- Update documentation for Alpine.js integration by @patinthehat in https://github.com/spatie/ray/pull/650
+- Minor Documentation Update by @patinthehat in https://github.com/spatie/ray/pull/651
+- Update Javascript Documentation by @patinthehat in https://github.com/spatie/ray/pull/652
+- Add docs for express.js integration by @patinthehat in https://github.com/spatie/ray/pull/654
+- Fix class import outside of code block by @rostockahoi in https://github.com/spatie/ray/pull/663
+- Added a verification that the Yii class exists by @FR6 in https://github.com/spatie/ray/pull/675
+
+## New Contributors
+
+- @jeffreyvr made their first contribution in https://github.com/spatie/ray/pull/647
+- @peterfox made their first contribution in https://github.com/spatie/ray/pull/649
+- @rostockahoi made their first contribution in https://github.com/spatie/ray/pull/663
+
+**Full Changelog**: https://github.com/spatie/ray/compare/1.34.1...1.34.2
+
+## 1.34.1 - 2022-03-03
+
+- remove stray `print_r` call
+
+## 1.34.0 - 2022-03-03
+
+- add support for global Ray
+
+## 1.33.2 - 2022-02-02
+
+## What's Changed
+
+- Return false if success variable not defined by @cmgmyr in https://github.com/spatie/ray/pull/635
+
+## New Contributors
+
+- @cmgmyr made their first contribution in https://github.com/spatie/ray/pull/635
+
+**Full Changelog**: https://github.com/spatie/ray/compare/1.33.1...1.33.2
+
 ## 1.33.1 - 2022-01-17
 
 ## What's Changed

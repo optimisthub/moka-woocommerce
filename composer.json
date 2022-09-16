@@ -31,7 +31,8 @@
         "php": ">=7.1",
         "rappasoft/laravel-helpers": "^2.0",
         "tightenco/collect": "^8.68",
-        "spatie/ray": "^1.33"
+        "spatie/ray": "^1.33",
+        "nesbot/carbon": "^2.62"
     },
     "autoload": {
         "files": [ 
