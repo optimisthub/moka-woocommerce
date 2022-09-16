@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 add_action( 'plugins_loaded', 'initOptimisthubGatewayClass' );
 
 /**
@@ -469,18 +471,19 @@ function initOptimisthubGatewayClass()
                 $orderDetails['CardToken'] = $token; 
 
                 $saveSubsRecord = $this->formatSubsRecord($orderDetails);
-
+                $subscriptionPeriod = $this->getSubscriptionProductPeriod($orderItems); 
+                 
                 self::saveSubscription(
                     [
                         'order_id'      => $orderId,
                         'order_amount'  => $currentTotal,
                         'order_details' => $this->formatOrderDetailsForLog($saveSubsRecord), 
-                        'subscription_status'  => '0',
-                        'subscription_period'  => '0',
-                        'subscription_next_try'  => '0',
-                        'user_id'  => $userId,
+                        'subscription_status'   => '0',
+                        'subscription_period'   => data_get($subscriptionPeriod, 'period_string'),
+                        'subscription_next_try' => data_get($subscriptionPeriod, 'next_try'),
+                        'user_id'       => $userId,
                         'optimist_id'   => data_get($orderDetails,'OtherTrxCode'), 
-                        'created_at'    => date('Y-m-d H:i:s'),      
+                        'created_at'    => current_datetime()->format('Y-m-d H:i:s'),
                     ]
                 );
             } 
@@ -1261,6 +1264,48 @@ function initOptimisthubGatewayClass()
             } 
 
             return $hasSubscription;
+        }
+
+        /**
+         * Calculate product current / next subscription period 
+         *
+         * @param [array] $orderItems
+         * @return array
+         */
+        private function getSubscriptionProductPeriod($orderItems)
+        {
+            $period = null;
+
+            if($orderItems)
+            {
+                foreach ( $orderItems as $itemId => $item ) 
+                {
+                    $productId = $item->get_product_id();
+                    $product   = wc_get_product( $productId );
+                    $type      = $product->get_type(); 
+                    if($type === 'subscription')
+                    {
+                        $__data = get_post_meta($productId);
+                        $__per  = data_get($__data, '_period_per.0', null);
+                        $__in   = data_get($__data, '_period_in.0', null);
+
+                        $__inString = ['gun' => 'day', 'ay' => 'month', 'hafta' => 'week'];
+ 
+                        $currentTime = Carbon::parse(current_datetime()->format('Y-m-d H:i:s'));
+                        $__per = str_replace('her_', '', $__per); 
+
+                        $nextTry = $currentTime::now()->add($__per, $__inString[$__in]); 
+
+                        $period = [
+                            'current_time'  => Carbon::parse($currentTime)->format('Y-m-d H:i:s'),
+                            'next_try'      => Carbon::parse($nextTry)->format('Y-m-d H:i:s'),
+                            'period_string' => $__per.'-'.$__inString[$__in],
+                        ];
+                    }
+                }
+            } 
+ 
+            return $period;
         }
         
     }
