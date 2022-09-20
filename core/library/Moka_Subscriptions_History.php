@@ -182,9 +182,7 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
                 $orderDetails   = json_decode( data_get($perRow, 'order_details'), true );
                 $currency       = data_get($orderDetails, 'Currency', 0);
                 $status         = data_get($perRow, 'subscription_status', null);
-
-                ray($userId);
-
+                
                 $return[] = 
                 [
                     'order_id'      => '<a href="'.esc_url(get_admin_url().'post.php?post='.$orderId).'&action=edit">'.$orderId.'</a><br><span style="font-size:11px">'.$optimistId.'</span>',
