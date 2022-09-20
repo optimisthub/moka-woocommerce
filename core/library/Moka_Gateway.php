@@ -430,7 +430,6 @@ function initOptimisthubGatewayClass()
             $currency           = $order->get_currency();
 
             $orderItems         = $order->get_items();
-            $hasSubscription    = $this->isOrderHasSubscriptionProduct($orderItems);
  
             if($order->get_total() < $currentTotal)
             {
@@ -451,44 +450,6 @@ function initOptimisthubGatewayClass()
                 );  
             } 
 
-            if($this->isSubscriptionsEnabled && $hasSubscription)
-            { 
- 
-                $userId     = get_current_user_id(); 
-                $customer   = $this->optimisthubMoka->addCustomerWithCard($orderDetails);  
-                $cardToken  = data_get($customer, 'CardList.0.CardToken');
-                $savedCard  = data_get($customer, 'CardList.0');
-                $orderDetails['CardToken'] = $cardToken;
- 
-                $tokenParams = $savedCard;
-                $tokenParams['CardToken']   = $cardToken;
-                $tokenParams['OrderId']     = $orderId; 
-                $customer['OrderId']        = $orderId; 
-                
-                $token = $this->fetchCardToken($tokenParams);
-
-                $this->setCustomerDataToOrderMeta($customer);
-                $orderDetails['CardToken'] = $token; 
-
-                $saveSubsRecord = $this->formatSubsRecord($orderDetails);
-                $subscriptionPeriod = $this->getSubscriptionProductPeriod($orderItems); 
-                 
-                self::saveSubscription(
-                    [
-                        'order_id'      => $orderId,
-                        'order_amount'  => $currentTotal,
-                        'order_details' => $this->formatOrderDetailsForLog($saveSubsRecord), 
-                        'subscription_status'   => '0',
-                        'subscription_period'   => data_get($subscriptionPeriod, 'period_string'),
-                        'subscription_next_try' => data_get($subscriptionPeriod, 'next_try'),
-                        'user_id'       => $userId,
-                        'optimist_id'   => data_get($orderDetails,'OtherTrxCode'), 
-                        'created_at'    => current_datetime()->format('Y-m-d H:i:s'),
-                    ]
-                );
-            } 
-  
-            dd('1');
             $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
             $callbackUrl        = data_get($payOrder, 'Data.Url');
             $callbackHash       = data_get($payOrder, 'Data.CodeForHash');
@@ -568,7 +529,8 @@ function initOptimisthubGatewayClass()
             $isCompleted = self::validatePayment(data_get($fetchData, 'id_hash'));
 
             if($isCompleted)
-            {
+            { 
+
                 $total = data_get($orderDetails,'Amount');
                 $currency = data_get($orderDetails,'Currency'); 
 
@@ -597,6 +559,47 @@ function initOptimisthubGatewayClass()
                 $redirectUrl = add_query_arg([
                     'msg' => 'Thank You', 'type' => 'woocommerce-message'
                 ], $checkoutOrderUrl); 
+
+                // Subscription product completed successfully
+                $orderItems = $order->get_items();
+                $hasSubscription = $this->isOrderHasSubscriptionProduct($orderItems);
+                
+                if($this->isSubscriptionsEnabled && $hasSubscription)
+                { 
+                    $userId     = get_current_user_id(); 
+                    $customer   = $this->optimisthubMoka->addCustomerWithCard($orderDetails);  
+                    $cardToken  = data_get($customer, 'CardList.0.CardToken');
+                    $savedCard  = data_get($customer, 'CardList.0');
+                    $orderDetails['CardToken'] = $cardToken;
+    
+                    $tokenParams = $savedCard;
+                    $tokenParams['CardToken']   = $cardToken;
+                    $tokenParams['OrderId']     = $orderId; 
+                    $customer['OrderId']        = $orderId; 
+                    
+                    $token = $this->fetchCardToken($tokenParams);
+
+                    $this->setCustomerDataToOrderMeta($customer);
+                    $orderDetails['CardToken'] = $token; 
+
+                    $saveSubsRecord = $this->formatSubsRecord($orderDetails);
+                    $subscriptionPeriod = $this->getSubscriptionProductPeriod($orderItems); 
+                    
+                    self::saveSubscription(
+                        [
+                            'order_id'      => $orderId,
+                            'order_amount'  => $total,
+                            'order_details' => $this->formatOrderDetailsForLog($saveSubsRecord), 
+                            'subscription_status'   => '0',
+                            'subscription_period'   => data_get($subscriptionPeriod, 'period_string'),
+                            'subscription_next_try' => data_get($subscriptionPeriod, 'next_try'),
+                            'user_id'       => $userId,
+                            'optimist_id'   => data_get($orderDetails,'OtherTrxCode'), 
+                            'created_at'    => current_datetime()->format('Y-m-d H:i:s'),
+                        ]
+                    );
+                } 
+                // Subscription product completed successfully
                 
                 wp_redirect($redirectUrl);
                 exit;
