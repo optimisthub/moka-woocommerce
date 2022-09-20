@@ -505,7 +505,6 @@ function initOptimisthubGatewayClass()
 
         public function receipt_page( $orderId )
         {
-
             global $woocommerce; 
       
             $fetchData = self::getHash(['orderId' => $orderId]);
@@ -563,10 +562,10 @@ function initOptimisthubGatewayClass()
                 // Subscription product completed successfully
                 $orderItems = $order->get_items();
                 $hasSubscription = $this->isOrderHasSubscriptionProduct($orderItems);
-                
+                 
                 if($this->isSubscriptionsEnabled && $hasSubscription)
                 { 
-                    $userId     = get_current_user_id(); 
+                    $userId     = $this->getOrderCustomerId($orderId);
                     $customer   = $this->optimisthubMoka->addCustomerWithCard($orderDetails);  
                     $cardToken  = data_get($customer, 'CardList.0.CardToken');
                     $savedCard  = data_get($customer, 'CardList.0');
@@ -1309,6 +1308,19 @@ function initOptimisthubGatewayClass()
             } 
  
             return $period;
+        }
+
+        /**
+         * Fetch customer id from order
+         *
+         * @return void
+         */
+        private function getOrderCustomerId($orderId)
+        {
+            $order = wc_get_order($orderId);
+            $orderId = $order->id;
+            $userId = $order->get_user_id();
+            return $userId;
         }
         
     }
