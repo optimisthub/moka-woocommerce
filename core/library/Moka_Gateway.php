@@ -1317,9 +1317,9 @@ function initOptimisthubGatewayClass()
          */
         private function getOrderCustomerId($orderId)
         {
-            $order = wc_get_order($orderId);
-            $orderId = $order->id;
-            $userId = $order->get_user_id();
+            $order      = wc_get_order($orderId);
+            $orderId    = $order->id;
+            $userId     = $order->get_user_id();
             return $userId;
         }
         
