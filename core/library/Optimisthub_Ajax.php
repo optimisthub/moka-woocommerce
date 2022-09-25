@@ -98,7 +98,6 @@ class Optimisthub_Ajax
             'time' => time(), 
             'data' => ['message' => 'ok'],
         ], 200 );
-
         wp_die();
     }
 
@@ -121,7 +120,60 @@ class Optimisthub_Ajax
             self::clear_installment($postData);
         }
 
+        if($method == 'cancel_subscription')
+        {
+            self::cancelSubscription($postData);
+        }
+
         wp_die();
+    }
+
+    public function cancelSubscription( $params )
+    {
+        global $wpdb; 
+        $orderId    = data_get($params, 'orderId');
+
+        if(!$orderId)
+        {
+            wp_send_json_success( [
+                'time' => time(), 
+                'data' => ['error' => 'Hata : Sipariş bulunamadı.'],
+            ], 200 );
+        }
+
+        $table      = 'moka_subscriptions';
+        $records    = $wpdb->get_row("SELECT * FROM $wpdb->prefix$table WHERE order_id = '$orderId' AND subscription_status = 0");
+
+        if(!$records || empty($records))
+        {
+            wp_send_json_success( [
+                'time' => time(), 
+                'data' => ['error' => 'Hata : Kayıt Bulunamadı.'],
+            ], 200 );
+        }
+
+        if($records)
+        {
+            $updateStatus = $wpdb->query(
+                $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_status = %s WHERE order_id = %d", '1', $orderId )
+            );  
+
+            if(!$updateStatus)
+            {
+                wp_send_json_success( [
+                    'time' => time(), 
+                    'data' => ['error' => 'Hata : '.$wpdb->last_query ],
+                ], 200 );
+            }
+
+            if($updateStatus)
+            {
+                wp_send_json_success( [
+                    'time' => time(), 
+                    'data' => ['messsage' => 'Abonelik başarılı bir şekilde iptal edildi. Lütfen bekleyiniz.'],
+                ], 200 );
+            }
+        }
     }
 
     /**
@@ -223,6 +275,7 @@ class Optimisthub_Ajax
         }
         return $this->mokaPayRequest->formatInstallmentResponse($list);
     }
+    
 
 }
  

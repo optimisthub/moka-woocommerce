@@ -351,7 +351,7 @@ class MokaSubscription
         if($this->isSubscriptionsEnabled)
         {
 
-            self::registerStyles();
+            self::registerStylesAndScripts();
 
             global $wpdb;
             $currentUserId  = get_current_user_id();
@@ -361,7 +361,7 @@ class MokaSubscription
             
             if($records)
             {
-                $return .= '<table class="shop_table shop_table_responsive my_account_orders">';
+                $return .= '<div id="subscription_ajax_response"></div><table class="shop_table shop_table_responsive my_account_orders">';
                 $return .= '<thead><tr>
                     <th>'.__( 'Order', 'woocommerce' ).'</th>
                     <th>'.__( 'Date', 'woocommerce' ).'</th>
@@ -386,7 +386,7 @@ class MokaSubscription
                         $return .= '<td class="text-center">'.esc_html(data_get($perRecord, 'order_amount',0.0)).' '.esc_html($order->get_currency()).'</td>';
                         $return .= '<td class="text-center">'.($subscriptionStatus == 0 ? 'Aktif' : 'Pasif').'</td>';
                         $return .= '<td class="text-center">
-                            '.($subscriptionStatus == 0 ? '<span class="subscription-cancelManually">İptal</span>' : '<span class="subscription-noActions">Düzenlenemez</span>').'
+                            '.($subscriptionStatus == 0 ? '<span data-order-id="'.esc_html($orderId).'" class="subscription-cancelManually">İptal</span>' : '<span class="subscription-noActions">Düzenlenemez</span>').'
                         </td>';
                     $return .= '</tr>';
                 }
@@ -485,10 +485,12 @@ class MokaSubscription
      * @author Fatih Toprak 
      * @return void
      */
-    private function registerStyles()
+    private function registerStylesAndScripts()
     {
-        wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+        wp_enqueue_script( 'moka-pay-corejs', $this->assets . 'moka.js' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
+        wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
         wp_enqueue_style ( 'moka-pay-card_css' );
+        wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
     }
 }
 

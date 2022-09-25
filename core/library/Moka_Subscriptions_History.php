@@ -198,9 +198,9 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
                     'actions' => 
                         ($status == 0) ? '
                         <!--<span class="subscription-payManually">Ödeme</span>-->
-                        <span class="subscription-cancelManually">İptal</span>
+                        <span data-order-id="'.$orderId.'" class="subscription-cancelManually">İptal</span>
                         ' : '
-                        <span class="subscription-noActions">Düzenlenemez</span>'
+                        <span data-order-id="'.$orderId.'" class="subscription-noActions">Düzenlenemez</span>'
                 ];
             }
         }
