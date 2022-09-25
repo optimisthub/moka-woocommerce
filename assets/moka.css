@@ -51,3 +51,5 @@
 .subscription-payManually { padding:4px 10px;border-radius: 4px;background:#3f83b1;color:#fff;cursor: pointer;}
 .subscription-cancelManually { padding:4px 10px;border-radius: 4px;background:#b13f74;color:#fff;cursor: pointer;}
 .subscription-noActions { padding:4px 0;border-bottom:1px solid #6c6c6c;color:#6c6c6c;opacity: 0.8;cursor: help;}
+#subscription_ajax_response p {background-color: #b13f3f;color:#fff;text-align: center;padding: 10px;;}
+#subscription_ajax_response p.message {background-color: #3f83b1;color:#fff;text-align: center;padding: 10px;;}
