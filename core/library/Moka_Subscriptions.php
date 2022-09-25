@@ -50,6 +50,11 @@ class MokaSubscription
         // Admin Menus
         add_action( 'admin_menu', [$this, 'addSubscriptionAdminMenuLink']);
 
+        // Cron Jobs
+        add_action( 'init', [$this, 'triggerSubscriptionPayments'] );
+        add_action( 'moka_subscriptions_recurring_payments_cron_job', [$this, 'runSubscriptionPayments']);
+
+
     }
 
     /**
@@ -465,6 +470,18 @@ class MokaSubscription
         } else {
             return $buttonText;
         }
+    }
+
+    public function triggerSubscriptionPayments()
+    {
+        if(!wp_next_scheduled('moka_subscriptions_recurring_payments_cron_job')) {
+            wp_schedule_event(time(), 'every_minute', 'moka_subscriptions_recurring_payments_cron_job');
+        }
+    }
+
+    public function runSubscriptionPayments()
+    {
+         
     }
 
     /**
