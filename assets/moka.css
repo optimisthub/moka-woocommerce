@@ -35,3 +35,12 @@
 /*
 .payment_method_mokapay .form-row-first {width:100% !important;;}
 .payment_method_mokapay .form-row-last {width:100% !important;}*/
+
+.mokapay-save-card-info-message {
+    padding:2% 0;
+    font-size:0.7rem;
+    border-top:1px solid #333;
+    margin-top:15px;
+    display:flex;
+    justify-content:flex-start;
+} 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2022-04-01 10:45+0300\n"
+"PO-Revision-Date: 2022-09-06 16:26+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.1.1\n"
 "X-Domain: languages\n"
 
 msgid "Moka by Isbank WooCommerce Gateway"
@@ -75,9 +75,7 @@ msgid "Card Code"
 msgstr "Card Code"
 
 msgid "TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href='#''>documentation</a>"
-msgstr ""
-"TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a target=_blank href=https://developer.moka.com/home.php?page=test-"
-"kartlari>documentation</a>"
+msgstr "TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a target=_blank href=https://developer.moka.com/home.php?page=test-kartlari>documentation</a>"
 
 msgid "Enable 3D"
 msgstr "Enable 3D"
@@ -150,3 +148,84 @@ msgstr "Order Status"
 
 msgid "You can choose what the status of the order will be when your payments are successfully completed."
 msgstr "You can choose what the status of the order will be when your payments are successfully completed."
+
+msgid "Subscribe"
+msgstr "Subscribe"
+
+msgid "Renewal Period"
+msgstr "Renewal Period"
+
+msgid "her gun"
+msgstr "Daily"
+
+msgid "her hafta"
+msgstr "Weekly"
+
+msgid "her ay"
+msgstr "Monthly"
+
+msgid "her_2 gun"
+msgstr "Every two days"
+
+msgid "her_2 hafta"
+msgstr "Every two weeks"
+
+msgid "her_2 ay"
+msgstr "Every two months"
+
+msgid "her_3 gun"
+msgstr "Every three days"
+
+msgid "her_3 hafta"
+msgstr "Every three weeks"
+
+msgid "her_3 ay"
+msgstr "Every three months"
+
+msgid "her_4 gun"
+msgstr "Every four days"
+
+msgid "her_4 hafta"
+msgstr "Every four weeks"
+
+msgid "her_4 ay"
+msgstr "Every four months"
+
+msgid "Subscription"
+msgstr "Subscription"
+
+msgid "Enable subscription ?"
+msgstr "Enable subscription ?"
+
+msgid "It allows you to sell products via subscription method on your site."
+msgstr "It allows you to sell products via subscription method on your site."
+
+msgid "You have enabled the subscription feature. Moka Pay from İşbank requires <a href=\"https://woocommerce.com/products/woocommerce-subscriptions/\">WooCommerce Subscriptions</a> to be installed and activated. If you do not want to use the Subscription feature, you must turn it off in Moka Pay settings."
+msgstr "You have enabled the subscription feature. Moka Pay from İşbank requires <a href=\"https://woocommerce.com/products/woocommerce-subscriptions/\">WooCommerce Subscriptions</a> to be installed and activated. If you do not want to use the Subscription feature, you must turn it off in Moka Pay settings."
+
+msgid "User ID"
+msgstr "User ID"
+
+msgid "Amount"
+msgstr "Amount"
+
+msgid "Details"
+msgstr "Details"
+
+msgid "Period"
+msgstr "Period"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Created At"
+msgstr "Created At"
+
+msgid "Updated At"
+msgstr "Updated At"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card."
+msgstr "Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card."

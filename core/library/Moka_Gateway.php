@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 add_action( 'plugins_loaded', 'initOptimisthubGatewayClass' );
 
 /**
@@ -25,7 +27,19 @@ function initOptimisthubGatewayClass()
             $this->has_fields = true; 
             $this->method_title = 'Moka by Isbank';
             $this->method_description = __('Moka by Isbank WooCommerce Gateway','moka-woocommerce');
-            $this->supports = ['products'];
+            $this->supports = [
+                'products', 
+                'subscriptions',
+                'subscription_cancellation', 
+                'subscription_suspension', 
+                'subscription_reactivation',
+                'subscription_amount_changes',
+                'subscription_date_changes',
+                'subscription_payment_method_change',
+                'subscription_payment_method_change_customer',
+                'subscription_payment_method_change_admin', 
+                'tokenization',
+            ];
     
             $this->init_form_fields();  
             $this->init_settings();
@@ -42,17 +56,21 @@ function initOptimisthubGatewayClass()
             $this->api_password = $this->get_option( 'api_password' );
             $this->order_prefix = $this->get_option( 'order_prefix' );
             $this->order_status = $this->get_option( 'order_status' );
+            $this->subscriptions = $this->get_option( 'subscriptions' );
+            $this->isSubscriptionsEnabled = 'yes' == $this->subscriptions;
             
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
             $this->userInformation = self::getUserInformationData();
+
+            $this->assets = $this->assetDir();
 
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
             add_action( 'admin_head', [$this, 'admin_css']);   
             add_action( 'woocommerce_receipt_'.$this->id, [$this, 'receipt_page']);  
-
+            
             self::__saveRates();
             
         }
@@ -93,6 +111,14 @@ function initOptimisthubGatewayClass()
                     'type'        => 'checkbox',
                     'description' => __('Place the payment gateway in test mode using test API keys.', 'moka-woocommerce' ),
                     'default'     => 'yes',
+                    'desc_tip'    => true,
+                ],
+                'subscriptions' => [
+                    'title'       => __( 'Subscription', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
+                    'label'       => __('Enable subscription ?', 'moka-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'description' => __('It allows you to sell products via subscription method on your site.' , 'moka-woocommerce'),
+                    'default'     => 'no',
                     'desc_tip'    => true,
                 ],
                 'installment' => [
@@ -151,11 +177,17 @@ function initOptimisthubGatewayClass()
 
             if($pagenow == 'admin.php' && isset($_GET['tab']) && isset($_GET['section']) && $_GET['section'] == 'mokapay')
             {
-                wp_register_style( 'moka-pay-admin',  plugins_url( 'moka-woocommerce-master/assets/moka-admin.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+                wp_register_style( 'moka-pay-admin',  $this->assets.'/moka-admin.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
                 wp_enqueue_style ( 'moka-pay-admin' );
             } 
 
-            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce-master/assets/moka-admin.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            if($pagenow == 'admin.php' && isset($_GET['page']) && $_GET['page'] == 'subscription')
+            {
+                wp_register_style( 'moka-pay-admin',  $this->assets.'/moka-admin.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+                wp_enqueue_style ( 'moka-pay-admin' );
+            } 
+
+            wp_enqueue_script( 'moka-pay-corejs', $this->assets.'/moka-admin.js', false, OPTIMISTHUB_MOKA_PAY_VERSION );
             wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
 
@@ -313,6 +345,13 @@ function initOptimisthubGatewayClass()
             $cc_form->form();
 
             echo '<div id="ajaxify-installment-table" class="installment-table"></div>'; 
+            if($this->isSubscriptionsEnabled)
+            {
+                echo '<div class="mokapay-save-card-info-message">
+                <p>'.__('Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card.', 'moka-woocommerce').'</p>
+                <img src="'.$this->assets.'/img/Logo-mokapos.svg" />
+                </div>';
+            }
             do_action( 'woocommerce_credit_card_form_end', $this->id );  
         }
  
@@ -323,11 +362,9 @@ function initOptimisthubGatewayClass()
          */
         public function payment_scripts() 
         { 
-            wp_enqueue_script( 'moka-pay-corejs', plugins_url( 'moka-woocommerce-master/assets/moka.js' ), false, OPTIMISTHUB_MOKA_PAY_VERSION );
-            
-            wp_register_style( 'moka-pay-card_css',  plugins_url( 'moka-woocommerce-master/assets/moka.css' ) , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_enqueue_script( 'moka-pay-corejs', $this->assets .  'moka.js' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
             wp_enqueue_style ( 'moka-pay-card_css' );
-
             wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
             
@@ -384,13 +421,16 @@ function initOptimisthubGatewayClass()
          * @return void
          */
         public function process_payment( $orderId ) 
-        {
+        { 
+
             $order              = new WC_order($orderId); 
             $orderDetails       = self::formatOrder($orderId);  
             $currentTotal       = data_get($orderDetails, 'Amount');
             $installmentNumber  = data_get($orderDetails, 'InstallmentNumber');
             $currency           = $order->get_currency();
-            
+
+            $orderItems         = $order->get_items();
+ 
             if($order->get_total() < $currentTotal)
             {
                 self::saveComissionDecision( [
@@ -409,7 +449,7 @@ function initOptimisthubGatewayClass()
                     true
                 );  
             } 
-  
+
             $payOrder           = $this->optimisthubMoka->initializePayment($orderDetails);
             $callbackUrl        = data_get($payOrder, 'Data.Url');
             $callbackHash       = data_get($payOrder, 'Data.CodeForHash');
@@ -424,13 +464,12 @@ function initOptimisthubGatewayClass()
                 [
                     'id_hash'       => $callbackHash,
                     'id_order'      => $orderId,
-                    'order_details' => json_encode($orderDetails), 
-                    'optimist_id'   => data_get($orderDetails,'orderDetails.OtherTrxCode'), 
+                    'order_details' => $this->formatOrderDetailsForLog($orderDetails), 
+                    'optimist_id'   => data_get($orderDetails,'OtherTrxCode'), 
                     'created_at'    => date('Y-m-d H:i:s'),      
                 ]
             );
 
-            
             $recordParams = 
             [
                 'id_cart'       => data_get($orderDetails,'orderId'),
@@ -466,10 +505,8 @@ function initOptimisthubGatewayClass()
 
         public function receipt_page( $orderId )
         {
-
             global $woocommerce; 
       
-
             $fetchData = self::getHash(['orderId' => $orderId]);
             $orderDetails = json_decode( data_get($fetchData, 'order_details'), true );
 
@@ -491,7 +528,8 @@ function initOptimisthubGatewayClass()
             $isCompleted = self::validatePayment(data_get($fetchData, 'id_hash'));
 
             if($isCompleted)
-            {
+            { 
+
                 $total = data_get($orderDetails,'Amount');
                 $currency = data_get($orderDetails,'Currency'); 
 
@@ -520,6 +558,47 @@ function initOptimisthubGatewayClass()
                 $redirectUrl = add_query_arg([
                     'msg' => 'Thank You', 'type' => 'woocommerce-message'
                 ], $checkoutOrderUrl); 
+
+                // Subscription product completed successfully
+                $orderItems = $order->get_items();
+                $hasSubscription = $this->isOrderHasSubscriptionProduct($orderItems);
+                 
+                if($this->isSubscriptionsEnabled && $hasSubscription)
+                { 
+                    $userId     = $this->getOrderCustomerId($orderId);
+                    $customer   = $this->optimisthubMoka->addCustomerWithCard($orderDetails);  
+                    $cardToken  = data_get($customer, 'CardList.0.CardToken');
+                    $savedCard  = data_get($customer, 'CardList.0');
+                    $orderDetails['CardToken'] = $cardToken;
+    
+                    $tokenParams = $savedCard;
+                    $tokenParams['CardToken']   = $cardToken;
+                    $tokenParams['OrderId']     = $orderId; 
+                    $customer['OrderId']        = $orderId; 
+                    
+                    $token = $this->fetchCardToken($tokenParams);
+
+                    $this->setCustomerDataToOrderMeta($customer);
+                    $orderDetails['CardToken'] = $token; 
+
+                    $saveSubsRecord = $this->formatSubsRecord($orderDetails);
+                    $subscriptionPeriod = $this->getSubscriptionProductPeriod($orderItems); 
+                    
+                    self::saveSubscription(
+                        [
+                            'order_id'      => $orderId,
+                            'order_amount'  => $total,
+                            'order_details' => $this->formatOrderDetailsForLog($saveSubsRecord), 
+                            'subscription_status'   => '0',
+                            'subscription_period'   => data_get($subscriptionPeriod, 'period_string'),
+                            'subscription_next_try' => data_get($subscriptionPeriod, 'next_try'),
+                            'user_id'       => $userId,
+                            'optimist_id'   => data_get($orderDetails,'OtherTrxCode'), 
+                            'created_at'    => current_datetime()->format('Y-m-d H:i:s'),
+                        ]
+                    );
+                } 
+                // Subscription product completed successfully
                 
                 wp_redirect($redirectUrl);
                 exit;
@@ -610,6 +689,7 @@ function initOptimisthubGatewayClass()
             $selectedInstallment    = data_get($postData, $this->id.'-installment');
             $currentComission       = data_get($rates, $selectedInstallment.'.value'); 
             $getAmount = $order->get_total();
+            $customerId = $order->get_user_id();
 
             $orderData = [
                 'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
@@ -633,6 +713,25 @@ function initOptimisthubGatewayClass()
                     "BuyerEmail"        => (string) $order->get_billing_email(),
                     "BuyerAddress"      => (string) $order->get_billing_address_1(). ' ' .$order->get_billing_address_2(). ' ' .$order->get_billing_city(),
                 ],
+                'CustomerDetails'       => [
+                    'CustomerCode' => (string) $this->company_code.'-OPT-'.$customerId,
+                    'FirstName' => (string) $order->get_billing_first_name(),
+                    'LastName' => (string) $order->get_billing_last_name(),
+                    'Gender' => '',
+                    'BirthDate' => '',
+                    'GsmNumber' => (string) $order->get_billing_phone(),
+                    'Email' => (string) $order->get_billing_email(),
+                    'Address' => (string) (string) $order->get_billing_address_1(). ' ' .$order->get_billing_address_2(). ' ' .$order->get_billing_city(),
+                    'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
+                    'ExpMonth'              => (string) data_get($expriyDate,'month' ),
+                    'ExpYear'               => (string) self::formatExpiryDate(data_get($expriyDate,'year' )),
+                    'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
+                    'CardName'              => (string) $order->get_billing_first_name(). '\'s saved card',
+                    'MokaStores'            => [
+                        'orderData'             => $order,
+                        'customerId'            => $customerId,
+                    ]
+                ]
 
                 // TODO : Basket Product Details
                 //'BasketProduct'         => self::formatBaksetProducts($order), 
@@ -940,6 +1039,19 @@ function initOptimisthubGatewayClass()
         }
 
         /**
+         * Save Subscriptions Data for admin panel
+         *
+         * @param [type] $params
+         * @return void
+         */
+        private function saveSubscription($params)
+        {
+            global $wpdb;
+            $tableName = $wpdb->prefix . 'moka_subscriptions';
+            return $wpdb->insert($tableName, $params);            
+        }
+
+        /**
          * Fetch last hash
          *
          * @param [type] $params
@@ -1028,12 +1140,187 @@ function initOptimisthubGatewayClass()
 
         /**
          * Get WC order statuses
-         *
+         * @since 2.9.5
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
          * @return void
          */
         private function getOrderStatuses()
         {
             return wc_get_order_statuses();
+        }
+
+        /**
+         * Define plugin asset files directory
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
+         * @return void
+         */
+        private function assetDir()
+        {
+            return str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
+        }
+
+        /**
+         * Set or get order token.
+         *
+         * @param [array] $params
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
+         * @return object
+         */
+        private function fetchCardToken($params)
+        {    
+            if(metadata_exists('shop_order', data_get($params, 'orderId'), '__card_token')) {
+                update_post_meta(data_get($params, 'OrderId'), '__card_token', data_get($params, 'CardToken'));
+                return get_post_meta(data_get($params, 'OrderId'), '__card_token', true);
+            } else {
+                update_post_meta(data_get($params, 'OrderId'), '__card_token', data_get($params, 'CardToken'));
+                return get_post_meta(data_get($params, 'OrderId'), '__card_token', true);
+            }
+        }
+
+        /**
+         * Store Dealer Information to Order.
+         *
+         * @param [type] $array
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
+         * @return void
+         */
+        private function setCustomerDataToOrderMeta($params)
+        {
+            update_post_meta(data_get($params, 'OrderId'), '__moka_customer', json_encode($params));
+        }
+
+        /**
+         * Format Subs. Record.
+         *
+         * @param [array] $params
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
+         * @return array
+         */
+        private function formatSubsRecord($params)
+        {  
+            unset($params['CvcNumber']);
+            return $params;
+        }
+
+        /**
+         * Format requests for logging.
+         *
+         * @param [array] $param
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
+         * @return string
+         */
+        private function formatOrderDetailsForLog($param)
+        { 
+            unset($params['CvcNumber']);
+            unset($params['ExpYear']);
+            unset($params['ExpMonth']);
+            unset($params['CustomerDetails']['ExpYear']);
+            unset($params['CustomerDetails']['ExpMonth']);
+            if(data_get($param, 'CardNumber'))
+            {
+                $param['CardNumber'] = '**** **** **** '.substr($param['CardNumber'], -4);
+            } 
+            if(data_get($param, 'CustomerDetails.CardNumber'))
+            {
+                $param['CustomerDetails']['CardNumber'] = '**** **** **** '.substr($param['CustomerDetails']['CardNumber'], -4);
+            } 
+           
+            return json_encode($param,true);
+        } 
+
+        /**
+         * Does order has subscription product
+         * @param [object] $orderItems
+         * @since 3.0
+         * @copyright 2022 Optimisthub
+         * @author Fatih Toprak 
+         * @return boolean
+         */
+        private function isOrderHasSubscriptionProduct($orderItems)
+        {
+            $hasSubscription = null;
+
+            if($orderItems)
+            {
+                foreach ( $orderItems as $itemId => $item ) 
+                {
+                    $productId = $item->get_product_id();
+                    $product   = wc_get_product( $productId );
+                    $type      = $product->get_type(); 
+                    if($type === 'subscription')
+                    {
+                        $hasSubscription = true;
+                    }
+                }
+            } 
+
+            return $hasSubscription;
+        }
+
+        /**
+         * Calculate product current / next subscription period 
+         *
+         * @param [array] $orderItems
+         * @return array
+         */
+        private function getSubscriptionProductPeriod($orderItems)
+        {
+            $period = null;
+
+            if($orderItems)
+            {
+                foreach ( $orderItems as $itemId => $item ) 
+                {
+                    $productId = $item->get_product_id();
+                    $product   = wc_get_product( $productId );
+                    $type      = $product->get_type(); 
+                    if($type === 'subscription')
+                    {
+                        $__data = get_post_meta($productId);
+                        $__per  = data_get($__data, '_period_per.0', null);
+                        $__in   = data_get($__data, '_period_in.0', null);
+
+                        $__inString = ['gun' => 'day', 'ay' => 'month', 'hafta' => 'week'];
+ 
+                        $currentTime = Carbon::parse(current_datetime()->format('Y-m-d H:i:s'));
+                        $__per = str_replace('her_', '', $__per); 
+
+                        $nextTry = $currentTime::now()->add($__per, $__inString[$__in]); 
+
+                        $period = [
+                            'current_time'  => Carbon::parse($currentTime)->format('Y-m-d H:i:s'),
+                            'next_try'      => Carbon::parse($nextTry)->format('Y-m-d H:i:s'),
+                            'period_string' => $__per.'-'.$__inString[$__in],
+                        ];
+                    }
+                }
+            } 
+ 
+            return $period;
+        }
+
+        /**
+         * Fetch customer id from order
+         *
+         * @return void
+         */
+        private function getOrderCustomerId($orderId)
+        {
+            $order = wc_get_order($orderId);
+            $orderId = $order->id;
+            $userId = $order->get_user_id();
+            return $userId;
         }
         
     }

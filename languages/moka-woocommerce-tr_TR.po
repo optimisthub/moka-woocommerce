@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2022-04-01 10:45+0300\n"
+"PO-Revision-Date: 2022-09-06 16:26+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.1.1\n"
 "X-Domain: languages\n"
 
 msgid "Moka by Isbank WooCommerce Gateway"
@@ -149,3 +149,84 @@ msgstr "Sipariş Durumu"
 
 msgid "You can choose what the status of the order will be when your payments are successfully completed."
 msgstr "Ödemeleriniz başarılı bir şekilde tamamlandığında siparişin durumunun ne olacağını seçebilirsiniz."
+
+msgid "Subscribe"
+msgstr "Aboneliği Başlat"
+
+msgid "Renewal Period"
+msgstr "Yenilenme Periyodu"
+
+msgid "her gun"
+msgstr "Günlük"
+
+msgid "her hafta"
+msgstr "Haftalık"
+
+msgid "her ay"
+msgstr "Aylık"
+
+msgid "her_2 gun"
+msgstr "Her iki günde bir"
+
+msgid "her_2 hafta"
+msgstr "Her iki haftada bir"
+
+msgid "her_2 ay"
+msgstr "Her iki ayda bir"
+
+msgid "her_3 gun"
+msgstr "Her üç günde bir"
+
+msgid "her_3 hafta"
+msgstr "Her üç haftada bir"
+
+msgid "her_3 ay"
+msgstr "Her üç ayda bir"
+
+msgid "her_4 gun"
+msgstr "Her dört günde bir"
+
+msgid "her_4 hafta"
+msgstr "Her dört haftada bir"
+
+msgid "her_4 ay"
+msgstr "Her dört ayda bir"
+
+msgid "Subscription"
+msgstr "Abonelikler"
+
+msgid "Enable subscription ?"
+msgstr "Abonelikli satış özelliğini aktif et ?"
+
+msgid "It allows you to sell products via subscription method on your site."
+msgstr "Siteniz üzerinden abonelik yöntemi ile ürün satışı yapmanızı sağlar."
+
+msgid "You have enabled the subscription feature. Moka Pay from İşbank requires <a href=\"https://woocommerce.com/products/woocommerce-subscriptions/\">WooCommerce Subscriptions</a> to be installed and activated. If you do not want to use the Subscription feature, you must turn it off in Moka Pay settings."
+msgstr "Abonelik özelliğini etkinleştirdiniz. İş Bankası'ndan Moka Pay, <a href=\"https://woocommerce.com/products/woocommerce-subscriptions/\">WooCommerce Aboneliklerinin</a> yüklenmesini ve etkinleştirilmesini gerektirir. Eğer Abonelik özelliğini kullanmak istemez iseniz, Moka Pay ayarlarından bu özelliği kapatmanız gerekir."
+
+msgid "User ID"
+msgstr "Kullanıcı"
+
+msgid "Amount"
+msgstr "Tutar"
+
+msgid "Details"
+msgstr "Sipariş Detayları"
+
+msgid "Period"
+msgstr "Periyot"
+
+msgid "Status"
+msgstr "Durum"
+
+msgid "Created At"
+msgstr "Oluşturulma"
+
+msgid "Updated At"
+msgstr "Güncellenme"
+
+msgid "Actions"
+msgstr "İşlemler"
+
+msgid "Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card."
+msgstr "Ödeme esnasında eklemiş olduğunuz kart bilgileriniz, Moka güvencesi ile Moka tarafından saklanacaktır. Sonraki abonelik ödemeniz bu kart ile alınacaktır."

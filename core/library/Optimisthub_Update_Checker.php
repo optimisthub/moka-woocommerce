@@ -166,13 +166,21 @@ class Optimisthub_Update_Checker
         return $transient;
     }
 
+    /**
+     * Purge Stored Transients
+     * 
+     * @since 2.4
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return void
+     */
     public function purge()
     {
         global $options;
         if (
             $this->cache_allowed
-            && 'update' === $options['action']
-            && 'plugin' === $options[ 'type' ]
+            && 'update' === data_get($options, 'action') && $options['action']
+            && 'plugin' === data_get($options, 'type') && $options[ 'type' ]
         ) {
             delete_transient( $this->cache_key );
         }
