@@ -351,8 +351,7 @@ class MokaSubscription
         if($this->isSubscriptionsEnabled)
         {
 
-            wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
-            wp_enqueue_style ( 'moka-pay-card_css' );
+            self::registerStyles();
 
             global $wpdb;
             $currentUserId  = get_current_user_id();
@@ -477,6 +476,19 @@ class MokaSubscription
     private function assetDir()
     {
         return str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
+    }
+
+    /**
+     * Register styles
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return void
+     */
+    private function registerStyles()
+    {
+        wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+        wp_enqueue_style ( 'moka-pay-card_css' );
     }
 }
 
