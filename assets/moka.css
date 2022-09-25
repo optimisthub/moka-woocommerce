@@ -44,3 +44,10 @@
     display:flex;
     justify-content:flex-start;
 } 
+
+.text-center {text-align:center !important}
+.active_subs { background:rgb(51, 121, 51) !important;cursor:pointer}
+.passive_subs {background:#b13f3f !important;cursor:pointer} 
+.subscription-payManually { padding:4px 10px;border-radius: 4px;background:#3f83b1;color:#fff;cursor: pointer;}
+.subscription-cancelManually { padding:4px 10px;border-radius: 4px;background:#b13f74;color:#fff;cursor: pointer;}
+.subscription-noActions { padding:4px 0;border-bottom:1px solid #6c6c6c;color:#6c6c6c;opacity: 0.8;cursor: help;}

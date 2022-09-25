@@ -20,6 +20,8 @@ class MokaSubscription
     {
         $this->mokaOptions = get_option('woocommerce_mokapay_settings');
         $this->isSubscriptionsEnabled = 'yes' == data_get($this->mokaOptions, 'subscriptions');
+
+        $this->assets = $this->assetDir();
         
         register_activation_hook( __FILE__,[$this, 'addProductTypeTaxonomy' ] );
         
@@ -347,7 +349,57 @@ class MokaSubscription
     public function addSubscriptionPermalinkEndpoint()
     {
         if($this->isSubscriptionsEnabled)
-        echo 'Here is all subscriptions';
+        {
+
+            self::registerStyles();
+
+            global $wpdb;
+            $currentUserId  = get_current_user_id();
+            $table          = 'moka_subscriptions';
+            $records        = $wpdb->get_results("SELECT * FROM  $wpdb->prefix$table WHERE user_id = '$currentUserId'");
+            $return         = '';
+            
+            if($records)
+            {
+                $return .= '<table class="shop_table shop_table_responsive my_account_orders">';
+                $return .= '<thead><tr>
+                    <th>'.__( 'Order', 'woocommerce' ).'</th>
+                    <th>'.__( 'Date', 'woocommerce' ).'</th>
+                    <th>'.__( 'Total', 'woocommerce' ).'</th>
+                    <th>'.__( 'Status', 'woocommerce' ).'</th>
+                    <th>'.__( 'Actions', 'woocommerce' ).'</th>
+                </tr></thead>';
+                foreach($records as $perRecord)
+                {
+                    $orderId                = data_get($perRecord, 'order_id');
+                    $order                  = wc_get_order($orderId);
+                    $subscriptionStatus     = data_get($perRecord, 'subscription_status');
+                    $subscriptionDate       = data_get($perRecord, 'created_at');
+                    $subscriptionNextDate   = data_get($perRecord, 'subscription_next_try');
+
+                    $return .= '<tr>';
+                        $return .= '<td class="text-center">'._x( '#', 'hash before order number', 'woocommerce' ).'<a href="'.esc_html($order->get_view_order_url()).'" target="_blank">'.esc_html($order->get_order_number()).'</a></td>';
+                        $return .= '<td class="text-center">'.
+                                'Başlangıç : '.esc_html( date('d.m.Y H:i', strtotime($subscriptionDate)) ).
+                                '<br>Sonraki Ödeme : '.esc_html( date('d.m.Y H:i', strtotime($subscriptionNextDate)) )
+                            .'</td>';
+                        $return .= '<td class="text-center">'.esc_html(data_get($perRecord, 'order_amount',0.0)).' '.esc_html($order->get_currency()).'</td>';
+                        $return .= '<td class="text-center">'.($subscriptionStatus == 0 ? 'Aktif' : 'Pasif').'</td>';
+                        $return .= '<td class="text-center">
+                            '.($subscriptionStatus == 0 ? '<span class="subscription-cancelManually">İptal</span>' : '<span class="subscription-noActions">Düzenlenemez</span>').'
+                        </td>';
+                    $return .= '</tr>';
+                }
+                $return .='</table>';
+            } 
+
+            if(!$records)
+            {
+                $return = esc_html_e( 'No order has been made yet.', 'woocommerce' );
+            }
+
+            echo $return;
+        }
     }
 
     /**
@@ -412,6 +464,31 @@ class MokaSubscription
         } else {
             return $buttonText;
         }
+    }
+
+    /**
+     * Define plugin asset files directory
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return void
+     */
+    private function assetDir()
+    {
+        return str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
+    }
+
+    /**
+     * Register styles
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return void
+     */
+    private function registerStyles()
+    {
+        wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+        wp_enqueue_style ( 'moka-pay-card_css' );
     }
 }
 

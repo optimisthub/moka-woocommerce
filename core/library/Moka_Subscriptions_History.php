@@ -197,7 +197,7 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
                     'created_at' => date('d.m.Y.H:i:s', strtotime(data_get($perRow, 'created_at', null))),
                     'actions' => 
                         ($status == 0) ? '
-                        <span class="subscription-payManually">Ödeme</span>
+                        <!--<span class="subscription-payManually">Ödeme</span>-->
                         <span class="subscription-cancelManually">İptal</span>
                         ' : '
                         <span class="subscription-noActions">Düzenlenemez</span>'
