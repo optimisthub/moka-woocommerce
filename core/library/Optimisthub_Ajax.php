@@ -154,9 +154,10 @@ class Optimisthub_Ajax
 
         if($records)
         {
+            $date = date('Y-m-d H:i:s');
             $updateStatus = $wpdb->query(
-                $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_status = %s WHERE order_id = %d", '1', $orderId )
-            );  
+                $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_status = %s WHERE order_id = %d", '1', $orderId ),
+            );   
 
             if(!$updateStatus)
             {
@@ -168,6 +169,7 @@ class Optimisthub_Ajax
 
             if($updateStatus)
             {
+                $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->prefix$table SET updated_at = %s WHERE order_id = %d",$date, $orderId ) ); 
                 wp_send_json_success( [
                     'time' => time(), 
                     'data' => ['messsage' => 'Abonelik başarılı bir şekilde iptal edildi. Lütfen bekleyiniz.'],
