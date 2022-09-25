@@ -381,10 +381,11 @@ class MokaSubscription
                         $return .= '<td class="text-center">'._x( '#', 'hash before order number', 'woocommerce' ).'<a href="'.esc_html($order->get_view_order_url()).'" target="_blank">'.esc_html($order->get_order_number()).'</a></td>';
                         $return .= '<td class="text-center">'.
                                 'Başlangıç : '.esc_html( date('d.m.Y H:i', strtotime($subscriptionDate)) ).
-                                '<br>Sonraki Ödeme : '.esc_html( date('d.m.Y H:i', strtotime($subscriptionNextDate)) )
+                                '<br>'.($subscriptionStatus == 0 ? 'Sonraki Ödeme' : 'Bitiş').' : '.esc_html( date('d.m.Y H:i',
+                                strtotime($subscriptionNextDate)) )
                             .'</td>';
                         $return .= '<td class="text-center">'.esc_html(data_get($perRecord, 'order_amount',0.0)).' '.esc_html($order->get_currency()).'</td>';
-                        $return .= '<td class="text-center">'.($subscriptionStatus == 0 ? 'Aktif' : 'Pasif').'</td>';
+                        $return .= '<td class="text-center">'.($subscriptionStatus == 0 ? 'Aktif' : 'Sonlandı').'</td>';
                         $return .= '<td class="text-center">
                             '.($subscriptionStatus == 0 ? '<span data-order-id="'.esc_html($orderId).'" class="subscription-cancelManually">İptal</span>' : '<span class="subscription-noActions">Düzenlenemez</span>').'
                         </td>';
