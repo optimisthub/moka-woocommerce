@@ -399,4 +399,200 @@ class MokaPayment
         return $output;
     }
 
+    /**
+     * Add Customer and Card to Moka 
+     * @param [array] $params
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return array
+     */
+    public function addCustomerWithCard($params)
+    {
+        global $mokaKey;
+
+        $params = data_get($params, 'CustomerDetails');
+
+        $postParams = [
+            'DealerCustomerAuthentication' => 
+            [
+                'DealerCode'=> data_get($this->mokaOptions, 'company_code'),
+                'Username'  => data_get($this->mokaOptions, 'api_username'),
+                'Password'  => data_get($this->mokaOptions, 'api_password'),
+                'CheckKey'  => $mokaKey,
+            ],
+            'DealerCustomerRequest' => 
+            [
+                'CustomerCode'      => data_get($params, 'CustomerCode'),
+                'FirstName'         => data_get($params, 'FirstName'),
+                'LastName'          => data_get($params, 'LastName'),
+                'Gender'            => data_get($params, 'Gender'), // 1 male 2 female
+                'BirthDate'         => data_get($params, 'BirthDate'), // YYYYMMDD
+                'GsmNumber'         => data_get($params, 'GsmNumber'),
+                'Email'             => data_get($params, 'Email'),
+                'Address'           => data_get($params, 'Address'),
+                'CardHolderFullName'=> data_get($params, 'CardHolderFullName'),
+                'CardNumber'        => data_get($params, 'CardNumber'),
+                'ExpMonth'          => data_get($params, 'ExpMonth'), // MM
+                'ExpYear'           => data_get($params, 'ExpYear'), // YYYY
+                'CardName'          => data_get($params, 'CardName'), // Ex : My MasterCard, My Visa, etc
+            ]
+        ];  
+        
+        $response = self::doRequest('/DealerCustomer/AddCustomerWithCard',$postParams);
+ 
+
+        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        {
+            $responseBody = data_get($response, 'body');
+            $responseBody = json_decode($responseBody, true);
+            $responseBodyResultsCode = data_get($responseBody, 'ResultCode');
+            $responseBody = data_get($responseBody, 'Data');
+ 
+            if(is_null($responseBody)) {
+                $responseBody = $this->getCustomerByCustomerCode($params);
+            }   
+
+            if($responseBodyResultsCode == 'DealerCustomer.AddCustomerWithCard.CustomerCodeAlreadyUsing')
+            {
+                $postParams['DealerCustomerId'] = data_get($responseBody, 'DealerCustomer.DealerCustomerId');
+ 
+                $cardCount = data_get($responseBody, 'CardListCount');
+                if($cardCount==0)
+                {
+                    $responseBody = $this->addCard($postParams); 
+                } else {
+                    $postParams['CardToken'] = data_get($responseBody, 'CardList.0.CardToken');
+                    $this->removeCard($postParams); 
+                    $responseBody = $this->addCard($postParams);  
+                }
+            }
+
+            return $responseBody;
+        }
+
+        return $response; 
+    }
+
+    /**
+     * Get customer Information 
+     * @param [array] $params
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return array
+     */ 
+    public function getCustomerByCustomerCode($params)
+    {
+        global $mokaKey;
+
+        $postParams = [
+            'DealerCustomerAuthentication' => 
+            [
+                'DealerCode'=> data_get($this->mokaOptions, 'company_code'),
+                'Username'  => data_get($this->mokaOptions, 'api_username'),
+                'Password'  => data_get($this->mokaOptions, 'api_password'),
+                'CheckKey'  => $mokaKey,
+            ],
+            'DealerCustomerRequest' => 
+            [
+                'CustomerCode' => data_get($params, 'CustomerCode'),
+            ]
+        ]; 
+
+        $response = self::doRequest('/DealerCustomer/GetCustomer',$postParams);
+        
+        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        {
+            $responseBody = data_get($response, 'body');
+            $responseBody = json_decode($responseBody, true);
+            $responseBody = data_get($responseBody, 'Data');
+            return $responseBody;
+        }
+        
+        return $response; 
+    }
+    /**
+     * Add Customer Card
+     * @param [array] $params
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return array
+     */
+    public function addCard($params)
+    {
+        global $mokaKey;
+
+        $postParams = [
+            'DealerCustomerAuthentication' => 
+            [
+                'DealerCode'=> data_get($this->mokaOptions, 'company_code'),
+                'Username'  => data_get($this->mokaOptions, 'api_username'),
+                'Password'  => data_get($this->mokaOptions, 'api_password'),
+                'CheckKey'  => $mokaKey,
+            ],
+            'DealerCustomerRequest' => 
+            [
+                'DealerCustomerId'  => data_get($params, 'DealerCustomerId'),
+                'CardHolderFullName'=> data_get($params, 'DealerCustomerRequest.CardHolderFullName'),
+                'CardNumber'        => data_get($params, 'DealerCustomerRequest.CardNumber'),
+                'ExpMonth'          => data_get($params, 'DealerCustomerRequest.ExpMonth'), // MM
+                'ExpYear'           => data_get($params, 'DealerCustomerRequest.ExpYear'), // YYYY
+                'CardName'          => data_get($params, 'DealerCustomerRequest.CardName'), // Ex : M
+            ]
+        ]; 
+
+        $response = self::doRequest('/DealerCustomer/AddCard',$postParams);
+        
+        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        {
+            $responseBody = data_get($response, 'body');
+            $responseBody = json_decode($responseBody, true);
+            $responseBody = data_get($responseBody, 'Data');
+            return $responseBody;
+        }
+        
+        return $response; 
+    }
+
+    /**
+     * Remove Customer Card
+     * @param [array] $params
+     * @since 3.0
+     * @copyright 2022 Optimisthub
+     * @author Fatih Toprak 
+     * @return array
+     */
+    public function removeCard($params)
+    {
+        global $mokaKey;
+
+        $postParams = [
+            'DealerCustomerAuthentication' => 
+            [
+                'DealerCode'=> data_get($this->mokaOptions, 'company_code'),
+                'Username'  => data_get($this->mokaOptions, 'api_username'),
+                'Password'  => data_get($this->mokaOptions, 'api_password'),
+                'CheckKey'  => $mokaKey,
+            ],
+            'DealerCustomerRequest' => 
+            [
+                'CardToken'  => data_get($params, 'CardToken'), 
+            ]
+        ]; 
+
+        $response = self::doRequest('/DealerCustomer/RemoveCard',$postParams);
+        
+        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        {
+            $responseBody = data_get($response, 'body');
+            $responseBody = json_decode($responseBody, true);
+            $responseBody = data_get($responseBody, 'Data');
+            return $responseBody;
+        }
+        
+        return $response; 
+    }
+
 }

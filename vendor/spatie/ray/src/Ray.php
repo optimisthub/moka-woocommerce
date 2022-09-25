@@ -6,6 +6,7 @@ use Carbon\CarbonInterface;
 use Closure;
 use Composer\InstalledVersions;
 use Exception;
+use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 use Spatie\Backtrace\Backtrace;
 use Spatie\LaravelRay\Ray as LaravelRay;
@@ -18,6 +19,7 @@ use Spatie\Ray\Payloads\CallerPayload;
 use Spatie\Ray\Payloads\CarbonPayload;
 use Spatie\Ray\Payloads\ClearAllPayload;
 use Spatie\Ray\Payloads\ColorPayload;
+use Spatie\Ray\Payloads\ConfettiPayload;
 use Spatie\Ray\Payloads\CreateLockPayload;
 use Spatie\Ray\Payloads\CustomPayload;
 use Spatie\Ray\Payloads\DecodedJsonPayload;
@@ -530,11 +532,36 @@ class Ray
         return $this->sendRequest($payload);
     }
 
+    public function url(string $url, string $label = ''): self
+    {
+        if (! Str::startsWith($url, 'http')) {
+            $url = "https://{$url}";
+        }
+
+        if (empty($label)) {
+            $label = $url;
+        }
+
+        $link = "<a href='{$url}'>{$label}</a>";
+
+        return $this->html($link);
+    }
+
+    public function link(string $url, string $label = '')
+    {
+        return $this->url($url, $label);
+    }
+
     public function html(string $html = ''): self
     {
         $payload = new HtmlPayload($html);
 
         return $this->sendRequest($payload);
+    }
+
+    public function confetti(): self
+    {
+        return $this->sendRequest(new ConfettiPayload());
     }
 
     public function exception(Throwable $exception, array $meta = [])
