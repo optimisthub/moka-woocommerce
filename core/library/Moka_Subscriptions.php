@@ -77,7 +77,8 @@ class MokaSubscription
         
         if($type == $this->productType) {
             update_post_meta($productId,'_stock_status', 'instock');
-            update_post_meta($productId,'_regular_price', $price);
+            update_post_meta($productId,'_sale_price', $price);
+            update_post_meta($productId,'_price', $price);
             update_post_meta($productId,'_sold_individually', 'yes');
         }
     }
