@@ -154,7 +154,8 @@ class Optimisthub_Ajax
 
         if($records)
         {
-            $date = date('Y-m-d H:i:s');
+            $date = current_datetime()->format('Y-m-d H:i:s');
+ 
             $updateStatus = $wpdb->query(
                 $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_status = %s WHERE order_id = %d", '1', $orderId ),
             );   

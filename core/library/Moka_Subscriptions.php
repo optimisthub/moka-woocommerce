@@ -2,6 +2,9 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+ 
+
 /**
  * Moka POS Subscriptions Add On
  * @since 3.0
@@ -20,6 +23,7 @@ class MokaSubscription
     {
         $this->mokaOptions = get_option('woocommerce_mokapay_settings');
         $this->isSubscriptionsEnabled = 'yes' == data_get($this->mokaOptions, 'subscriptions');
+         #$this->optimisthubMokaGateway = new OptimistHub_Moka_Gateway();
 
         $this->assets = $this->assetDir();
         
@@ -481,7 +485,62 @@ class MokaSubscription
 
     public function runSubscriptionPayments()
     {
-         
+        global $wpdb;
+        $table   = 'moka_subscriptions';
+        $records = $wpdb->get_results("SELECT * FROM $wpdb->prefix$table WHERE subscription_status = 0");
+
+        
+        if($records)
+        {
+            foreach ($records as $perKey => $perValue) {
+
+                $paymentDate = data_get($perValue, 'subscription_next_try');
+                $currentTime = current_datetime()->format('Y-m-d H:i:s');
+                
+                if(strtotime($currentTime)>=strtotime($paymentDate))
+                {
+                    $orderId        = data_get($perValue, 'order_id');
+                    $orderDetails   = json_decode(data_get($perValue, 'order_details'));
+                    $payment        = new MokaPayment();
+
+                    $requestParams  = [
+                        'CardToken'             => data_get($orderDetails, 'CardToken'),
+                        'Amount'                => data_get($orderDetails, 'Amount'),
+                        'Currency'              => data_get($orderDetails, 'Currency') ,
+                        'InstallmentNumber'     => data_get($orderDetails, 'InstallmentNumber'),
+                        'ClientIP'              => data_get($orderDetails, 'ClientIP'),
+                        'OtherTrxCode'          => data_get($orderDetails, 'OtherTrxCode'),
+                        'Software'              => strtoupper('OPT-WpWoo-'.get_bloginfo('version').'-'.WC_VERSION), 
+                        'Description'           => 'RecurringPayment-'.$orderId,
+                        'isSubscriptionPayment' => true,
+                    ];
+                    
+                    $doPayment  = $payment->initializePayment($requestParams);
+                    $isSuccess  = data_get($doPayment, 'Data.IsSuccessful');
+
+                    if($isSuccess)
+                    {
+                        // Save Log  
+                        $wpdb->insert($wpdb->prefix . 'moka_transactions', [
+                            'id_cart'       => $orderId,
+                            'id_customer'   => self::getOrderCustomerId($orderId),
+                            'optimist_id'   => data_get($orderDetails, 'OtherTrxCode'),
+                            'amount'        => data_get($orderDetails, 'Amount'),
+                            'amount_paid'   => data_get($orderDetails, 'Amount'),
+                            'installment'   => data_get($orderDetails, 'InstallmentNumber'),
+                            'result_code'   => data_get($doPayment, 'ResultCode'),
+                            'result_message'=> data_get($doPayment, 'Data.VirtualPosOrderId'), 
+                            'result'        => 0,
+                            'created_at'    => current_datetime()->format('Y-m-d H:i:s')
+                        ]);
+
+                        // TODO
+                        // Update Subscription Row
+
+                    } 
+                } 
+            }
+        }
     }
 
     /**
@@ -509,6 +568,19 @@ class MokaSubscription
         wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
         wp_enqueue_style ( 'moka-pay-card_css' );
         wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+    }
+
+    /**
+     * Fetch customer id from order
+     *
+     * @return void
+     */
+    private function getOrderCustomerId($orderId)
+    {
+        $order      = wc_get_order($orderId);
+        $orderId    = $order->id;
+        $userId     = $order->get_user_id();
+        return $userId;
     }
 }
 
