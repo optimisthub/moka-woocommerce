@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
- 
+use Carbon\Carbon;
 
 /**
  * Moka POS Subscriptions Add On
@@ -497,7 +497,7 @@ class MokaSubscription
                 $paymentDate = data_get($perValue, 'subscription_next_try');
                 $currentTime = current_datetime()->format('Y-m-d H:i:s');
                 
-                if(strtotime($currentTime)>=strtotime($paymentDate))
+                if(strtotime($paymentDate)<time())
                 {
                     $orderId        = data_get($perValue, 'order_id');
                     $orderDetails   = json_decode(data_get($perValue, 'order_details'));
@@ -534,16 +534,33 @@ class MokaSubscription
                             'created_at'    => current_datetime()->format('Y-m-d H:i:s')
                         ]);
 
-                        // TODO
-
-                        /*
-                            Zamanlanan görevin ödeme zamanı şimdi güncellemesi yapılırken periyod sütunu alınıp convert edilicek. 
-                            Daha sonrasında, yeni date ilgili kolona (next_try) yazılacak.
-                        */
+                        // Update Subscription information
+                        $subscriptionPeriod = data_get($perValue, 'subscription_period');
+                        $currentTime = Carbon::parse(current_datetime()->format('Y-m-d H:i:s'));
+                        $__inString = ['day', 'month', 'week'];
                         
+                        $__per = str_replace(['her-', 'her_'], '1 ', $subscriptionPeriod); 
+                        $__per = explode('-',$__per);
+                        
+                        $nextTry = $currentTime::now()->add($__per[0],$__per[1]); 
+                 
+                        $period = [
+                            'current_time'  => Carbon::parse($currentTime)->format('Y-m-d H:i:s'),
+                            'next_try'      => Carbon::parse($nextTry)->format('Y-m-d H:i:s'),
+                            'period_string' => implode('-',$__per),
+                        ];                        
+ 
+                        $wpdb->query(
+                            $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_period = %s WHERE order_id = %d", $period['period_string'], $orderId ),
+                        );  
+ 
+                        $wpdb->query(
+                            $wpdb->prepare( "UPDATE $wpdb->prefix$table SET updated_at = %s WHERE order_id = %d", current_datetime()->format('Y-m-d H:i:s'), $orderId ),
+                        );  
 
-                        // Update Subscription Row
-
+                        $wpdb->query(
+                            $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_next_try = %s WHERE order_id = %d", $period['next_try'], $orderId ),
+                        );  
                     } 
                 } 
             }
