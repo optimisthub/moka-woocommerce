@@ -535,6 +535,13 @@ class MokaSubscription
                         ]);
 
                         // TODO
+
+                        /*
+                            Zamanlanan görevin ödeme zamanı şimdi güncellemesi yapılırken periyod sütunu alınıp convert edilicek. 
+                            Daha sonrasında, yeni date ilgili kolona (next_try) yazılacak.
+                        */
+                        
+
                         // Update Subscription Row
 
                     } 
