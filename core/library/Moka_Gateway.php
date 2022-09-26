@@ -1294,7 +1294,7 @@ function initOptimisthubGatewayClass()
                         $__inString = ['gun' => 'day', 'ay' => 'month', 'hafta' => 'week'];
  
                         $currentTime = Carbon::parse(current_datetime()->format('Y-m-d H:i:s'));
-                        $__per = str_replace(['her-','her_'], '', $__per); 
+                        $__per = str_replace(['her-','her_', 'her'], '1', $__per); 
 
                         $nextTry = $currentTime::now()->add($__per, $__inString[$__in]); 
 
