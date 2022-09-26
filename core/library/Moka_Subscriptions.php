@@ -529,7 +529,7 @@ class MokaSubscription
                             'amount_paid'   => data_get($orderDetails, 'Amount'),
                             'installment'   => data_get($orderDetails, 'InstallmentNumber'),
                             'result_code'   => data_get($doPayment, 'ResultCode'),
-                            'result_message'=> data_get($doPayment, 'Data.VirtualPosOrderId'), 
+                            'result_message'=> 'Sistem tarafından abonelik ücreti yenilendi. - İşlem ID : '.data_get($doPayment, 'Data.VirtualPosOrderId'), 
                             'result'        => 0,
                             'created_at'    => current_datetime()->format('Y-m-d H:i:s')
                         ]);
