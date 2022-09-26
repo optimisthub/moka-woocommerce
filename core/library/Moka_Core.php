@@ -25,7 +25,14 @@ class MokaPayment
      */
     public function initializePayment($params) 
     {
+
         $method = self::payWith($this->mokaOptions);
+        
+        if(data_get($params, 'isSubscriptionPayment'))
+        {
+            $method = '/PaymentDealer/DoDirectPayment';
+            unset($params['isSubscriptionPayment']);
+        }
 
         global $mokaKey;
 
@@ -39,9 +46,9 @@ class MokaPayment
             ],
             'PaymentDealerRequest' => $params
         ]; 
-
-
+ 
         $paymentRequest = self::doRequest($method, $postParams);
+ 
         if(data_get($paymentRequest, 'response.code') && data_get($paymentRequest, 'response.code') == 200)
         {
             $responseBody = data_get($paymentRequest, 'body');
@@ -59,7 +66,7 @@ class MokaPayment
     public function payWith($params) 
     {
         $isEnable3D = 'yes' === data_get($params, 'enable_3d');
-        return $isEnable3D ? '/PaymentDealer/DoDirectPaymentThreeD' : '/PaymentDealer/DoDirectPaymentThreeD';
+        return $isEnable3D ? '/PaymentDealer/DoDirectPaymentThreeD' : '/PaymentDealer/DoDirectPayment';
     }
 
     /**
