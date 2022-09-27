@@ -488,9 +488,7 @@ class MokaSubscription
     {
         global $wpdb;
         $table   = 'moka_subscriptions';
-        $records = $wpdb->get_results("SELECT * FROM $wpdb->prefix$table WHERE subscription_status = 0");
-
-        
+        $records = $wpdb->get_results("SELECT * FROM $wpdb->prefix$table WHERE subscription_status = 0 ORDER BY id DESC");
         if($records)
         {
             foreach ($records as $perKey => $perValue) {
@@ -503,14 +501,14 @@ class MokaSubscription
                     $orderId        = data_get($perValue, 'order_id');
                     $orderDetails   = json_decode(data_get($perValue, 'order_details'));
                     $payment        = new MokaPayment();
-
+                    $otherTrxCode   = data_get($orderDetails, 'OtherTrxCode').'-'.date('His',strtotime($currentTime));
                     $requestParams  = [
                         'CardToken'             => data_get($orderDetails, 'CardToken'),
                         'Amount'                => data_get($orderDetails, 'Amount'),
                         'Currency'              => data_get($orderDetails, 'Currency') ,
                         'InstallmentNumber'     => data_get($orderDetails, 'InstallmentNumber'),
                         'ClientIP'              => data_get($orderDetails, 'ClientIP'),
-                        'OtherTrxCode'          => data_get($orderDetails, 'OtherTrxCode'),
+                        'OtherTrxCode'          => $otherTrxCode,
                         'Software'              => strtoupper('OPT-WpWoo-'.get_bloginfo('version').'-'.WC_VERSION), 
                         'Description'           => 'RecurringPayment-'.$orderId,
                         'isSubscriptionPayment' => true,
@@ -525,7 +523,7 @@ class MokaSubscription
                         $wpdb->insert($wpdb->prefix . 'moka_transactions', [
                             'id_cart'       => $orderId,
                             'id_customer'   => self::getOrderCustomerId($orderId),
-                            'optimist_id'   => data_get($orderDetails, 'OtherTrxCode'),
+                            'optimist_id'   => $otherTrxCode,
                             'amount'        => data_get($orderDetails, 'Amount'),
                             'amount_paid'   => data_get($orderDetails, 'Amount'),
                             'installment'   => data_get($orderDetails, 'InstallmentNumber'),
@@ -549,8 +547,8 @@ class MokaSubscription
                             'current_time'  => Carbon::parse($currentTime)->format('Y-m-d H:i:s'),
                             'next_try'      => Carbon::parse($nextTry)->format('Y-m-d H:i:s'),
                             'period_string' => implode('-',$__per),
-                        ];                        
- 
+                        ];          
+                                
                         $wpdb->query(
                             $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_period = %s WHERE order_id = %d", $period['period_string'], $orderId ),
                         );  
@@ -561,6 +559,10 @@ class MokaSubscription
 
                         $wpdb->query(
                             $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_next_try = %s WHERE order_id = %d", $period['next_try'], $orderId ),
+                        );  
+
+                        $wpdb->query(
+                            $wpdb->prepare( "UPDATE $wpdb->prefix$table SET optimist_id = %s WHERE order_id = %d",  $otherTrxCode, $orderId ),
                         );  
                     } 
                 } 
