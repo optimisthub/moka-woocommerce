@@ -349,7 +349,7 @@ function initOptimisthubGatewayClass()
             {
                 echo '<div class="mokapay-save-card-info-message">
                 <p>'.__('Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card.', 'moka-woocommerce').'</p>
-                <img src="'.$this->assets.'/img/Logo-mokapos.svg" />
+                <img src="'.$this->assets.'/img/logo-mavi-moka.svg" alt="Moka POS" style="height:40px" />
                 </div>';
             }
             do_action( 'woocommerce_credit_card_form_end', $this->id );  
