@@ -266,12 +266,13 @@ class MokaSubscription
     public function changeAddToCartText($buttonText, $product)
     {
         if($this->isSubscriptionsEnabled)
-
-        $type = $product->get_type(); 
-        
-        if($type == $this->productType)
-        { 
-            $buttonText = __("Subscribe", "moka-woocommerce");
+        {    
+            $type = $product->get_type(); 
+            
+            if($type == $this->productType)
+            { 
+                $buttonText = __("Subscribe", "moka-woocommerce");
+            }
         }
 
         return $buttonText;
@@ -285,23 +286,24 @@ class MokaSubscription
     public function addToCartButtonProductSummary()
     {
         if($this->isSubscriptionsEnabled)
-        
-        global $product;
+        {
+            global $product;
 
-        if ( $this->productType == $product->get_type() ) {
-            do_action( 'woocommerce_before_add_to_cart_button' ); 
-                $productId = $product->get_id(); 
-                $period = get_post_meta($productId);
-                $periodString = data_get($period, '_period_per.0'). ' ' .data_get($period,'_period_in.0');       
-            ?>
-   
-            <p class="cart">
-                <a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" rel="nofollow" class="single_add_to_cart_button button alt">
-                    <?php echo __("Subscribe", "moka-woocommerce"); ?>
-                </a>
-            </p>
-            <p><?php echo "<br>".__('Renewal Period', 'moka-woocommerce').' : '.__($periodString, 'moka-woocommerce'); ?></p>
-            <?php do_action( 'woocommerce_after_add_to_cart_button' );
+            if ( $this->productType == $product->get_type() ) {
+                do_action( 'woocommerce_before_add_to_cart_button' ); 
+                    $productId = $product->get_id(); 
+                    $period = get_post_meta($productId);
+                    $periodString = data_get($period, '_period_per.0'). ' ' .data_get($period,'_period_in.0');       
+                ?>
+    
+                <p class="cart">
+                    <a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" rel="nofollow" class="single_add_to_cart_button button alt">
+                        <?php echo __("Subscribe", "moka-woocommerce"); ?>
+                    </a>
+                </p>
+                <p><?php echo "<br>".__('Renewal Period', 'moka-woocommerce').' : '.__($periodString, 'moka-woocommerce'); ?></p>
+                <?php do_action( 'woocommerce_after_add_to_cart_button' );
+            }
         }
     }
 
