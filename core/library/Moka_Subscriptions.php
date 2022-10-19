@@ -204,10 +204,10 @@ class MokaSubscription
                         'label'       => __( 'Abonelik Periyodu', 'moka-woocommerce' ),
                         'value'       => $product_object->get_meta( '_period_per', true ),
                         'options'     => [
-                            'her' => 'Her',
-                            'her_2' => 'Her 2.', 
-                            'her_3' => 'Her 3.', 
-                            'her_4' => 'Her 4.', 
+                            '1' => 'Her',
+                            '2' => 'Her 2.', 
+                            '3' => 'Her 3.', 
+                            '4' => 'Her 4.', 
                         ],
                         'default'     => '',
                         'placeholder' => __( 'Period', 'moka-woocommerce' ),
@@ -219,7 +219,7 @@ class MokaSubscription
                         'class'       => 'select short',
                         'label'       => '',
                         'value'       => $product_object->get_meta( '_period_in', true ),
-                        'options'     => ['gun' => 'Gün','hafta' => 'Hafta', 'ay' => 'Ay'],
+                        'options'     => ['day' => 'Gün','week' => 'Hafta', 'month' => 'Ay', 'year'=> 'Yıl'],
                         'default'     => '',
                         'placeholder' => __( 'Period', 'moka-woocommerce' ),
                     ]
@@ -301,7 +301,8 @@ class MokaSubscription
                         <?php echo __("Subscribe", "moka-woocommerce"); ?>
                     </a>
                 </p>
-                <p><?php echo "<br>".__('Renewal Period', 'moka-woocommerce').' : '.__($periodString, 'moka-woocommerce'); ?></p>
+                <p><?php echo "<br>".__('Renewal Period', 'moka-woocommerce').' : '.data_get($period, '_period_per.0'). ' ' .__(data_get($period,'_period_in.0'), 'moka-woocommerce'); ?>
+                </p>
                 <?php do_action( 'woocommerce_after_add_to_cart_button' );
             }
         }
@@ -318,10 +319,10 @@ class MokaSubscription
     {
         $productId = data_get($cartItem, 'product_id');
         $period = get_post_meta($productId);
-        $periodString = data_get($period, '_period_per.0'). ' ' .data_get($period,'_period_in.0');
+        $periodString = data_get($period, '_period_per.0'). ' ' .__(data_get($period,'_period_in.0'), 'moka-woocommerce');
         $itemData[] = [
             'key' => __('Renewal Period', 'moka-woocommerce'), 
-            'value' => __($periodString, 'moka-woocommerce'), 
+            'value' => $periodString, 
             'display' => '',
         ];
         return $itemData;
@@ -515,10 +516,11 @@ class MokaSubscription
                         'Description'           => 'RecurringPayment-'.$orderId,
                         'isSubscriptionPayment' => true,
                     ];
+
                     
                     $doPayment  = $payment->initializePayment($requestParams);
                     $isSuccess  = data_get($doPayment, 'Data.IsSuccessful');
-
+  
                     if($isSuccess)
                     {
                         // Save Log  
@@ -538,17 +540,18 @@ class MokaSubscription
                         // Update Subscription information
                         $subscriptionPeriod = data_get($perValue, 'subscription_period');
                         $currentTime = Carbon::parse(current_datetime()->format('Y-m-d H:i:s'));
-                        $__inString = ['day', 'month', 'week'];
+
+                        $__data = get_post_meta($productId);
+                        $__per = data_get($__data, '_period_per.0', null);
+                        $__in = data_get($__data, '_period_in.0', null);
+
+                        $nextTry = $currentTime::now()->add($__per, $__in); 
                         
-                        $__per = str_replace(['her-', 'her_'], '1 ', $subscriptionPeriod); 
-                        $__per = explode('-',$__per);
-                        
-                        $nextTry = $currentTime::now()->add($__per[0],$__per[1]); 
                  
                         $period = [
                             'current_time'  => Carbon::parse($currentTime)->format('Y-m-d H:i:s'),
                             'next_try'      => Carbon::parse($nextTry)->format('Y-m-d H:i:s'),
-                            'period_string' => implode('-',$__per),
+                            'period_string' => $__per.' '.$__in,
                         ];          
                                 
                         $wpdb->query(

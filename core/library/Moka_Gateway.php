@@ -21,7 +21,7 @@ function initOptimisthubGatewayClass()
 
         public function __construct() 
         {  
- 
+  
             $this->id = 'mokapay';  
             $this->icon = ''; // TODO : Moka Icon
             $this->has_fields = true; 
@@ -691,6 +691,9 @@ function initOptimisthubGatewayClass()
             $getAmount = $order->get_total();
             $customerId = $order->get_user_id();
 
+            $orderItems = $order->get_items();
+            $hasSubscription = $this->isOrderHasSubscriptionProduct($orderItems);
+
             $orderData = [
                 'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
                 'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
@@ -736,6 +739,11 @@ function initOptimisthubGatewayClass()
                 // TODO : Basket Product Details
                 //'BasketProduct'         => self::formatBaksetProducts($order), 
             ]; 
+
+            if($hasSubscription)
+            {
+                $orderData['Description'] = 'RecurringPayment-'.$orderId;
+            }
              
             return $orderData;
 
@@ -1290,19 +1298,18 @@ function initOptimisthubGatewayClass()
                         $__data = get_post_meta($productId);
                         $__per  = data_get($__data, '_period_per.0', null);
                         $__in   = data_get($__data, '_period_in.0', null);
-
-                        $__inString = ['gun' => 'day', 'ay' => 'month', 'hafta' => 'week'];
  
                         $currentTime = Carbon::parse(current_datetime()->format('Y-m-d H:i:s'));
-                        $__per = str_replace(['her-','her_', 'her'], '1', $__per); 
 
-                        $nextTry = $currentTime::now()->add($__per, $__inString[$__in]); 
+                        $nextTry = $currentTime::now()->add($__per, $__in); 
 
                         $period = [
                             'current_time'  => Carbon::parse($currentTime)->format('Y-m-d H:i:s'),
                             'next_try'      => Carbon::parse($nextTry)->format('Y-m-d H:i:s'),
-                            'period_string' => $__per.'-'.$__inString[$__in],
-                        ];
+                            'period_string' => $__per.' '.$__in,
+                        ]; 
+
+                        ray($period);
                     }
                 }
             } 

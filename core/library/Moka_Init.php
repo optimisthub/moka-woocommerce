@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.0.1');
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.0.2');
 
 global $mokaVersion;
 $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
@@ -65,7 +65,8 @@ class Moka_Init
 	 */
 	public function recentNewsByOptimisthub() 
 	{
-		echo '<p><strong>Ücretsiz</strong> Moka POS WooCommerce Eklentisi Optimist Hub Bünyesinde geliştirilmiştir. Açık kaynak kodlu eklentiye sizler de katkıda bulunabilirsiniz. <a href="https://github.com/optimisthub/moka-woocommerce">></a></p> <p style="display:flex;justify-content:center;align-items:center"> <a href="https://optimisthub.com/?ref='. get_bloginfo("wpurl").'&source=moka-woocommerce" target="_blank"> <img style="width:220px" src="'.plugins_url( 'moka-woocommerce-master/assets/img/optimisthub.svg' ).'" alt=""> </a> </p>'; 
+		$assetDir = str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
+		echo '<p><strong>Ücretsiz</strong> Moka POS WooCommerce Eklentisi Optimist Hub Bünyesinde geliştirilmiştir. Açık kaynak kodlu eklentiye sizler de katkıda bulunabilirsiniz. <a href="https://github.com/optimisthub/moka-woocommerce">></a></p> <p style="display:flex;justify-content:center;align-items:center"> <a href="https://optimisthub.com/?ref='. get_bloginfo("wpurl").'&source=moka-woocommerce" target="_blank"> <img style="width:220px" src="'.$assetDir.'/img/optimisthub.svg'.'" alt=""> </a> </p>'; 
 	}
 
 }
