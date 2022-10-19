@@ -567,6 +567,7 @@ function initOptimisthubGatewayClass()
                 { 
                     $userId     = $this->getOrderCustomerId($orderId);
                     $customer   = $this->optimisthubMoka->addCustomerWithCard($orderDetails);  
+ 
                     $cardToken  = data_get($customer, 'CardList.0.CardToken');
                     $savedCard  = data_get($customer, 'CardList.0');
                     $orderDetails['CardToken'] = $cardToken;
@@ -597,6 +598,12 @@ function initOptimisthubGatewayClass()
                             'created_at'    => current_datetime()->format('Y-m-d H:i:s'),
                         ]
                     );
+
+                    global $wpdb;
+                    $hashTable = 'moka_transactions_hash';
+                    $wpdb->query(
+                            $wpdb->prepare( "UPDATE $wpdb->prefix$hashTable SET order_details = %s WHERE id_order = %d", $this->formatOrderDetailsForLog($saveSubsRecord), $orderId ),
+                    );  
                 } 
                 // Subscription product completed successfully
                 
@@ -1216,6 +1223,7 @@ function initOptimisthubGatewayClass()
         private function formatSubsRecord($params)
         {  
             unset($params['CvcNumber']);
+            $params['hideCardNumber'] = true;
             return $params;
         }
 
@@ -1235,14 +1243,18 @@ function initOptimisthubGatewayClass()
             unset($params['ExpMonth']);
             unset($params['CustomerDetails']['ExpYear']);
             unset($params['CustomerDetails']['ExpMonth']);
-            if(data_get($param, 'CardNumber'))
+
+            if(data_get($param, 'hideCardNumber'))
             {
-                $param['CardNumber'] = '**** **** **** '.substr($param['CardNumber'], -4);
-            } 
-            if(data_get($param, 'CustomerDetails.CardNumber'))
-            {
-                $param['CustomerDetails']['CardNumber'] = '**** **** **** '.substr($param['CustomerDetails']['CardNumber'], -4);
-            } 
+                if(data_get($param, 'CardNumber'))
+                {
+                    $param['CardNumber'] = '**** **** **** '.substr($param['CardNumber'], -4);
+                } 
+                if(data_get($param, 'CustomerDetails.CardNumber'))
+                {
+                    $param['CustomerDetails']['CardNumber'] = '**** **** **** '.substr($param['CustomerDetails']['CardNumber'], -4);
+                }
+            }
            
             return json_encode($param,true);
         } 
@@ -1307,9 +1319,7 @@ function initOptimisthubGatewayClass()
                             'current_time'  => Carbon::parse($currentTime)->format('Y-m-d H:i:s'),
                             'next_try'      => Carbon::parse($nextTry)->format('Y-m-d H:i:s'),
                             'period_string' => $__per.' '.$__in,
-                        ]; 
-
-                        ray($period);
+                        ];  
                     }
                 }
             } 
