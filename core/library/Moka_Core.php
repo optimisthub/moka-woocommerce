@@ -174,6 +174,9 @@ class MokaPayment
     public function generateInstallmentsTableHtml($params)
     {
 
+        $assetDir =  str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
+
+
         $storedData = get_option( 'woocommerce_mokapay-installments' );
         $avaliableInstallmentsCount = data_get($params, 'maxInstallment');
         $paymentId = data_get($params, 'paymentGatewayId');
@@ -198,7 +201,7 @@ class MokaPayment
         foreach($storedData as $perStoredInstallmentKey => $perStoredInstallment)
         {
             $return.='<tr>';
-                $imagePath =  plugins_url( 'moka-woocommerce-master/assets/img/cards/banks/' );
+                $imagePath =  $assetDir. '/img/cards/banks/';
        
                 $return.= '<tr>';
                 $cardImageSlug = data_get($perStoredInstallment, 'groupName');
@@ -250,7 +253,7 @@ class MokaPayment
      */
     public function generateInstallmentsTableShortcode()
     {
-
+ 
         $storedData = get_option( 'woocommerce_mokapay-installments' ); 
 
         if(!$storedData)
@@ -266,12 +269,14 @@ class MokaPayment
         }
 
         $return.= '</tr></thead>';
+
+        $assetDir = str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
         
         foreach($storedData as $perStoredInstallmentKey => $perStoredInstallment)
         {
           
             $return.='<tr>';
-                $imagePath =  plugins_url( 'moka-woocommerce-master/assets/img/cards/banks/' );
+                $imagePath = $assetDir.'img/cards/banks/';
                 $cardImageSlug = data_get($perStoredInstallment, 'groupName');
                 $cardSymbol = '<img style="width:100px !important;max-width:unset;" src="'.$imagePath.$cardImageSlug.'.svg" />';
                 if(!$cardImageSlug)

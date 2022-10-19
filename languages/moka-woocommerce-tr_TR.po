@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2022-09-06 16:26+0300\n"
+"PO-Revision-Date: 2022-10-20 01:49+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: tr_TR\n"
@@ -156,41 +156,17 @@ msgstr "Aboneliği Başlat"
 msgid "Renewal Period"
 msgstr "Yenilenme Periyodu"
 
-msgid "her gun"
-msgstr "Günlük"
+msgid "day"
+msgstr "gün"
 
-msgid "her hafta"
-msgstr "Haftalık"
+msgid "week"
+msgstr "hafta"
 
-msgid "her ay"
-msgstr "Aylık"
+msgid "month"
+msgstr "ay"
 
-msgid "her_2 gun"
-msgstr "Her iki günde bir"
-
-msgid "her_2 hafta"
-msgstr "Her iki haftada bir"
-
-msgid "her_2 ay"
-msgstr "Her iki ayda bir"
-
-msgid "her_3 gun"
-msgstr "Her üç günde bir"
-
-msgid "her_3 hafta"
-msgstr "Her üç haftada bir"
-
-msgid "her_3 ay"
-msgstr "Her üç ayda bir"
-
-msgid "her_4 gun"
-msgstr "Her dört günde bir"
-
-msgid "her_4 hafta"
-msgstr "Her dört haftada bir"
-
-msgid "her_4 ay"
-msgstr "Her dört ayda bir"
+msgid "year"
+msgstr "yıl"
 
 msgid "Subscription"
 msgstr "Abonelikler"
