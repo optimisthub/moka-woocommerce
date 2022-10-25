@@ -593,6 +593,7 @@ function initOptimisthubGatewayClass()
                             'subscription_status'   => '0',
                             'subscription_period'   => data_get($subscriptionPeriod, 'period_string'),
                             'subscription_next_try' => data_get($subscriptionPeriod, 'next_try'),
+                            'try_count'     => 0,
                             'user_id'       => $userId,
                             'optimist_id'   => data_get($orderDetails,'OtherTrxCode'), 
                             'created_at'    => current_datetime()->format('Y-m-d H:i:s'),

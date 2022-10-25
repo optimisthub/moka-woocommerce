@@ -195,14 +195,28 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
                     'subscription_period' => data_get($perRow, 'subscription_period', null),
                     'subscription_status' => $status == 0 ? '<mark class="active_subs">Aktif</mark>' : '<mark class="passive_subs">Pasif</mark>',
                     'created_at' => date('d.m.Y.H:i:s', strtotime(data_get($perRow, 'created_at', null))),
-                    'actions' => 
-                        ($status == 0) ? '
-                        <!--<span class="subscription-payManually">Ödeme</span>-->
-                        <span data-order-id="'.$orderId.'" class="subscription-cancelManually">İptal</span>
-                        ' : '
-                        <span data-order-id="'.$orderId.'" class="subscription-noActions">Düzenlenemez</span>'
+                    'actions' => self::statusString($status,$orderId,$perRow)
                 ];
             }
+        }
+
+        return $return;
+
+    }
+
+    private function statusString($status,$orderId,$row)
+    {
+
+        $return = '<span data-order-id="'.$orderId.'" class="subscription-noActions">Düzenlenemez</span>';
+
+        if($status==0)
+        {
+            $return = '<span data-order-id="'.$orderId.'" class="subscription-cancelManually">İptal</span>';
+        }
+
+        if($status==2)
+        {
+            $return = '<span class="subscription-cancelManually" style="background:#000">Ödeme Başarısız</span><br>'.$row['updated_at'];
         }
 
         return $return;
