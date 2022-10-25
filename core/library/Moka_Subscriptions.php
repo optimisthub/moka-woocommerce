@@ -58,6 +58,8 @@ class MokaSubscription
         add_action( 'init', [$this, 'triggerSubscriptionPayments'] );
         add_action( 'moka_subscriptions_recurring_payments_cron_job', [$this, 'runSubscriptionPayments']);
 
+        add_action( 'init', [$this, 'mybeAddColumnIfIsNotExists'] );
+
 
     }
 
@@ -483,7 +485,7 @@ class MokaSubscription
     public function triggerSubscriptionPayments()
     {
         if(!wp_next_scheduled('moka_subscriptions_recurring_payments_cron_job')) {
-            wp_schedule_event(time(), 'every_minute', 'moka_subscriptions_recurring_payments_cron_job');
+            wp_schedule_event(time(), 'daily', 'moka_subscriptions_recurring_payments_cron_job');
         }
     }
 
@@ -495,13 +497,31 @@ class MokaSubscription
         if($records)
         {
             foreach ($records as $perKey => $perValue) {
-
+ 
                 $paymentDate = data_get($perValue, 'subscription_next_try');
                 $currentTime = current_datetime()->format('Y-m-d H:i:s');
-                
+                $tryCount    = (int)data_get($perValue, 'try_count'); 
+                $orderId     = data_get($perValue, 'order_id');
+
                 if(strtotime($paymentDate)<time())
                 {
-                    $orderId        = data_get($perValue, 'order_id');
+                    if($tryCount>=3)
+                    {
+                        $wpdb->update( $wpdb->prefix.$table, 
+                            [
+                                'try_count' => ($tryCount+1),
+                                'subscription_status' => 2
+                            ],    
+                            ['order_id' => $orderId]
+                        ); 
+                        return;
+                    }
+    
+                    if(!data_get($perValue, 'subscription_period'))
+                    {
+                        return;
+                    }
+
                     $orderDetails   = json_decode(data_get($perValue, 'order_details'));
                     $payment        = new MokaPayment();
                     $otherTrxCode   = data_get($orderDetails, 'OtherTrxCode').'-'.date('His',strtotime($currentTime));
@@ -541,34 +561,27 @@ class MokaSubscription
                         $subscriptionPeriod = data_get($perValue, 'subscription_period');
                         $currentTime = Carbon::parse(current_datetime()->format('Y-m-d H:i:s'));
 
-                        $__data = get_post_meta($productId);
-                        $__per = data_get($__data, '_period_per.0', null);
-                        $__in = data_get($__data, '_period_in.0', null);
+                        $__data = explode(' ',$subscriptionPeriod);
 
-                        $nextTry = $currentTime::now()->add($__per, $__in); 
-                        
+                        $nextTry = $currentTime::now()->add($__data[0], $__data[1]); 
                  
                         $period = [
                             'current_time'  => Carbon::parse($currentTime)->format('Y-m-d H:i:s'),
                             'next_try'      => Carbon::parse($nextTry)->format('Y-m-d H:i:s'),
-                            'period_string' => $__per.' '.$__in,
+                            'period_string' => $subscriptionPeriod
                         ];          
                                 
-                        $wpdb->query(
-                            $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_period = %s WHERE order_id = %d", $period['period_string'], $orderId ),
-                        );  
- 
-                        $wpdb->query(
-                            $wpdb->prepare( "UPDATE $wpdb->prefix$table SET updated_at = %s WHERE order_id = %d", current_datetime()->format('Y-m-d H:i:s'), $orderId ),
-                        );  
+                        $wpdb->update( $wpdb->prefix.$table, 
+                            [
+                                'subscription_period'   => $period['period_string'],
+                                'updated_at'            => current_datetime()->format('Y-m-d H:i:s'),
+                                'subscription_next_try' => $period['next_try'],
+                                'optimist_id'           => $otherTrxCode,
+                                'try_count'             => ($tryCount+1)
+                            ],    
+                            ['order_id' => $orderId]
+                        );
 
-                        $wpdb->query(
-                            $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_next_try = %s WHERE order_id = %d", $period['next_try'], $orderId ),
-                        );  
-
-                        $wpdb->query(
-                            $wpdb->prepare( "UPDATE $wpdb->prefix$table SET optimist_id = %s WHERE order_id = %d",  $otherTrxCode, $orderId ),
-                        );  
                     } 
                 } 
             }
@@ -613,6 +626,22 @@ class MokaSubscription
         $orderId    = $order->id;
         $userId     = $order->get_user_id();
         return $userId;
+    }
+
+    /**
+     * Add Try Count
+     *
+     * @return void
+     */
+    public function mybeAddColumnIfIsNotExists()
+    {
+        global $wpdb;
+        $table   = $wpdb->prefix.'moka_subscriptions';
+        $row = $wpdb->get_results(  "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '$table' AND column_name = 'try_count'"  );
+        
+        if(empty($row)){
+            $wpdb->query("ALTER TABLE $table ADD try_count INT(1) NOT NULL DEFAULT 0 AFTER `subscription_next_try`");
+        }
     }
 }
 
