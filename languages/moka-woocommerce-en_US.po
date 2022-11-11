@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2022-10-20 01:49+0300\n"
+"PO-Revision-Date: 2022-11-11 16:58+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -205,3 +205,12 @@ msgstr "Actions"
 
 msgid "Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card."
 msgstr "Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card."
+
+msgid "Installment Options"
+msgstr "Taksit Seçenekleri"
+
+msgid "With installments starting from"
+msgstr "With installments starting from"
+
+msgid "Show Installment Message under the price_html ?"
+msgstr "Show Installment Message under the price_html ?"
