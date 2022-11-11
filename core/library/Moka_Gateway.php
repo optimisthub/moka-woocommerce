@@ -57,8 +57,8 @@ function initOptimisthubGatewayClass()
             $this->order_prefix = $this->get_option( 'order_prefix' );
             $this->order_status = $this->get_option( 'order_status' );
             $this->subscriptions = $this->get_option( 'subscriptions' );
-            $this->isSubscriptionsEnabled = 'yes' == $this->subscriptions;
-            
+            $this->installment_message = $this->get_option( 'installment_message' );
+            $this->isSubscriptionsEnabled = 'yes' == $this->subscriptions; 
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
             $this->userInformation = self::getUserInformationData();
@@ -70,7 +70,7 @@ function initOptimisthubGatewayClass()
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
             add_action( 'admin_head', [$this, 'admin_css']);   
             add_action( 'woocommerce_receipt_'.$this->id, [$this, 'receipt_page']);  
-            
+
             self::__saveRates();
             
         }
@@ -119,6 +119,13 @@ function initOptimisthubGatewayClass()
                     'type'        => 'checkbox',
                     'description' => __('It allows you to sell products via subscription method on your site.' , 'moka-woocommerce'),
                     'default'     => 'no',
+                    'desc_tip'    => true,
+                ],
+                'installment_message' => [
+                    'title'       => __( 'Show Installment Message under the price_html ?', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
+                    'label'       => __('Show Installment Message under the price_html ?', 'moka-woocommerce' ),
+                    'type'        => 'checkbox', 
+                    'default'     => 'yes',
                     'desc_tip'    => true,
                 ],
                 'installment' => [
@@ -363,8 +370,6 @@ function initOptimisthubGatewayClass()
         public function payment_scripts() 
         { 
             wp_enqueue_script( 'moka-pay-corejs', $this->assets .  'moka.js' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
-            wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
-            wp_enqueue_style ( 'moka-pay-card_css' );
             wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
         }
             
