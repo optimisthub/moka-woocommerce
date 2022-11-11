@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5');
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.1');
 
 global $mokaVersion;
 $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
@@ -185,6 +185,8 @@ class Moka_Init
 		
 				echo $price.' 
 					<div class="min--installment--price"><span>'.$minRatePrice['unit_price']. '</span> '.get_woocommerce_currency_symbol() .' \' '.__( 'With installments starting from', 'moka-woocommerce' ).' ...</div>';
+			} else {
+				echo $price;
 			}
 		}
 	}
@@ -208,6 +210,7 @@ class Moka_Init
 			'122-is-bankasi-a-s' => 'maximum.svg',
 			'108-halk-bankasi-a-s' => 'paraf.svg',
 			'174-vakiflar-bankasi-t-a-o' => 'world.svg',
+			'118-ing-bank-a-s' => 'ing-bank.png'
 
 		];
 		return $images[$string];
