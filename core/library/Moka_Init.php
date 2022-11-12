@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.1');
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.2');
 
 global $mokaVersion;
 $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
@@ -96,11 +96,19 @@ class Moka_Init
 
 	public function generateInstallmentProductTab($tabs)
 	{
-		$tabs['installment_tab'] = array(
-			'title'     => __( 'Installment Options', 'moka-woocommerce' ),
-			'priority'  => 20,
-			'callback'  => [$this, 'generateInstallmentProductTabContent']
-		);
+		$options = get_option( 'woocommerce_mokapay_settings' );
+		$isavaliable = data_get($options, 'installment_tab_enable');
+		$tabPosition = data_get($options, 'installment_tab_position',20);
+		
+		if($isavaliable && $isavaliable=='yes')
+		{
+			$tabs['installment_tab'] = array(
+				'title'     => __( 'Installment Options', 'moka-woocommerce' ),
+				'priority'  => $tabPosition,
+				'callback'  => [$this, 'generateInstallmentProductTabContent']
+			);
+		}
+
 		return $tabs;
 	}
 
@@ -139,7 +147,7 @@ class Moka_Init
 	 
 					foreach ($rates as $perRateKey => $perRateValue) 
 					{
-						if($perRateValue['value']>0 && $perRateValue['active']==1)
+						if($perRateValue['value']>=0 && $perRateValue['active']==1)
 						{
 							$returnPrice = self::calculateComission($perRateKey,$perRateValue['value'],$productPrice);
 							
@@ -210,7 +218,7 @@ class Moka_Init
 			'122-is-bankasi-a-s' => 'maximum.svg',
 			'108-halk-bankasi-a-s' => 'paraf.svg',
 			'174-vakiflar-bankasi-t-a-o' => 'world.svg',
-			'118-ing-bank-a-s' => 'ing-bank.png'
+			'118-ing-bank-a-s' => 'bonus.png'
 
 		];
 		return $images[$string];

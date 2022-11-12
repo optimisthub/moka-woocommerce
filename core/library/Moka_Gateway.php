@@ -128,6 +128,21 @@ function initOptimisthubGatewayClass()
                     'default'     => 'yes',
                     'desc_tip'    => true,
                 ],
+                'installment_tab_enable' => [
+                    'title'       => __( 'Installment table display on product pages', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
+                    'label'       => __('If you want the installment table to be displayed as a product tab on the product pages, turn it on.', 'moka-woocommerce' ),
+                    'type'        => 'checkbox', 
+                    'default'     => 'yes',
+                    'desc_tip'    => true,
+                ],
+                'installment_tab_position' => [
+                    'title'       => __( 'Position of Installment Options Tab among other tabs', 'moka-woocommerce' ),
+                    'type'        => 'text', 
+                    'default'     => '20',
+                    'label'       => __('The default value is 20. You can change the tab position according to the features provided by your theme or plugins. Example (like 40,60,90.)', 'moka-woocommerce' ),
+                    'desc_tip'    => true,
+                ],
+
                 'installment' => [
                     'title'       => __( 'Installement', 'moka-woocommerce' ),
                     'label'       => __('Enable/Disable Installement ?', 'moka-woocommerce' ),
