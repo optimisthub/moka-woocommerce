@@ -218,7 +218,7 @@ class Moka_Init
 			'122-is-bankasi-a-s' => 'maximum.svg',
 			'108-halk-bankasi-a-s' => 'paraf.svg',
 			'174-vakiflar-bankasi-t-a-o' => 'world.svg',
-			'118-ing-bank-a-s' => 'bonus.png'
+			'118-ing-bank-a-s' => 'bonus.svg'
 
 		];
 		return $images[$string];

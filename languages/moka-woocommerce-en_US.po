@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2022-11-12 19:03+0300\n"
+"PO-Revision-Date: 2022-11-15 12:13+0300\n"
 "Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -222,7 +222,7 @@ msgid "If you want the installment table to be displayed as a product tab on the
 msgstr "If you want the installment table to be displayed as a product tab on the product pages, turn it on."
 
 msgid "Position of Installment Options Tab among other tabs"
-msgstr "Taksit Seçenekleri Sekmesinin diğer sekmeler arasındaki pozisyonu"
+msgstr "Position of Installment Options Tab among other tabs"
 
 msgid "The default value is 20. You can change the tab position according to the features provided by your theme or plugins. Example (like 40,60,90.)"
 msgstr "The default value is 20. You can change the tab position according to the features provided by your theme or plugins. Example (like 40,60,90.)"
