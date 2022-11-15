@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.2');
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.3');
 
 global $mokaVersion;
 $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
