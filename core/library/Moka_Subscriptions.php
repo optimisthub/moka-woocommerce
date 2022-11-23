@@ -319,6 +319,8 @@ class MokaSubscription
      */
     public function displayCartItemCustomMetaData( $itemData, $cartItem ) 
     {
+        return $itemData;
+        /*
         $productId = data_get($cartItem, 'product_id');
         $period = get_post_meta($productId);
         $periodString = data_get($period, '_period_per.0'). ' ' .__(data_get($period,'_period_in.0'), 'moka-woocommerce');
@@ -326,8 +328,8 @@ class MokaSubscription
             'key' => __('Renewal Period', 'moka-woocommerce'), 
             'value' => $periodString, 
             'display' => '',
-        ];
-        return $itemData;
+        ];*/
+        
     }  
 
     /**
