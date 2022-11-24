@@ -175,14 +175,17 @@ class MokaSubscription
      */
     public function registerSubscriptionProductTab($tabs)
     {
-        $tabs['general']['class'] = 'hide_if_grouped hide_if_'.$this->productType;
-        $tabData[$this->productType] = [
-            'label'    => __( 'Abonelik Özellikleri', 'moka-woocommerce' ),
-            'target' => $this->productType.'_type_product_options',
-            'class'  => 'show_if_'.$this->productType,
-        ]; 
-                
-        $tabs = array_merge($tabData, $tabs);
+        if($this->isSubscriptionsEnabled)
+        {
+            $tabs['general']['class'] = 'hide_if_grouped hide_if_'.$this->productType;
+            $tabData[$this->productType] = [
+                'label'    => __( 'Abonelik Özellikleri', 'moka-woocommerce' ),
+                'target' => $this->productType.'_type_product_options',
+                'class'  => 'show_if_'.$this->productType,
+            ]; 
+                    
+            $tabs = array_merge($tabData, $tabs);
+        }
         return $tabs;
     }
 
