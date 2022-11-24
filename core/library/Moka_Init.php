@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.4');
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.5');
 
 global $mokaVersion;
 $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
@@ -196,6 +196,8 @@ class Moka_Init
 			} else {
 				echo $price;
 			}
+		} else {
+			return $price;
 		}
 	}
 
