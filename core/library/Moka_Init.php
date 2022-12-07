@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.5');
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.4');
 
 global $mokaVersion;
 $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
@@ -14,6 +14,9 @@ $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
  */
 class Moka_Init
 {
+
+	const MAX_INSTALLMENT_SIZE = 12;
+
 	public function __construct()
 	{
 		$this->assets = $this->assetDir();
@@ -175,6 +178,7 @@ class Moka_Init
 
 	public function renderMinInstallmentMessage($price)
 	{
+		$return = $price;
 		if(is_singular('product'))
 		{
 			global $product;
@@ -185,19 +189,18 @@ class Moka_Init
 			$options = get_option( 'woocommerce_mokapay_settings' );
 			$isavaliable = data_get($options, 'installment_message');
 
-			if($isavaliable == 'yes' && !is_shop() && $woocommerce_loop['name'] == '')
+			if($isavaliable == 'yes' && !is_shop() && $woocommerce_loop['name'] == '' && $product->is_type( 'simple' ))
 			{
 				$installments = get_option( 'woocommerce_mokapay-installments' );
 				$minRate = data_get(current($installments), 'rates.12.value');
-				$minRatePrice = self::calculateComission(12,$minRate,$productPrice);
+				$minRatePrice = self::calculateComission(self::MAX_INSTALLMENT_SIZE,$minRate,$productPrice);
 		
-				echo $price.' 
+				$return .= ' 
 					<div class="min--installment--price"><span>'.$minRatePrice['unit_price']. '</span> '.get_woocommerce_currency_symbol() .' \' '.__( 'With installments starting from', 'moka-woocommerce' ).' ...</div>';
 			} else {
-				echo $price;
+				$return = $price;
 			}
-		} else {
-			return $price;
+			return $return;
 		}
 	}
 
