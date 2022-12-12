@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.6');
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.5.7');
 
 global $mokaVersion;
 $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
@@ -179,6 +179,7 @@ class Moka_Init
 	public function renderMinInstallmentMessage($price)
 	{
 		$return = $price;
+
 		if(is_singular('product'))
 		{
 			global $product;
@@ -202,6 +203,8 @@ class Moka_Init
 			}
 			return $return;
 		}
+
+		return $return;
 	}
 
  
