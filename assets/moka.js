@@ -6,7 +6,7 @@ jQuery(document).ready(function () {
     /**
      * Bin Number Request 
      */
-    jQuery(document).on('keyup','input#mokapay-card-number',function( e ) {  
+    jQuery(document).on('keyup change','input#mokapay-card-number',function( e ) {  
         e.preventDefault();
         let binValue = jQuery(this).val();
         let total = jQuery('#mokapay-current-order-total').val();
