@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://optimisthub.com?ref=github.com&param=moka-woocommerce">
-    <img alt="Optimisthub.com" src="https://optimisthub.com/cdn/moka/moka-woocommerce-plugin.jpg">
+    <img alt="Optimisthub.com" src="https://www.optimisthub.com/cdn/moka/moka-woocommerce-plugin.png">
   </a> 
 </p>
 
