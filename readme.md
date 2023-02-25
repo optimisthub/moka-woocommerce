@@ -25,7 +25,7 @@ Moka Pos, Moka Pay plugin;
 - Tried with MYSQL 8.0+.
 - Tested with PHP versions 7.1,7.4,8.x>.
 - Fully compatible with WooCommerce version 6.0+.
-- Fully compatible with WordPress 5.8.2.
+- Fully compatible with WordPress 5.8.2+.
 
 ## How To Install
 
@@ -38,3 +38,18 @@ For sandbox usage : https://developer.moka.com/home.php?page=test-kartlari
 ### Changelog 
 
 Version history : https://github.com/optimisthub/moka-woocommerce/wiki/Changelog
+
+### Other integrations
+
+- Moka PHP Client : https://github.com/optimisthub/moka-php 
+- Moka Open Cart 3.x : https://github.com/optimisthub/moka-opencart-3.x
+- Moka Open Cart 2.3x : https://github.com/optimisthub/moka-opencart-2.3
+- Moka Open Cart 2.2x : https://github.com/optimisthub/moka-opencart-2.2
+- Moka Presta Shop : https://github.com/optimisthub/moka-prestashop
+- Moka Magento : https://github.com/optimisthub/moka-magento
+
+#### Powerfull WordPress Plugins by Optimisthub 
+
+- Smart SEO Friendly Sitemap Generator *[Already Published]* : https://github.com/optimisthub/smart-sitemap-generator
+- Scheduled Posts Issue Fixer : https://github.com/optimisthub/scheduled-posts-issue-fixer
+- Enable Svg Support : https://github.com/optimisthub/wordpress-svg-enabler

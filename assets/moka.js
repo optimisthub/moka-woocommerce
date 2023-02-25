@@ -1,12 +1,12 @@
 jQuery.ajaxSetup({cache: false});
 
 jQuery(document).ready(function () {
-    console.info('Moka PAY Core Js File loaded, successfully.');
+    console.info('Moka PAY Core Js File loaded, successfully. Version 3.7.0);
     
     /**
      * Bin Number Request 
      */
-    jQuery(document).on('keyup','input#mokapay-card-number',function( e ) {  
+    jQuery(document).on('blur keyup click change','input#mokapay-card-number',function( e ) {  
         e.preventDefault();
         let binValue = jQuery(this).val();
         let total = jQuery('#mokapay-current-order-total').val();
@@ -28,7 +28,7 @@ jQuery(document).ready(function () {
                 }
             });
         } 
-    });
+    }); 
 
     /**
      * Cancel Subscription
