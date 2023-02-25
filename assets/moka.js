@@ -1,7 +1,7 @@
 jQuery.ajaxSetup({cache: false});
 
 jQuery(document).ready(function () {
-    console.info('Moka PAY Core Js File loaded, successfully. Version 3.7.0);
+    console.info('Moka PAY Core Js File loaded, successfully. Version 3.7.0');
     
     /**
      * Bin Number Request 
