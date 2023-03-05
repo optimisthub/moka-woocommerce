@@ -227,17 +227,36 @@ class Optimisthub_Ajax
         {
             $formHtml .='<fieldset style="padding-bottom:30px"><p class="form-row form-row-wide">';
                 #$formHtml .= '<img class="aligncenter" src="'.data_get($params, 'card.CardTemplate').'" />';
-                $formHtml .= '<label for="mokapay-installment">'.__( "Installment Shopping", 'moka-woocommerce' ).'</label>';
-                $formHtml .= '<select name="mokapay-installment" class="input-select">';
-                foreach(range(1,$maxInstallment) as $perInstallmentKey)
+                $formHtml .= '<label>'.__( "Installment Shopping", 'moka-woocommerce' ).'</label>';
+
+                $formHtml .='
+                 <style>
+                    .custom-checkboxes {display:flex;}
+                    .w-w-50 {width:49%;float:left;margin-right:1%;}
+                 </style>
+                ';
+
+               # $formHtml .= '<select name="mokapay-installment" class="input-select">';
+                foreach(range(1,$maxInstallment) as $kk=>$perInstallmentKey)
                 {
                     if($installmentRates[$perInstallmentKey]['active'] == 1)
                     {
                         $optionValue = $perInstallmentKey == 1 ? __( "Cash In Advence", 'moka-woocommerce' ) : $perInstallmentKey. ' '. __( "Installment", 'moka-woocommerce' );
-                        $formHtml.='<option value="'.$perInstallmentKey.'">'.self::calculateComissionRate($total, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</option>';
+                        $checked = $kk==0 ? ' checked="checked" ' : '';
+
+                        $formHtml .=' <p class="form-row w-w-50">
+                            <input '.$checked.' id="installment-pick'.$kk.'" type="radio" class="input-radio w-w-50" name="mokapay-installment" value="'.$perInstallmentKey.'">
+                            <label for="installment-pick'.$kk.'"> '.$optionValue .' x '. self::calculateComissionRate($total, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.'</label>
+                        </p>';
+
+                        $formHtml .=' ';
+                        #$formHtml .='<input type="radio" id="ins'.$kk.'" name="mokapay-installment" value="'.$perInstallmentKey.'">';
+                        #$formHtml .='<div><label for="ins'.$kk.'">'.self::calculateComissionRate($total, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</label></div><br>';
+                        
+                        #$formHtml.='<option value="'.$perInstallmentKey.'">'.self::calculateComissionRate($total, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</option>';
                     }
                 }
-                $formHtml .= '</select>';
+                #$formHtml .= '</select>';
             $formHtml .= '</p></fieldset>';
         }
 

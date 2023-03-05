@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.0');
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.1');
 
 global $mokaVersion;
 $mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
@@ -189,8 +189,13 @@ class Moka_Init
 
 			$options = get_option( 'woocommerce_mokapay_settings' );
 			$isavaliable = data_get($options, 'installment_message');
+			$stock = $product->get_stock_quantity(); 
 
-			if($isavaliable == 'yes' && !is_shop() && $woocommerce_loop['name'] == '' && $product->is_type( 'simple' ))
+			if(
+				
+				$stock>0 && $isavaliable == 'yes' && !is_shop() && $woocommerce_loop['name'] == '' && $product->is_type( 'simple' ) || 
+				$stock>0 && $isavaliable == 'yes' && !is_shop() && $woocommerce_loop['name'] == '' && $product->is_type( 'variable' )
+			)
 			{
 				$installments = get_option( 'woocommerce_mokapay-installments' );
 				$minRate = data_get(current($installments), 'rates.12.value');
