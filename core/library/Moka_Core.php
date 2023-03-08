@@ -287,8 +287,7 @@ class MokaPayment
                 $return.= '<td>'.$cardSymbol.'</td>';
                 for ($i=1; $i < count(data_get($perStoredInstallment, 'rates'))+1 ; $i++) { 
                     $return.='<td>';
-                        $return.=data_get($perStoredInstallment, 'rates')[$i]['value'] != 0 ?
-                        data_get($perStoredInstallment, 'rates')[$i]['value'].' '.get_woocommerce_currency() : '-';
+                        $return.=data_get($perStoredInstallment, 'rates')[$i]['value'] > 0 ? '% '.data_get($perStoredInstallment, 'rates')[$i]['value'] : '-';
                     $return.='</td>';
                 }
             $return.='</tr>';
