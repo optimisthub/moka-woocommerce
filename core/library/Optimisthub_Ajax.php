@@ -233,6 +233,18 @@ class Optimisthub_Ajax
                  <style>
                     .custom-checkboxes {display:flex;}
                     .w-w-50 {width:49%;float:left;margin-right:1%;}
+                    p.form-row.w-w-50 {
+                        width: 100% !important;
+                        display: block !important;
+                        margin: 0 !important;
+                    }
+                    p.form-row.w-w-50 input {
+                        width: unset !important;
+                    }
+                    
+                    p.form-row.w-w-50 label {
+                        line-height: 1 !important;
+                    }
                  </style>
                 ';
 
