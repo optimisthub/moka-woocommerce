@@ -20,10 +20,10 @@
 
 Moka Pos, Moka Pay plugin;
 
-- Minimum PHP 7.1> requirement is required.
+- Minimum PHP 7.4+ requirement is required.
 - PHP cURL extension is required.
-- Tried with MYSQL 8.0+.
-- Tested with PHP versions 7.1,7.4,8.x>.
+- Tried with MYSQL 5.7.43, 8.0.
+- Tested with PHP versions 7.4, 8.1.
 - Fully compatible with WooCommerce version 6.0+.
 - Fully compatible with WordPress 5.8.2+.
 

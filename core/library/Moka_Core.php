@@ -49,12 +49,13 @@ class MokaPayment
  
         $paymentRequest = self::doRequest($method, $postParams);
  
-        if(data_get($paymentRequest, 'response.code') && data_get($paymentRequest, 'response.code') == 200)
+        if($paymentRequest && data_get($paymentRequest, 'response.code') && data_get($paymentRequest, 'response.code') == 200)
         {
             $responseBody = data_get($paymentRequest, 'body');
             $responseBody = json_decode($responseBody, true);
             return $responseBody;
         }
+        return $paymentRequest;
     }
 
     /**
@@ -96,7 +97,7 @@ class MokaPayment
 
         $response = self::doRequest('/PaymentDealer/GetBankCardInformation',$postParams);
         
-        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {
             $responseBody = data_get($response, 'body');
             $responseBody = json_decode($responseBody, true);
@@ -132,7 +133,7 @@ class MokaPayment
 
         $response = self::doRequest('/Dealer/GetDealer',$postParams);
 
-        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {
             $responseBody = data_get($response, 'body');
             $responseBody = json_decode($responseBody, true);
@@ -338,20 +339,30 @@ class MokaPayment
      */
     private function doRequest($method, $params)
     {
-        return wp_remote_post($this->apiHost.$method,
+        $remote_request = wp_remote_post($this->apiHost.$method,
             [
-                'method'      => 'POST',
-                'timeout'     => 45,
-                'redirection' => 5,
-                'httpversion' => '1.0',
-                'blocking'    => true,
-                'headers'     => [
-                    'Content-Type' => 'application/json'
+                'method'        => 'POST',
+                'timeout'       => 45,
+                'redirection'   => 5,
+                'httpversion'   => '1.0',
+                'blocking'      => true,
+                'headers'       => 
+                [
+                    'Content-Type'  => 'application/json'
                 ],
-                'body'        => json_encode($params),
-                'cookies'     => [],
+                'body'          => json_encode($params),
+                'cookies'       => [],
+                'sslverify'     => false,
             ]
-        );   
+        );
+        if(
+        !is_wp_error( $remote_request ) && 
+        200 == wp_remote_retrieve_response_code( $remote_request ) && 
+        !empty( wp_remote_retrieve_body( $remote_request ) )
+        ) {
+            return $remote_request;
+        }
+        return false;  
     }
 
     /**
@@ -454,7 +465,7 @@ class MokaPayment
         $response = self::doRequest('/DealerCustomer/AddCustomerWithCard',$postParams);
  
 
-        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {
             $responseBody = data_get($response, 'body');
             $responseBody = json_decode($responseBody, true);
@@ -514,7 +525,7 @@ class MokaPayment
 
         $response = self::doRequest('/DealerCustomer/GetCustomer',$postParams);
         
-        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        if($resposne && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {
             $responseBody = data_get($response, 'body');
             $responseBody = json_decode($responseBody, true);
@@ -557,7 +568,7 @@ class MokaPayment
 
         $response = self::doRequest('/DealerCustomer/AddCard',$postParams);
         
-        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {
             $responseBody = data_get($response, 'body');
             $responseBody = json_decode($responseBody, true);
@@ -596,7 +607,7 @@ class MokaPayment
 
         $response = self::doRequest('/DealerCustomer/RemoveCard',$postParams);
         
-        if(data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
         {
             $responseBody = data_get($response, 'body');
             $responseBody = json_decode($responseBody, true);

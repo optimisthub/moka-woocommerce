@@ -3,11 +3,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.3');
-
-global $mokaVersion;
-$mokaVersion = OPTIMISTHUB_MOKA_PAY_VERSION;
-
 /**
  * Init Moka POS Confiuration and Gateway Class for WooCommerce
  * @since 2.2

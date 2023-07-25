@@ -22,7 +22,12 @@
             "name": "Fatih Toprak",
             "email": "patron@fatihtoprak.com",
             "homepage": "https://github.com/optimisthub"
-        } 
+        },
+        {
+            "name": "Cüneyt Çil",
+            "email": "trgino@trgino.com",
+            "homepage": "https://github.com/optimisthub"
+        }
     ],
     "support": {
         "email": "hi@optimisthub.com"
@@ -31,7 +36,6 @@
         "php": ">=7.1",
         "rappasoft/laravel-helpers": "^2.0",
         "tightenco/collect": "^8.68",
-        "spatie/ray": "^1.33",
         "nesbot/carbon": "^2.62"
     },
     "autoload": {
