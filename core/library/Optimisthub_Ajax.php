@@ -24,6 +24,8 @@ class Optimisthub_Ajax
      */
     public function validate_bin($params)
     { 
+        $avaliableInstallment = null;
+
         $postData = $params;
  
         $action = data_get($postData, 'action');
@@ -39,13 +41,29 @@ class Optimisthub_Ajax
         $mokaPay = new MokaPayment();
         $response = $mokaPay->requestBin(['binNumber' => $binNumber]);
 
+        if( !$response )
+        {
+            $error = new WP_Error( '002', 'Response Could Not Fetched.' );
+
+            $data = [
+                'error_message'     => $error,
+                'cardInformation'   => $response, 
+                'installments'      => $avaliableInstallment,
+                'renderedHtml'      => self::renderedHtml($response, []),
+            ]; 
+            wp_send_json_error( [
+                'binNumber' => $binNumber, 
+                'time'      => time(), 
+                'data'      => $data,
+            ] );
+        }
+
         ## installments
         $bankCode = mb_strtolower(data_get($response, 'BankCode')); 
         $bankGroup = mb_strtolower(data_get($response, 'GroupName')); 
 
         $installments = self::fetchInstallment();
         
-        $avaliableInstallment = null;
         if($bankGroup)
         { 
             foreach($installments as $perInstallment)
@@ -58,28 +76,20 @@ class Optimisthub_Ajax
         }    
         
         ## installments
-        $data= [
+        $data = [
             'cardInformation' => $response, 
             'installments' => $avaliableInstallment,
-            'renderedHtml' => self::renderedHtml(['card' => $response, 'installments' => $avaliableInstallment, 'total' => data_get($postData, 'total')]),
+            'renderedHtml' => self::renderedHtml($response, [
+                'card'          => $response, 
+                'installments'  => $avaliableInstallment, 
+                'total'         => data_get($postData, 'total'),
+            ]),
         ];  
-
-        if(!$response)
-        {
-            $error = new WP_Error( '002', 'Response Could Not Fetched.' );
-
-            $data['error_message'] = $error; 
-            wp_send_json_error( [
-                'binNumber' => $binNumber, 
-                'time' => time(), 
-                'data' => $data,
-            ] );
-        }
 
         wp_send_json_success( [
             'binNumber' => $binNumber, 
-            'time' => time(), 
-            'data' => $data,
+            'time'      => time(), 
+            'data'      => $data,
         ], 200 );
 
         wp_die();
@@ -199,29 +209,28 @@ class Optimisthub_Ajax
      * @param [array] $params
      * @return void
      */
-    private function renderedHtml( $params )
+    private function renderedHtml( $response, $params )
     {
-        $total = data_get($params, 'total');
-        $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
-        $installmentRates = data_get($params, 'installments.rates');
-        $orderTotal = $total;
-
-        ### Disable rate for 1 installment
-        $installmentRates[1]=[
-            'active' => 1,
-            'value' => 0,
+        $installmentRates = [
+            1 => [
+                'active' => 1,
+                'value' => 0,
+            ],
         ];
-        ### Disable rate for 1 installment
 
         $formHtml = ''; 
         $formHtml.='<input type="hidden" name="mokapay-order-total" value="'.$orderTotal.'">';
         $formHtml.='<input type="hidden" name="mokapay-installment-rates" value="'.urlencode(json_encode($installmentRates)).'">';
- 
-        
-        if(!$this->enableInstallment)
-        {
-            return $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
+
+        if( !$response || !$this->enableInstallment ) {
+            $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
+            return $formHtml;
         }
+
+        $total = data_get($params, 'total');
+        $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
+        $installmentRates = data_get($params, 'installments.rates');
+        $orderTotal = $total;
 
         if($installmentRates)
         {
@@ -274,7 +283,8 @@ class Optimisthub_Ajax
 
         if(!$installmentRates)
         {
-            return $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
+            $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
+            return $formHtml;
         } 
         return $formHtml;
     }

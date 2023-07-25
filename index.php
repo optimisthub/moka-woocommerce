@@ -3,7 +3,7 @@
  * Plugin Name: Moka Payment Gateway for WooCommerce
  * Plugin URI: https://github.com/optimisthub/moka-woocommerce
  * Description: Moka Payment gateway for woocommerce
- * Version: 3.7.3
+ * Version: 3.7.4
  * Author: Optimist Hub
  * Author URI: https://optimisthub.com?ref=mokaPayment
  * Domain Path: /languages/ 
@@ -13,6 +13,8 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.4');
 
 require __DIR__ . '/vendor/autoload.php';    
 
@@ -40,7 +42,6 @@ function loadOptimisthubMokaTranslations()
 function mokaPaySqlTables() 
 {
 	global $wpdb;
-	global $mokaVersion;
 
 	$tableNames = [
 		$wpdb->prefix . 'moka_transactions',
@@ -93,14 +94,17 @@ function mokaPaySqlTables()
 
 	];
 
-	require( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	if( !function_exists( 'dbDelta' ))
+	{
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	}
 
 	foreach($createTableQuery as $perQuery )
 	{  
 		dbDelta( $perQuery ); 
 	} 
 
-	add_option( 'moka_transactions', $mokaVersion );
+	add_option( 'moka_transactions', OPTIMISTHUB_MOKA_PAY_VERSION );
 }
 
 register_activation_hook(__FILE__, 'mokaPaySqlTables');

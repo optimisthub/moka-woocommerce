@@ -17,9 +17,8 @@ class Optimisthub_Update_Checker
 
     public function __construct()
     {
-        global $mokaVersion;  
         $this->plugin_slug      = 'moka-woocommerce-master';
-        $this->version          = $mokaVersion;
+        $this->version          = OPTIMISTHUB_MOKA_PAY_VERSION;
         $this->cache_key        = 'moka_worker_update_check';
         $this->cache_allowed    = true;
         $this->endpoint         = 'https://moka.wooxup.com/check';
@@ -42,18 +41,19 @@ class Optimisthub_Update_Checker
         {    
             $remote = wp_remote_post( $this->endpoint,
                 [
-                    'method'      => 'POST',
-                    'timeout'     => 45,
-                    'redirection' => 5,
-                    'httpversion' => '1.0',
-                    'blocking'    => true,
-                    'headers'     => [],
-                    'body'        => 
+                    'method'        => 'POST',
+                    'timeout'       => 45,
+                    'redirection'   => 5,
+                    'httpversion'   => '1.0',
+                    'blocking'      => true,
+                    'headers'       => [],
+                    'body'          => 
                     [
-                        'platform'  =>  $this->platform,
-                        'version'   =>  $this->version,
+                        'platform'  => $this->platform,
+                        'version'   => $this->version,
                     ],
-                    'cookies'     => [],
+                    'cookies'       => [],
+                    'sslverify'     => false,
                 ]
             );    
 
