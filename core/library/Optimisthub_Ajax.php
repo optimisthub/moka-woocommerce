@@ -211,12 +211,18 @@ class Optimisthub_Ajax
      */
     private function renderedHtml( $response, $params )
     {
-        $installmentRates = [
-            1 => [
+
+        $orderTotal = data_get($params, 'total');
+        $installmentRates = data_get($params, 'installments.rates');
+        $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
+
+        if(!isset($installmentRates[1])){
+            $installmentRates[1] = [
                 'active' => 1,
                 'value' => 0,
-            ],
-        ];
+            ];
+        }
+
 
         $formHtml = ''; 
         $formHtml.='<input type="hidden" name="mokapay-order-total" value="'.$orderTotal.'">';
@@ -226,11 +232,6 @@ class Optimisthub_Ajax
             $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
             return $formHtml;
         }
-
-        $total = data_get($params, 'total');
-        $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
-        $installmentRates = data_get($params, 'installments.rates');
-        $orderTotal = $total;
 
         if($installmentRates)
         {
@@ -267,14 +268,14 @@ class Optimisthub_Ajax
 
                         $formHtml .=' <p class="form-row w-w-50">
                             <input '.$checked.' id="installment-pick'.$kk.'" type="radio" class="input-radio w-w-50" name="mokapay-installment" value="'.$perInstallmentKey.'">
-                            <label for="installment-pick'.$kk.'"> '.$optionValue .' x '. self::calculateComissionRate($total, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.'</label>
+                            <label for="installment-pick'.$kk.'"> '.$optionValue .' x '. self::calculateComissionRate($orderTotal, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.'</label>
                         </p>';
 
                         $formHtml .=' ';
                         #$formHtml .='<input type="radio" id="ins'.$kk.'" name="mokapay-installment" value="'.$perInstallmentKey.'">';
-                        #$formHtml .='<div><label for="ins'.$kk.'">'.self::calculateComissionRate($total, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</label></div><br>';
+                        #$formHtml .='<div><label for="ins'.$kk.'">'.self::calculateComissionRate($orderTotal, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</label></div><br>';
                         
-                        #$formHtml.='<option value="'.$perInstallmentKey.'">'.self::calculateComissionRate($total, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</option>';
+                        #$formHtml.='<option value="'.$perInstallmentKey.'">'.self::calculateComissionRate($orderTotal, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</option>';
                     }
                 }
                 #$formHtml .= '</select>';

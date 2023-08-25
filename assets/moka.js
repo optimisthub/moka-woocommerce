@@ -1,5 +1,5 @@
 jQuery(document).ready(function () {
-    console.info('Moka PAY Core Js File loaded, successfully. Version 3.7.4');
+    console.info('Moka PAY Core Js File loaded, successfully. Version 3.7.5');
     let binCache = '';
 
     /**

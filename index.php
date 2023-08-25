@@ -3,7 +3,7 @@
  * Plugin Name: Moka Payment Gateway for WooCommerce
  * Plugin URI: https://github.com/optimisthub/moka-woocommerce
  * Description: Moka Payment gateway for woocommerce
- * Version: 3.7.4
+ * Version: 3.7.5
  * Author: Optimist Hub
  * Author URI: https://optimisthub.com?ref=mokaPayment
  * Domain Path: /languages/ 
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.4');
+define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.5');
 
 require __DIR__ . '/vendor/autoload.php';    
 
