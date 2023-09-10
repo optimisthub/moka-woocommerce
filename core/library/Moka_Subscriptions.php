@@ -24,10 +24,8 @@ class MokaSubscription
         $this->mokaOptions = get_option('woocommerce_mokapay_settings');
         $this->isSubscriptionsEnabled = 'yes' == data_get($this->mokaOptions, 'subscriptions');
          #$this->optimisthubMokaGateway = new OptimistHub_Moka_Gateway();
-
-        $this->assets = $this->assetDir();
         
-        register_activation_hook( __FILE__,[$this, 'addProductTypeTaxonomy' ] );
+        register_activation_hook( __FILE__, [$this, 'addProductTypeTaxonomy' ] );
         
         // Subscription Filters and Actions
         add_action( 'woocommerce_loaded',[$this, 'registerSubscriptionProductType' ] );
@@ -140,7 +138,7 @@ class MokaSubscription
     public function addProductTyepSelectorOnBackend($types)
     {
         if($this->isSubscriptionsEnabled)
-        $types[$this->productType] = __( 'Abonelikler', 'moka-woocommerce' );
+        $types[$this->productType] = __( 'Subscriptions', 'moka-woocommerce' );
         return $types;
     }
 
@@ -179,7 +177,7 @@ class MokaSubscription
         {
             $tabs['general']['class'] = 'hide_if_grouped hide_if_'.$this->productType;
             $tabData[$this->productType] = [
-                'label'    => __( 'Abonelik Özellikleri', 'moka-woocommerce' ),
+                'label'    => __( 'Subscription Features', 'moka-woocommerce' ),
                 'target' => $this->productType.'_type_product_options',
                 'class'  => 'show_if_'.$this->productType,
             ]; 
@@ -206,7 +204,7 @@ class MokaSubscription
                     [
                         'id'          => '_period_per',
                         'class'       => 'select short',
-                        'label'       => __( 'Abonelik Periyodu', 'moka-woocommerce' ),
+                        'label'       => __( 'Subscription Period', 'moka-woocommerce' ),
                         'value'       => $product_object->get_meta( '_period_per', true ),
                         'options'     => [
                             '1' => 'Her',
@@ -224,7 +222,12 @@ class MokaSubscription
                         'class'       => 'select short',
                         'label'       => '',
                         'value'       => $product_object->get_meta( '_period_in', true ),
-                        'options'     => ['day' => 'Gün','week' => 'Hafta', 'month' => 'Ay', 'year'=> 'Yıl'],
+                        'options'     => [
+                            'day' => __( 'Day', 'moka-woocommerce' ),
+                            'week' => __( 'Week', 'moka-woocommerce' ), 
+                            'month' => __( 'Month', 'moka-woocommerce' ), 
+                            'year'=> __( 'Year', 'moka-woocommerce' ),
+                        ],
                         'default'     => '',
                         'placeholder' => __( 'Period', 'moka-woocommerce' ),
                     ]
@@ -232,10 +235,10 @@ class MokaSubscription
                 woocommerce_wp_text_input(
                     array(
                         'id'          => '_subscription_price',
-                        'label'       => __( 'Abonelik Fiyatı', 'moka-woocommerce' ),
+                        'label'       => __( 'Subscription Price', 'moka-woocommerce' ),
                         'value'       => $product_object->get_meta( '_subscription_price', true ),
                         'default'     => '',
-                        'placeholder' => __( 'Abonelik Fiyatı', 'moka-woocommerce' ),
+                        'placeholder' => __( 'Subscription Price', 'moka-woocommerce' ),
                         'data_type' => 'price',
                     )
                 );
@@ -594,18 +597,6 @@ class MokaSubscription
     }
 
     /**
-     * Define plugin asset files directory
-     * @since 3.0
-     * @copyright 2022 Optimisthub
-     * @author Fatih Toprak 
-     * @return void
-     */
-    private function assetDir()
-    {
-        return str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
-    }
-
-    /**
      * Register styles
      * @since 3.0
      * @copyright 2022 Optimisthub
@@ -614,10 +605,20 @@ class MokaSubscription
      */
     private function registerStylesAndScripts()
     {
-        wp_enqueue_script( 'moka-pay-corejs', $this->assets . 'moka.js' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
-        wp_register_style( 'moka-pay-card_css', $this->assets. 'moka.css' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
+        wp_enqueue_script( 'moka-pay-corejs', OPTIMISTHUB_MOKA_URL . 'assets/moka.js' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
+        wp_register_style( 'moka-pay-card_css', OPTIMISTHUB_MOKA_URL. 'assets/moka.css' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
         wp_enqueue_style ( 'moka-pay-card_css' );
-        wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+        wp_localize_script( 'moka-pay-corejs', 'moka_ajax', [
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'subscription_confirm' => __( 'If you agree, your subscription will be cancelled and the payment will not be renewed. However; you will be able to continue to use your subscription until the membership expiration date.', 'moka-woocommerce' ),
+            'success_redirection' => __( 'Your transaction has been completed successfully. Within 2 seconds the page will be refreshed', 'moka-woocommerce' ),
+            'update_comission' => __( 'When you do this, all of the instalment data you have entered is deleted and the current ones from Moka Pay servers are overwritten. The process cannot be reversed. To continue, please enter confirmation in the field below and continue the process. Otherwise, your transaction will not continue.', 'moka-woocommerce' ),
+            'version' => OPTIMISTHUB_MOKA_PAY_VERSION,
+            'installment_test' => __( 'Installment Rate Test', 'moka-woocommerce' ),
+            'bin_test' => __( 'Bank Identification Test', 'moka-woocommerce' ),
+            'success' => __( 'Success', 'moka-woocommerce' ),
+            'failed' => __( 'Failed', 'moka-woocommerce' ),
+        ] );
     }
 
     /**

@@ -10,7 +10,7 @@ class Optimisthub_Ajax
         $this->mokaPayRequest = new MokaPayment();
         $this->mokaOptions  = get_option('woocommerce_mokapay_settings');
         $this->installments = get_option('woocommerce_mokapay-installments') ? get_option('woocommerce_mokapay-installments') : self::generateDynamicInstallmentData();
-        $this->currency = get_option('woocommerce_currency');
+        $this->installment_total = 'yes' === data_get($this->mokaOptions, 'show_installment_total');
         $this->enableInstallment = 'yes' === data_get($this->mokaOptions, 'installment');
  
         add_action( 'wp_ajax_optimisthub_ajax', array( $this, 'optimisthub_ajax' ) ); 
@@ -59,13 +59,15 @@ class Optimisthub_Ajax
         }
 
         ## installments
-        $bankCode = mb_strtolower(data_get($response, 'BankCode')); 
-        $bankGroup = mb_strtolower(data_get($response, 'GroupName')); 
+        $bankCode = data_get($response, 'BankCode'); 
+        $bankGroup = data_get($response, 'GroupName'); 
 
         $installments = self::fetchInstallment();
         
-        if($bankGroup)
+        if($bankGroup && $installments)
         { 
+            $bankCode = mb_strtolower($bankCode); 
+            $bankGroup = mb_strtolower($bankGroup); 
             foreach($installments as $perInstallment)
             {
                 if($perInstallment['groupName'] == $bankGroup)
@@ -82,7 +84,9 @@ class Optimisthub_Ajax
             'renderedHtml' => self::renderedHtml($response, [
                 'card'          => $response, 
                 'installments'  => $avaliableInstallment, 
-                'total'         => data_get($postData, 'total'),
+                'state'         => data_get($postData, 'state'),
+                'bankCode'      => $bankCode,
+                'bankGroup'     => $bankGroup,
             ]),
         ];  
 
@@ -110,6 +114,58 @@ class Optimisthub_Ajax
         ], 200 );
         wp_die();
     }
+    
+    /**
+     * Dealer informations check
+     *
+     * @param [array] $params
+     * @return void
+     */
+    public function admin_test($params)
+    {
+        $test_cards = [
+            '5127541122223332',
+            '4183441122223339',
+            '4397481122223337',
+            '5269551122223339',
+        ];
+
+        $result = [
+            'commissioncheck' => false,
+            'bincheck' => false,
+            'message' => '',
+        ];
+
+        if(
+            data_get($this->mokaOptions, 'company_code') && 
+            data_get($this->mokaOptions, 'api_username') && 
+            data_get($this->mokaOptions, 'api_password') 
+        ){
+            $commissioncheck = $this->mokaPayRequest->getInstallments();
+            $commissioncheck = data_get($commissioncheck, 'CommissionList');
+            if( $commissioncheck ){
+                $result['commissioncheck'] = true;
+                $result['commissiondata'] = $commissioncheck;
+            }
+
+            $mokaPay = new MokaPayment();
+            $binNumber = substr($test_cards[array_rand($test_cards)], 0, 6);
+            $bincheck = $mokaPay->requestBin(['binNumber' => $binNumber ]);
+            if( $bincheck ){
+                $result['bincheck'] = true;
+                $result['bindata'] = $bincheck;
+            }
+
+        }else{
+            $result['message'] = __( 'The test function can be performed after saving the merchant information.', 'moka-woocommerce' );
+        }
+
+        wp_send_json_success( [
+            'time' => time(), 
+            'data' => $result,
+        ], 200 );
+        wp_die();
+    }
 
     /**
      * General Ajax Request Callback
@@ -133,6 +189,11 @@ class Optimisthub_Ajax
         if($method == 'cancel_subscription')
         {
             self::cancelSubscription($postData);
+        }
+
+        if($method == 'moka_admin_test')
+        {
+            self::admin_test($postData);
         }
 
         wp_die();
@@ -212,9 +273,21 @@ class Optimisthub_Ajax
     private function renderedHtml( $response, $params )
     {
 
-        $orderTotal = data_get($params, 'total');
+        global $woocommerce;
+
+        $orderTotal = false;
+        $orderState = data_get($params, 'state');
+        if($orderState == 'cart'){
+            $orderTotal = data_get($woocommerce, 'cart.total');
+        }elseif($orderState == 'order'){
+            $order = wc_get_order(get_query_var('order-pay'));
+            $orderTotal = $order->get_total();  
+        }
+
         $installmentRates = data_get($params, 'installments.rates');
         $maxInstallment = data_get($params, 'card.MaxInstallmentNumber');
+        $bankCode = data_get($params, 'bankCode');
+        $bankGroup = data_get($params, 'bankGroup');
 
         if(!isset($installmentRates[1])){
             $installmentRates[1] = [
@@ -225,10 +298,11 @@ class Optimisthub_Ajax
 
 
         $formHtml = ''; 
-        $formHtml.='<input type="hidden" name="mokapay-order-total" value="'.$orderTotal.'">';
-        $formHtml.='<input type="hidden" name="mokapay-installment-rates" value="'.urlencode(json_encode($installmentRates)).'">';
+        $formHtml.='<input type="hidden" name="mokapay-order-state" value="'.$orderState.'">';
+        $formHtml.='<input type="hidden" name="mokapay-order-bankCode" value="'.$bankCode.'">';
+        $formHtml.='<input type="hidden" name="mokapay-order-bankGroup" value="'.$bankGroup.'">';
 
-        if( !$response || !$this->enableInstallment ) {
+        if( !$orderTotal || !$response || !$this->enableInstallment ) {
             $formHtml.='<input type="hidden" name="mokapay-installment" value="1">';
             return $formHtml;
         }
@@ -255,30 +329,40 @@ class Optimisthub_Ajax
                     p.form-row.w-w-50 label {
                         line-height: 1 !important;
                     }
+                    .installment-table .moka-total {
+                        font-size:80%;
+                        color:#333;
+                    }
                  </style>
                 ';
 
                # $formHtml .= '<select name="mokapay-installment" class="input-select">';
-                foreach(range(1,$maxInstallment) as $kk=>$perInstallmentKey)
+                foreach(range(1, $maxInstallment) as $kk => $perInstallmentKey)
                 {
                     if($installmentRates[$perInstallmentKey]['active'] == 1)
                     {
                         $optionValue = $perInstallmentKey == 1 ? __( "Cash In Advence", 'moka-woocommerce' ) : $perInstallmentKey. ' '. __( "Installment", 'moka-woocommerce' );
-                        $checked = $kk==0 ? ' checked="checked" ' : '';
+                        $checked = $perInstallmentKey == 1 ? ' checked="checked" ' : '';
 
-                        $formHtml .=' <p class="form-row w-w-50">
-                            <input '.$checked.' id="installment-pick'.$kk.'" type="radio" class="input-radio w-w-50" name="mokapay-installment" value="'.$perInstallmentKey.'">
-                            <label for="installment-pick'.$kk.'"> '.$optionValue .' x '. self::calculateComissionRate($orderTotal, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.'</label>
-                        </p>';
+                        $installment_price = self::calculateComissionRate($orderTotal, $installmentRates[$perInstallmentKey]['value'], $perInstallmentKey);
+                        
+                        $installment_total = $this->installment_total ? ' <span class="moka-total"> = ' . self::moka_price( self::calculateComissionRateTotal($orderTotal, $installmentRates[$perInstallmentKey]['value'], $perInstallmentKey) ) . '</span>' : '';
+
+                        if($perInstallmentKey == 1) {
+                            $formHtml .=' <p class="form-row w-w-50">
+                                <input '.$checked.' id="installment-pick' . $kk . '" type="radio" class="input-radio w-w-50" name="mokapay-installment" value="' . $perInstallmentKey . '">
+                                <label for="installment-pick' . $kk . '"> ' . $optionValue . ' = ' .self::moka_price($installment_price) . '</label>
+                            </p>';  
+                        }else{
+                            $formHtml .=' <p class="form-row w-w-50">
+                                <input '.$checked.' id="installment-pick' . $kk . '" type="radio" class="input-radio w-w-50" name="mokapay-installment" value="' . $perInstallmentKey . '">
+                                <label for="installment-pick' . $kk . '"> ' . $optionValue . ' x ' . self::moka_price($installment_price) . $installment_total . '</label>
+                            </p>';                        
+                        }
 
                         $formHtml .=' ';
-                        #$formHtml .='<input type="radio" id="ins'.$kk.'" name="mokapay-installment" value="'.$perInstallmentKey.'">';
-                        #$formHtml .='<div><label for="ins'.$kk.'">'.self::calculateComissionRate($orderTotal, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</label></div><br>';
-                        
-                        #$formHtml.='<option value="'.$perInstallmentKey.'">'.self::calculateComissionRate($orderTotal, $installmentRates[$perInstallmentKey]['value'],$perInstallmentKey) . ' ' .$this->currency.' x '.$optionValue.'</option>';
                     }
                 }
-                #$formHtml .= '</select>';
             $formHtml .= '</p></fieldset>';
         }
 
@@ -300,8 +384,18 @@ class Optimisthub_Ajax
      */
     private function calculateComissionRate( $total, $percent, $installment )
     {
-        $total = ( ( ($total*$percent)/100) + $total);
-        return number_format(($total/$installment),2);
+        $realPercent = floatval( floatval($total) * floatval($percent) / 100 );
+        $totalPrice = floatval($total) + $realPercent; 
+        
+        return self::moka_number_format( ($totalPrice/intval($installment)) );
+    }
+    
+    private function calculateComissionRateTotal( $total, $percent, $installment )
+    {
+        $realPercent = floatval( floatval($total) * floatval($percent) / 100 );
+        $totalPrice = floatval($total) + $realPercent; 
+        
+        return self::moka_number_format( $totalPrice );
     }
 
     /**
@@ -321,6 +415,20 @@ class Optimisthub_Ajax
         return $this->mokaPayRequest->formatInstallmentResponse($list);
     }
     
+    private function moka_price($price)
+    {   
+        $price = preg_replace('/\s+/', '', $price);
+        $price = self::moka_number_format($price);
+        $price = $price . get_woocommerce_currency_symbol();        
+        return $price;
+    }
+
+    private function moka_number_format($price, $decimal = 2){
+        $_price = floatval($price);
+        $_price = number_format( $_price, ($decimal + 1), '.', '');
+        $_price = substr($_price, 0, -1);
+        return $_price;
+    }
 
 }
  

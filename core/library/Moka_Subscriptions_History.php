@@ -1,8 +1,9 @@
 <?php
-    if (!class_exists('WP_List_Table')) {
-        require_once(ABSPATH . 'wp-admin/includes/screen.php');
-        require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
-    }
+
+if ( !class_exists('WP_List_Table') ) {
+    require_once(ABSPATH . 'wp-admin/includes/screen.php');
+    require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+}
 
 
 /**
@@ -53,7 +54,7 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
     public function get_columns()
     {
         $columns = array(
-            'order_id'              => 'WooCommerce ID',
+            'order_id'              => __('Order ID', 'moka-woocommerce'),
             'user_id'               => __('User ID', 'moka-woocommerce'),
             'order_amount'          => __('Amount', 'moka-woocommerce'),
             'order_details'         => __('Details', 'moka-woocommerce'),
@@ -193,7 +194,7 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
                     '<a href="tel:'.data_get($orderDetails, 'CustomerDetails.GsmNumber').'">'.data_get($orderDetails, 'CustomerDetails.GsmNumber').'</a>'.'<hr>'.
                         data_get($orderDetails, 'CardNumber').'<br>',
                     'subscription_period' => data_get($perRow, 'subscription_period', null),
-                    'subscription_status' => $status == 0 ? '<mark class="active_subs">Aktif</mark>' : '<mark class="passive_subs">Pasif</mark>',
+                    'subscription_status' => $status == 0 ? '<mark class="active_subs">'.__( 'Active', 'moka-woocommerce' ).'</mark>' : '<mark class="passive_subs">'.__( 'Passive', 'moka-woocommerce' ).'</mark>',
                     'created_at' => date('d.m.Y.H:i:s', strtotime(data_get($perRow, 'created_at', null))),
                     'actions' => self::statusString($status,$orderId,$perRow)
                 ];
@@ -207,16 +208,16 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
     private function statusString($status,$orderId,$row)
     {
 
-        $return = '<span data-order-id="'.$orderId.'" class="subscription-noActions">Düzenlenemez</span>';
+        $return = '<span data-order-id="'.$orderId.'" class="subscription-noActions">'.__( 'Not editable', 'moka-woocommerce' ).'</span>';
 
         if($status==0)
         {
-            $return = '<span data-order-id="'.$orderId.'" class="subscription-cancelManually">İptal</span>';
+            $return = '<span data-order-id="'.$orderId.'" class="subscription-cancelManually">'.__( 'Cancel', 'moka-woocommerce' ).'</span>';
         }
 
         if($status==2)
         {
-            $return = '<span class="subscription-cancelManually" style="background:#000">Ödeme Başarısız</span><br>'.$row['updated_at'];
+            $return = '<span class="subscription-cancelManually" style="background:#000">'.__( 'Payment Failed', 'moka-woocommerce' ).'</span><br>'.$row['updated_at'];
         }
 
         return $return;

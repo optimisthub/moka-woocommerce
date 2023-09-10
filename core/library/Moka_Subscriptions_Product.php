@@ -8,7 +8,6 @@
  * @author Fatih Toprak 
  */
 
-add_action( 'plugins_loaded', 'addSubscriptionProductType' );
 
 function addSubscriptionProductType () {
 
@@ -31,3 +30,5 @@ function addSubscriptionProductType () {
         }
     }
 }
+
+addSubscriptionProductType();
