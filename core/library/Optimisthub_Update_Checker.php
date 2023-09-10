@@ -37,13 +37,13 @@ class Optimisthub_Update_Checker
     public function request() 
     { 
         $remote = get_transient( $this->cache_key );
-        if( $remote && $this->cache_allowed ) {
-            return $remote;
-        }else{    
+        if( false === $remote || ! $this->cache_allowed ) 
+        {    
             $remote = wp_remote_post( $this->endpoint,
                 [
                     'method'        => 'POST',
-                    'timeout'       => 30,
+                    'timeout'       => 45,
+                    'redirection'   => 5,
                     'httpversion'   => '1.0',
                     'blocking'      => true,
                     'headers'       => [],
@@ -58,27 +58,26 @@ class Optimisthub_Update_Checker
             );    
 
             if(
-                is_wp_error( $remote )
-                || 200 != wp_remote_retrieve_response_code( $remote )
+            is_wp_error( $remote )
+                || 200 !== wp_remote_retrieve_response_code( $remote )
                 || empty( wp_remote_retrieve_body( $remote ) )
             ) {
                 return false;
             }
-
-            $remote = json_decode( wp_remote_retrieve_body( $remote ) );
-
-            if( !$remote || !isset($remote->data) ) 
-            {
-                return false;
-            }
-
-            $remote = data_get($remote,'data');
             
             set_transient( $this->cache_key, $remote, DAY_IN_SECONDS );
 
-            return $remote;
-
         }
+
+        $remote = json_decode( wp_remote_retrieve_body( $remote ) );
+        $remote = data_get($remote, 'data');
+
+        if( ! $remote ) 
+        {
+            return false;
+        }
+
+        return $remote;
     }
 
     /**
@@ -146,7 +145,7 @@ class Optimisthub_Update_Checker
      */
     public function update( $transient ) {
 
-        if ( isset($transient->checked ) && empty($transient->checked ) ) {
+        if ( empty($transient->checked ) ) {
             return $transient;
         }
 
@@ -158,7 +157,7 @@ class Optimisthub_Update_Checker
         ) {
             $_response = new stdClass();
             $_response->slug          = $this->plugin_slug;
-            $_response->plugin        = OPTIMISTHUB_MOKA_BASENAME . '/index.php'; 
+            $_response->plugin        = 'moka-woocommerce-master/index.php'; 
             $_response->new_version   = data_get($remote, 'version');
             $_response->tested        = data_get($remote, 'tested');
             $_response->package       = data_get($remote, 'download_url');
@@ -183,8 +182,8 @@ class Optimisthub_Update_Checker
         global $options;
         if (
             $this->cache_allowed
-            && isset($options['action']) && $options['action'] && 'update' === data_get($options, 'action') 
-            && isset($options['type']) && $options['type'] && 'plugin' === data_get($options, 'type') 
+            && 'update' === data_get($options, 'action') && $options['action']
+            && 'plugin' === data_get($options, 'type') && $options[ 'type' ]
         ) {
             delete_transient( $this->cache_key );
         }
