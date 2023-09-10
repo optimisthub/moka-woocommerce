@@ -3,227 +3,663 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2022-11-15 12:13+0300\n"
-"Last-Translator: Fatih Toprak <patron@fatihtoprak.com>\n"
-"Language-Team: \n"
-"Language: tr_TR\n"
+"PO-Revision-Date: 2023-09-10 16:27+0000\n"
+"Last-Translator: Cuneyt Cil <trgino@trgino.com>\n"
+"Language-Team: Türkçe\n"
 "Language: tr_TR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.1.1\n"
-"X-Domain: languages\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Domain: moka-woocommerce\n"
 
-msgid "Moka by Isbank WooCommerce Gateway"
-msgstr "İş Bankası desteği ile Moka Pay"
+#: core/library/Moka_Gateway.php:1035
+msgid "3D authorisation error"
+msgstr "3D onay alma hatası"
 
-msgid "Enable/Disable"
-msgstr "Açık / Kapalı"
+#: core/library/Moka_Gateway.php:1034
+msgid "3D confirmation received but money could not be withdrawn from the part"
+msgstr "3D onayı alındı ancak para parttan çekilemedi"
 
-msgid "Enable Moka Pay Gateway?"
-msgstr "Moka Pay Ödeme Metodu Aktifleştirilsin mi ?"
-
-msgid "Title"
-msgstr "Başlık"
-
-msgid "This controls the title which the user sees during checkout."
-msgstr "Kullanıcılarınızın ödeme admında göreceği başlık alanıdır."
-
-msgid "Credit Card"
-msgstr "Kredi Kartı"
-
-msgid "Description"
-msgstr "Açıklama"
-
-msgid "This controls the description which the user sees during checkout."
-msgstr "Kullanıcılarınızın ödeme admında göreceği açıklama alanıdır."
-
-msgid "Pay with your credit card via our super-cool payment gateway."
-msgstr "Kredi kartınız veya banka kartınız ile, güvenle MokaPay ile ödeme yapabilirsiniz."
-
-msgid "Enable Test Mode?"
-msgstr "Test Modunu Aktifleştir?"
-
-msgid "Place the payment gateway in test mode using test API keys."
-msgstr "Test modunuzu aktif ederseniz, size test ortamı için size iletilen test bilgilerinizi eklemeyi unutmayınız. Size iletilen bilgilerden canlı ve test ortamı giriş bilgilerinin farklı bilgiler olduğunu hatırlatmak isteriz."
-
-msgid "Company Code"
-msgstr "Bayi Kodu"
-
-msgid "Company Name"
-msgstr "Bayi Adı"
-
-msgid "Api Username"
-msgstr "Api Kullanıcı Adı"
-
-msgid "Api Password"
-msgstr "Api Şifresi"
-
-msgid "Installement"
-msgstr "Taksitli Alışveriş"
-
-msgid "Enable/Disable Installement ?"
-msgstr "Taksitli Alışveriş aktifleştirilsin mi?"
-
-msgid "Name On Card"
-msgstr "Kart Üzerindeki İsim"
-
-msgid "Card Number"
-msgstr "Kart Numaranız"
-
-msgid "Card Code"
-msgstr "Güvenlik Kodunuz"
-
-msgid "TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href='#''>documentation</a>"
-msgstr "<br><strong>Şu an test modu aktif durumdadır.</strong> <a href=https://developer.moka.com/home.php?page=test-kartlari target=_blank>Test Kartlarına bu linkten</a> ulaşabilirsiniz"
-
-msgid "Enable 3D"
-msgstr "3D Modu"
-
-msgid "Enable 3d Payment?"
-msgstr "3D ile ödeme?"
-
-msgid "Moka Pos Settings"
-msgstr "Moka Pos Ayarları"
-
-msgid "<strong>Card holder</strong> is required."
-msgstr "<strong>Kart Üzerindeki İsim</strong> Zorunludur."
-
-msgid "<strong>Installment</strong> is required."
-msgstr "<strong>Taksit Sayısı</strong> Zorunludur."
-
-msgid "<strong>Card Number</strong> is required."
-msgstr "<strong>Kart Numaranız</strong> Zorunludur."
-
-msgid "<strong>Card Expiry</strong> is required."
-msgstr "<strong>Kart Son Kullanma Tarihi</strong> Zorunludur."
-
+#: core/library/Moka_Gateway.php:452
 msgid "<strong>Card CVC</strong> is required."
 msgstr "<strong>Kart Güvenlik Kodu</strong> Zorunludur."
 
-msgid "Installment Shopping"
-msgstr "Taksitli Alışveriş"
+#: core/library/Moka_Gateway.php:447
+msgid "<strong>Card Expiry</strong> is required."
+msgstr "<strong>Kart Son Kullanma Tarihi</strong> Zorunludur."
 
-msgid "Installment"
-msgstr "Taksit"
+#: core/library/Moka_Gateway.php:435
+msgid "<strong>Card holder</strong> is required."
+msgstr "<strong>Kart Üzerindeki İsim</strong> Zorunludur."
 
-msgid "Cash In Advence"
-msgstr "Tek Çekim"
+#: core/library/Moka_Gateway.php:441
+msgid "<strong>Card Number</strong> is required."
+msgstr "<strong>Kart Numaranız</strong> Zorunludur."
 
-msgid "Installment Fee"
-msgstr "Taksitli Alışveriş Komisyonu"
+#: core/library/Moka_Gateway.php:460
+msgid "<strong>Installment</strong> is required."
+msgstr "<strong>Taksit Sayısı</strong> Zorunludur."
 
-msgid "Hey, the order is paid by Moka Pay!"
-msgstr "Sipariş ödemesi başarılı bir şekilde tamamlandı!"
-
-msgid "Payment is processing via Moka Pay."
-msgstr "Moka Pay ile ödeme işlemi tamamlanıyor."
-
-msgid "Waiting for user payment."
-msgstr "Kullanıcının ödeme yapması bekleniyor."
-
-msgid "Moka Payment History"
-msgstr "Moka Ödeme Geçmişi"
-
-msgid "Order Id"
-msgstr "Sipariş Id"
-
-msgid "Customer Id"
-msgstr "Müşteri Id"
-
-msgid "Transaction Id"
-msgstr "İşlem Id"
-
-msgid "Order Prefix"
-msgstr "Sipariş Öneki"
-
-msgid "Payment Completed"
-msgstr "Ödeme tamamlandı"
-
-msgid "This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)"
-msgstr "Bu alan birden çok sitede kullanılan Moka POS modülü için raporlama esnasında siparişlerin ayrıştırılmasında kolaylık sağlar. (Opsiyonel)"
-
-msgid "Order Status"
-msgstr "Sipariş Durumu"
-
-msgid "You can choose what the status of the order will be when your payments are successfully completed."
-msgstr "Ödemeleriniz başarılı bir şekilde tamamlandığında siparişin durumunun ne olacağını seçebilirsiniz."
-
-msgid "Subscribe"
-msgstr "Aboneliği Başlat"
-
-msgid "Renewal Period"
-msgstr "Yenilenme Periyodu"
-
-msgid "day"
-msgstr "gün"
-
-msgid "week"
-msgstr "hafta"
-
-msgid "month"
-msgstr "ay"
-
-msgid "year"
-msgstr "yıl"
-
-msgid "Subscription"
-msgstr "Abonelikler"
-
-msgid "Enable subscription ?"
-msgstr "Abonelikli satış özelliğini aktif et ?"
-
-msgid "It allows you to sell products via subscription method on your site."
-msgstr "Siteniz üzerinden abonelik yöntemi ile ürün satışı yapmanızı sağlar."
-
-msgid "You have enabled the subscription feature. Moka Pay from İşbank requires <a href=\"https://woocommerce.com/products/woocommerce-subscriptions/\">WooCommerce Subscriptions</a> to be installed and activated. If you do not want to use the Subscription feature, you must turn it off in Moka Pay settings."
-msgstr "Abonelik özelliğini etkinleştirdiniz. İş Bankası'ndan Moka Pay, <a href=\"https://woocommerce.com/products/woocommerce-subscriptions/\">WooCommerce Aboneliklerinin</a> yüklenmesini ve etkinleştirilmesini gerektirir. Eğer Abonelik özelliğini kullanmak istemez iseniz, Moka Pay ayarlarından bu özelliği kapatmanız gerekir."
-
-msgid "User ID"
-msgstr "Kullanıcı"
-
-msgid "Amount"
-msgstr "Tutar"
-
-msgid "Details"
-msgstr "Sipariş Detayları"
-
-msgid "Period"
-msgstr "Periyot"
-
-msgid "Status"
-msgstr "Durum"
-
-msgid "Created At"
-msgstr "Oluşturulma"
-
-msgid "Updated At"
-msgstr "Güncellenme"
-
+#: core/library/Moka_Subscriptions_History.php:64
 msgid "Actions"
 msgstr "İşlemler"
 
-msgid "Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card."
-msgstr "Ödeme esnasında eklemiş olduğunuz kart bilgileriniz, Moka güvencesi ile Moka tarafından saklanacaktır. Sonraki abonelik ödemeniz bu kart ile alınacaktır."
+#: core/library/Moka_Subscriptions_History.php:197
+msgid "Active"
+msgstr "Aktif"
 
+#: core/library/Moka_Subscriptions_History.php:59
+#: core/library/Optimisthub_Transaction_History.php:72
+msgid "Amount"
+msgstr "Tutar"
+
+#: core/library/Moka_Gateway.php:1045
+msgid "An unexpected error occurred"
+msgstr "Beklenmeyen bir hata oluştu"
+
+#: core/library/Moka_Gateway.php:996
+msgid "An unexpected error occurred."
+msgstr "Beklenmeyen bir hata oluştu."
+
+#: core/library/Moka_Gateway.php:976
+msgid "Any of the daily limits defined for the dealer have been exceeded."
+msgstr "Kartın günlük limiti aşıldığı için daha fazla işlem yapılamaz."
+
+#: core/library/Moka_Gateway.php:189
+msgid "Api Password"
+msgstr "Api Şifresi"
+
+#: core/library/Moka_Gateway.php:185
+msgid "Api Username"
+msgstr "Api Kullanıcı Adı"
+
+#: core/library/Moka_Gateway.php:1026
+msgid "Approval mechanism not available"
+msgstr "Onay mekanizması mevcut değil"
+
+#: core/library/Moka_Gateway.php:224 core/library/Moka_Gateway.php:417
+#: core/library/Moka_Subscriptions.php:618
+msgid "Bank Identification Test"
+msgstr "Banka Tanımlama Testi"
+
+#: core/library/Moka_Gateway.php:1036
+msgid "Bank or Card does not support 3D secure"
+msgstr "Banka veya Kart 3D secure desteklemiyor"
+
+#: core/library/Moka_Gateway.php:1020
+msgid "Bank SSL error"
+msgstr "Banka SSL hatası"
+
+#: core/library/Moka_Gateway.php:1021
+msgid "Call your bank for manual confirmation"
+msgstr "Manual onay için bankanızı arayınız"
+
+#: core/library/Moka_Subscriptions_History.php:215
+msgid "Cancel"
+msgstr "İptal"
+
+#: core/library/Moka_Core.php:200
+msgid "Card"
+msgstr "Kart"
+
+#: core/library/Moka_Gateway.php:353
+msgid "Card Code"
+msgstr "Güvenlik Kodunuz"
+
+#: core/library/Moka_Gateway.php:549
+msgid "Card details have been successfully verified."
+msgstr "Kart bilgileri başarıyla doğrulandı."
+
+#: core/library/Moka_Gateway.php:1022
+msgid "Card details incorrect"
+msgstr "Kart bilgileri hatalı"
+
+#: core/library/Moka_Gateway.php:1016
+msgid "Card expiry date incorrect"
+msgstr "Kartın son kullanma tarihi hatalı"
+
+#: core/library/Moka_Gateway.php:326
+msgid "Card Number"
+msgstr "Kart Numaranız"
+
+#: core/library/Optimisthub_Ajax.php:344
+msgid "Cash In Advence"
+msgstr "Tek Çekim"
+
+#: core/library/Moka_Gateway.php:177
+msgid "Company Code"
+msgstr "Bayi Kodu"
+
+#: core/library/Moka_Gateway.php:181
+msgid "Company Name"
+msgstr "Bayi Adı"
+
+#: core/library/Moka_Subscriptions_History.php:63
+msgid "Created At"
+msgstr "Oluşturulma"
+
+#: core/library/Moka_Gateway.php:96
+msgid "Credit Card"
+msgstr "Kredi Kartı"
+
+#: core/library/Moka_Gateway.php:1013
+msgid "Credit card number not in valid format"
+msgstr "Kredi kartı numarası geçerli formatta değil"
+
+#: core/library/Optimisthub_Transaction_History.php:69
+msgid "Customer Id"
+msgstr "Müşteri Id"
+
+#: core/library/Moka_Subscriptions.php:226
+#| msgid "day"
+msgid "Day"
+msgstr "Gün"
+
+#: core/library/Moka_Gateway.php:100
+msgid "Description"
+msgstr "Açıklama"
+
+#: core/library/Moka_Subscriptions_History.php:60
+msgid "Details"
+msgstr "Sipariş Detayları"
+
+#: core/library/Moka_Gateway.php:150
+msgid "Enable 3D"
+msgstr "3D Modu"
+
+#: core/library/Moka_Gateway.php:151
+msgid "Enable 3d Payment?"
+msgstr "3D ile ödeme?"
+
+#: core/library/Moka_Gateway.php:86
+msgid "Enable Moka Pay Gateway?"
+msgstr "Moka Pay Ödeme Metodu Aktifleştirilsin mi ?"
+
+#: core/library/Moka_Gateway.php:115
+msgid "Enable subscription ?"
+msgstr "Abonelikli satış özelliğini aktif et ?"
+
+#: core/library/Moka_Gateway.php:107
+msgid "Enable Test Mode?"
+msgstr "Test Modunu Aktifleştir?"
+
+#: core/library/Moka_Gateway.php:85 core/library/Moka_Gateway.php:106
+#: core/library/Moka_Gateway.php:114 core/library/Moka_Gateway.php:122
+#: core/library/Moka_Gateway.php:129
+msgid "Enable/Disable"
+msgstr "Açık / Kapalı"
+
+#: core/library/Moka_Gateway.php:145
+msgid "Enable/Disable Installement ?"
+msgstr "Taksitli Alışveriş aktifleştirilsin mi?"
+
+#: core/library/Moka_Gateway.php:226 core/library/Moka_Gateway.php:419
+#: core/library/Moka_Subscriptions.php:620
+msgid "Failed"
+msgstr "Başarısız"
+
+#: core/library/Moka_Gateway.php:1018
+msgid "Failed to connect to bank"
+msgstr "Bankaya bağlanılamadı"
+
+#: core/library/Moka_Gateway.php:1011
+msgid "Failed to obtain cardholder approval"
+msgstr "Kart sahibi onayı alınamadı"
+
+#: core/library/Moka_Gateway.php:1033
+msgid "Fake approval"
+msgstr "Sahte onay"
+
+#: core/library/Moka_Gateway.php:1038
+msgid "Fraud possibility"
+msgstr "Fraud olasılığı"
+
+#: core/library/Moka_Gateway.php:1010
+msgid "General Error"
+msgstr "Genel Hata"
+
+#: core/library/Moka_Gateway.php:1014
+msgid "General rejection"
+msgstr "Genel red"
+
+#: core/library/Moka_Gateway.php:589 core/library/Moka_Gateway.php:606
+msgid "Hey, the order is paid by Moka Pay!"
+msgstr "Sipariş ödemesi başarılı bir şekilde tamamlandı!"
+
+#: core/library/Moka_Gateway.php:219 core/library/Moka_Gateway.php:412
+#: core/library/Moka_Subscriptions.php:613
+msgid ""
+"If you agree, your subscription will be cancelled and the payment will not "
+"be renewed. However; you will be able to continue to use your subscription "
+"until the membership expiration date."
+msgstr ""
+"Onaylıyor iseniz, aboneliğiniz iptal edilecek ve ödemesi yenilenmeyecek."
+"Ancak; aboneliğinizi üyelik sonlanma tarihine dek kullanmaya devam "
+"edebileceksiniz."
+
+#: core/library/Moka_Gateway.php:130
+msgid ""
+"If you want the installment table to be displayed as a product tab on the "
+"product pages, turn it on."
+msgstr ""
+"Ürün sayfalarında taksit tablosunu ürün sekmesi olarak gösterilmesini "
+"istiyorsanız açık konuma getiriniz."
+
+#: core/library/Moka_Gateway.php:144
+#: core/library/Optimisthub_Transaction_History.php:71
+msgid "Installement"
+msgstr "Taksitli Alışveriş"
+
+#: core/library/Moka_Core.php:204 core/library/Moka_Core.php:276
+#: core/library/Moka_Gateway.php:498 core/library/Optimisthub_Ajax.php:344
+msgid "Installment"
+msgstr "Taksit"
+
+#: core/library/Moka_Gateway.php:904
+msgid "Installment Fee"
+msgstr "Taksitli Alışveriş Komisyonu"
+
+#: core/library/Moka_Init.php:101
 msgid "Installment Options"
 msgstr "Taksit Seçenekleri"
 
-msgid "With installments starting from"
-msgstr "den başlayan taksitlerle"
+#: core/library/Moka_Gateway.php:223 core/library/Moka_Gateway.php:416
+#: core/library/Moka_Subscriptions.php:617
+msgid "Installment Rate Test"
+msgstr "Taksit Oranıları Testi"
 
-msgid "Show Installment Message under the price_html ?"
-msgstr "Fiyat altında minimum taksit mesajı ?"
+#: core/library/Optimisthub_Ajax.php:314
+msgid "Installment Shopping"
+msgstr "Taksitli Alışveriş"
 
+#: core/library/Moka_Core.php:192
+msgid "Installment Table"
+msgstr "Taksit Tablosu"
+
+#: core/library/Moka_Gateway.php:129
 msgid "Installment table display on product pages"
 msgstr "Ürün sayfalarında taksit tablosu gösterimi"
 
-msgid "If you want the installment table to be displayed as a product tab on the product pages, turn it on."
-msgstr "Ürün sayfalarında taksit tablosunu ürün sekmesi olarak gösterilmesini istiyorsanız açık konuma getiriniz."
+#: core/library/Moka_Gateway.php:1024
+msgid "Invalid account number"
+msgstr "Geçersiz hesap numarası"
 
+#: core/library/Moka_Gateway.php:1025
+msgid "Invalid CVV"
+msgstr "Geçersiz CVV"
+
+#: core/library/Moka_Gateway.php:1032
+msgid "Invalid merchant"
+msgstr "Geçersiz işyeri"
+
+#: core/library/Moka_Gateway.php:958
+msgid "Invalid request detected. Try Again."
+msgstr "Geçersiz istek tespit edildi. Tekrar deneyiniz."
+
+#: core/library/Moka_Gateway.php:1017
+msgid "Invalid transaction"
+msgstr "Geçersiz işlem"
+
+#: core/library/Moka_Gateway.php:117
+msgid "It allows you to sell products via subscription method on your site."
+msgstr "Siteniz üzerinden abonelik yöntemi ile ürün satışı yapmanızı sağlar."
+
+#: core/library/Moka_Gateway.php:964
+msgid "It is mandatory to send the transaction amount."
+msgstr "İşlem tutarı göndermek zorunludur."
+
+#: core/library/Moka_Gateway.php:1029
+msgid "Lost card"
+msgstr "Kayıp kart"
+
+#: core/library/Moka_Gateway.php:27
+msgid "Moka by Isbank WooCommerce Gateway"
+msgstr "İş Bankası desteği ile Moka Pay"
+
+#: core/library/Optimisthub_Transaction_History.php:31
+#: core/library/Optimisthub_Transaction_History.php:52
+msgid "Moka Payment History"
+msgstr "Moka Ödeme Geçmişi"
+
+#: core/library/Moka_Gateway.php:241
+msgid "Moka Pos Settings"
+msgstr "Moka Pos Ayarları"
+
+#: core/library/Moka_Subscriptions.php:228
+#| msgid "month"
+msgid "Month"
+msgstr "Ay"
+
+#: core/library/Moka_Gateway.php:313 core/library/Moka_Gateway.php:320
+msgid "Name On Card"
+msgstr "Kart Üzerindeki İsim"
+
+#: core/library/Moka_Gateway.php:970
+msgid "No dealer found."
+msgstr "Üye işyeri bulunamadı."
+
+#: core/library/Moka_Gateway.php:979
+msgid ""
+"No further transactions can be made as the daily limit of the card has been "
+"exceeded."
+msgstr "Kartın günlük limiti aşıldığı için daha fazla işlem yapılamaz."
+
+#: core/library/Moka_Gateway.php:984
+msgid "No installments in foreign currency."
+msgstr "Döviz ile taksit yapılamaz."
+
+#: core/library/Moka_Subscriptions_History.php:211
+msgid "Not editable"
+msgstr "Düzenlenemez"
+
+#: core/library/Moka_Subscriptions_History.php:57
+msgid "Order ID"
+msgstr "Şipariş No"
+
+#: core/library/Optimisthub_Transaction_History.php:68
+msgid "Order Id"
+msgstr "Sipariş Id"
+
+#: core/library/Moka_Gateway.php:164
+msgid "Order Prefix"
+msgstr "Sipariş Öneki"
+
+#: core/library/Moka_Gateway.php:170
+msgid "Order Status"
+msgstr "Sipariş Durumu"
+
+#: core/library/Moka_Subscriptions_History.php:197
+msgid "Passive"
+msgstr "Pasif"
+
+#: core/library/Moka_Gateway.php:103
+msgid "Pay with your credit card via our super-cool payment gateway."
+msgstr ""
+"Kredi kartınız veya banka kartınız ile, güvenle MokaPay ile ödeme "
+"yapabilirsiniz."
+
+#: core/library/Moka_Gateway.php:601
+msgid "Payment Completed"
+msgstr "Ödeme tamamlandı"
+
+#: core/library/Moka_Subscriptions_History.php:220
+msgid "Payment Failed"
+msgstr "Ödeme Başarısız"
+
+#: core/library/Moka_Gateway.php:588
+msgid "Payment is processing via Moka Pay."
+msgstr "Moka Pay ile ödeme işlemi tamamlanıyor."
+
+#: core/library/Moka_Subscriptions.php:216
+#: core/library/Moka_Subscriptions.php:232
+#: core/library/Moka_Subscriptions_History.php:61
+msgid "Period"
+msgstr "Periyot"
+
+#: core/library/Moka_Gateway.php:109
+msgid "Place the payment gateway in test mode using test API keys."
+msgstr ""
+"Test modunuzu aktif ederseniz, size test ortamı için size iletilen test "
+"bilgilerinizi eklemeyi unutmayınız. Size iletilen bilgilerden canlı ve test "
+"ortamı giriş bilgilerinin farklı bilgiler olduğunu hatırlatmak isteriz."
+
+#: core/library/Moka_Core.php:269
+msgid ""
+"Please activate the installment option in the Moka Pay settings and save the "
+"settings."
+msgstr ""
+"Lütfen Moka Pay ayarlarından, taksit seçeneğini aktif edip ayarları kaydedin."
+
+#: core/library/Moka_Gateway.php:136
 msgid "Position of Installment Options Tab among other tabs"
 msgstr "Taksit Seçenekleri Sekmesinin diğer sekmeler arasındaki pozisyonu"
 
-msgid "The default value is 20. You can change the tab position according to the features provided by your theme or plugins. Example (like 40,60,90.)"
-msgstr "Varsayılan değer olarak 20 belirlenmiştir. Temanızın veya eklentilerinizin sağladığı niteliklere göre sekme pozisyonunu değiştirebilirsiniz. Örnek (40,60,90 gibi.)"
+#: core/library/Moka_Subscriptions.php:312
+msgid "Renewal Period"
+msgstr "Yenilenme Periyodu"
+
+#: core/library/Moka_Gateway.php:1030
+msgid "Restricted card"
+msgstr "Kısıtlı kart"
+
+#: core/library/Moka_Gateway.php:967
+msgid "Sending the expiry date is mandatory."
+msgstr "Son kullanım tarihi gönderme zorunludur."
+
+#: core/library/Moka_Gateway.php:122 core/library/Moka_Gateway.php:123
+msgid "Show Installment Message under the price_html ?"
+msgstr "Fiyat altında minimum taksit mesajı ?"
+
+#: core/library/Moka_Gateway.php:157 core/library/Moka_Gateway.php:158
+msgid "Show Installment Total Amount"
+msgstr "Taksit Toplam Tutarını Göster"
+
+#: core/library/Moka_Subscriptions_History.php:62
+msgid "Status"
+msgstr "Durum"
+
+#: core/library/Moka_Gateway.php:1028
+msgid "Stolen card"
+msgstr "Çalıntı kart"
+
+#: core/library/Moka_Subscriptions.php:282
+#: core/library/Moka_Subscriptions.php:309
+#: core/library/Moka_Subscriptions.php:487
+msgid "Subscribe"
+msgstr "Aboneliği Başlat"
+
+#: core/library/Moka_Gateway.php:114 core/library/Moka_Subscriptions.php:351
+#: core/library/Moka_Subscriptions.php:438
+#: core/library/Moka_Subscriptions.php:439
+#: core/library/Moka_Subscriptions.php:460
+msgid "Subscription"
+msgstr "Abonelikler"
+
+#: core/library/Moka_Subscriptions.php:180
+msgid "Subscription Features"
+msgstr "Abonelik Özellikleri"
+
+#: core/library/Moka_Subscriptions.php:207
+msgid "Subscription Period"
+msgstr "Abonelik Süresi"
+
+#: core/library/Moka_Subscriptions.php:238
+#: core/library/Moka_Subscriptions.php:241
+msgid "Subscription Price"
+msgstr "Abonelik Ücreti"
+
+#: core/library/Moka_Subscriptions.php:141
+msgid "Subscriptions"
+msgstr "Abonelikler"
+
+#: core/library/Moka_Gateway.php:225 core/library/Moka_Gateway.php:418
+#: core/library/Moka_Subscriptions.php:619
+msgid "Success"
+msgstr "Başarılı"
+
+#: core/library/Moka_Gateway.php:1027
+msgid "System error"
+msgstr "Sistem hatası"
+
+#: core/library/Moka_Gateway.php:248
+msgid "Test Informations"
+msgstr "Üye İşyeri Bilgilerini Test Et"
+
+#: core/library/Moka_Gateway.php:378
+msgid ""
+"TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a "
+"href='#''>documentation</a>"
+msgstr ""
+"<br><strong>Şu an test modu aktif durumdadır.</strong> <a href=https:"
+"//developer.moka.com/home.php?page=test-kartlari target=_blank>Test "
+"Kartlarına bu linkten</a> ulaşabilirsiniz"
+
+#: core/library/Moka_Gateway.php:139
+msgid ""
+"The default value is 20. You can change the tab position according to the "
+"features provided by your theme or plugins. Example (like 40,60,90.)"
+msgstr ""
+"Varsayılan değer olarak 20 belirlenmiştir. Temanızın veya eklentilerinizin "
+"sağladığı niteliklere göre sekme pozisyonunu değiştirebilirsiniz. Örnek (40,"
+"60,90 gibi.)"
+
+#: core/library/Moka_Gateway.php:987 core/library/Moka_Gateway.php:990
+msgid "The number of installments is invalid."
+msgstr "Taksit sayısı geçersiz."
+
+#: core/library/Moka_Gateway.php:993
+msgid "The number of installments is not allowed."
+msgstr "Taksit sayısına izin verilmiyor."
+
+#: core/library/Moka_Gateway.php:497
+msgid ""
+"The order amount has been updated due to the request for shopping in "
+"installments. %s"
+msgstr ""
+"Sipariş Tutarında, taksitli alışveriş talep edildiğinden dolayı güncelleme "
+"yapıldı. %s"
+
+#: core/library/Optimisthub_Ajax.php:160
+msgid ""
+"The test function can be performed after saving the merchant information."
+msgstr ""
+"Test fonksiyonu, üye işyeri bilgilerini kaydettikten sonra yapılabilir."
+
+#: core/library/Moka_Gateway.php:981
+msgid "There is an error in the card details, please check."
+msgstr "Kart bilgilerinde hata var lütfen kontrol ediniz."
+
+#: core/library/Moka_Gateway.php:102
+msgid "This controls the description which the user sees during checkout."
+msgstr "Kullanıcılarınızın ödeme admında göreceği açıklama alanıdır."
+
+#: core/library/Moka_Gateway.php:95
+msgid "This controls the title which the user sees during checkout."
+msgstr "Kullanıcılarınızın ödeme admında göreceği başlık alanıdır."
+
+#: core/library/Moka_Gateway.php:166
+msgid ""
+"This field provides convenience for the separation of orders during "
+"reporting for the Moka POS module used in more than one site. (Optional)"
+msgstr ""
+"Bu alan birden çok sitede kullanılan Moka POS modülü için raporlama "
+"esnasında siparişlerin ayrıştırılmasında kolaylık sağlar. (Opsiyonel)"
+
+#: core/library/Moka_Gateway.php:1031
+msgid "Timeout"
+msgstr "Zaman aşımı"
+
+#: core/library/Moka_Gateway.php:93
+msgid "Title"
+msgstr "Başlık"
+
+#: core/library/Moka_Gateway.php:589
+msgid "Total."
+msgstr "Toplam."
+
+#: core/library/Optimisthub_Transaction_History.php:70
+msgid "Transaction Id"
+msgstr "İşlem Id"
+
+#: core/library/Moka_Gateway.php:1015
+msgid "Transaction not open to cardholder"
+msgstr "Kart sahibine açık olmayan işlem"
+
+#: core/library/Moka_Gateway.php:1019
+msgid "Undefined error"
+msgstr "Tanımsız hata"
+
+#: core/library/Moka_Core.php:194
+msgid "Update installment rates via Moka"
+msgstr "Taksit oranlarını Moka ile Güncelle"
+
+#: core/library/Moka_Subscriptions_History.php:58
+msgid "User ID"
+msgstr "Kullanıcı"
+
+#: core/library/Moka_Gateway.php:1037
+msgid "User is not authorised to perform this operation"
+msgstr "Kullanıcı bu işlemi yapmaya yetkili değil"
+
+#: core/library/Moka_Gateway.php:973
+msgid "Virtual pos is not defined for the dealer."
+msgstr "Üye işyeri için sanal pos tanımı yapılmamış."
+
+#: core/library/Moka_Gateway.php:669 core/library/Moka_Gateway.php:680
+msgid "Waiting for user payment."
+msgstr "Kullanıcının ödeme yapması bekleniyor."
+
+#: core/library/Moka_Subscriptions.php:227
+#| msgid "week"
+msgid "Week"
+msgstr "Hafta"
+
+#: core/library/Moka_Gateway.php:221 core/library/Moka_Gateway.php:414
+#: core/library/Moka_Subscriptions.php:615
+msgid ""
+"When you do this, all of the instalment data you have entered is deleted and "
+"the current ones from Moka Pay servers are overwritten. The process cannot "
+"be reversed. To continue, please enter confirmation in the field below and "
+"continue the process. Otherwise, your transaction will not continue."
+msgstr ""
+"Bu işlemi yaptığınızda, girmiş olduğunuz taksit verilerinin tamamı silinir "
+"ve Moka Pay sunucularından güncel olanları üzerine yazılır. İşlem geri "
+"alınamaz. Devam etmek için lütfen alttaki alana onay yazıp işleme devam "
+"ediniz.Aksi halde işlemniz devam etmeyecektir."
+
+#: core/library/Moka_Init.php:204
+msgid "With installments starting from"
+msgstr "den başlayan taksitlerle"
+
+#: core/library/Moka_Subscriptions.php:229
+#| msgid "year"
+msgid "Year"
+msgstr "Yıl"
+
+#: core/library/Moka_Gateway.php:172
+msgid ""
+"You can choose what the status of the order will be when your payments are "
+"successfully completed."
+msgstr ""
+"Ödemeleriniz başarılı bir şekilde tamamlandığında siparişin durumunun ne "
+"olacağını seçebilirsiniz."
+
+#: core/library/Moka_Gateway.php:1023
+msgid "Your card does not support 3D secure"
+msgstr "Katınız 3D secure desteklemiyor"
+
+#: core/library/Moka_Gateway.php:1012
+msgid "Your card has insufficient limit."
+msgstr "Kartınızın limiti yetersiz."
+
+#: core/library/Moka_Gateway.php:395
+msgid ""
+"Your card information that you have added during the payment will be kept by "
+"Moka with the assurance of Moka. Your next subscription payment will be "
+"taken with this card."
+msgstr ""
+"Ödeme esnasında eklemiş olduğunuz kart bilgileriniz, Moka güvencesi ile Moka "
+"tarafından saklanacaktır. Sonraki abonelik ödemeniz bu kart ile alınacaktır."
+
+#: core/library/Moka_Gateway.php:1039
+msgid "Your card is closed to internet purchases"
+msgstr "Kartınız internet alışverişlerine kapalıdır"
+
+#: core/library/Moka_Gateway.php:961
+msgid "Your card limit is insufficient."
+msgstr "Kart limitiniz yetersiz."
+
+#: core/library/Moka_Gateway.php:673 core/library/Moka_Gateway.php:679
+msgid "Your payment could not be collected. Please try again."
+msgstr "Ödemeniz tahsil edilemedi. Lütfen yeniden deneyiniz."
+
+#: core/library/Moka_Gateway.php:220 core/library/Moka_Gateway.php:413
+#: core/library/Moka_Subscriptions.php:614
+msgid ""
+"Your transaction has been completed successfully. Within 2 seconds the page "
+"will be refreshed"
+msgstr ""
+"İşleminiz başarılı bir şekilde tamamlandı. 2 Saniye içerisinde sayfa "
+"yenilecektir."

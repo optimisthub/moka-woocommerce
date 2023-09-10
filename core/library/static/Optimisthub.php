@@ -43,9 +43,9 @@
  
 <hr>
 <br>
-<a href="https://optimisthub.com/?ref=<?php echo get_bloginfo('wpurl'); ?>&source=moka-woocommerce" target="_blank">
+<a href="https://optimisthub.com/?utm_source=moka-woocommerce&utm_campaign=moka-woocommerce&utm_content=<?php echo get_bloginfo("wpurl"); ?>" target="_blank">
   <img style="width:220px"
-    src="<?php echo str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ )).'/img/optimisthub.svg'; ?>"
+    src="<?php echo OPTIMISTHUB_MOKA_URL.'assets/img/optimisthub.svg'; ?>"
     alt="">
 </a>
 <p><strong>Ücretsiz</strong> Moka POS WooCommerce Eklentisi Optimist Hub Bünyesinde geliştirilmiştir.</p>

@@ -64,7 +64,7 @@ class Optimisthub_Transaction_History
 
             $color = $errorMessage ? ' color:red ': '';
 
-            $output .= '<div class="per-log '.$extra.'">';
+            $output .= '<div class="per-log '.$extra.'" data-code="'.data_get($perLog, 'result_code').'">';
                 $output .= '<strong>'.__("Order Id", "moka-woocommerce" ).' : </strong>' . data_get($perLog, 'id_cart'). ' - ';
                 $output .= '<strong>'.__("Customer Id", "moka-woocommerce" ).' : </strong>' . data_get($perLog, 'id_customer'). ' - ';
                 $output .= '<strong>'.__("Transaction Id", "moka-woocommerce" ).' : </strong>' . data_get($perLog, 'optimist_id'). ' - ';

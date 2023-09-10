@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://optimisthub.com?ref=github.com&param=moka-woocommerce">
+  <a href="https://optimisthub.com/?utm_source=moka-woocommerce&utm_campaign=moka-woocommerce&utm_content=readme">
     <img alt="Optimisthub.com" src="https://www.optimisthub.com/cdn/moka/moka-woocommerce-plugin.png">
   </a> 
 </p>

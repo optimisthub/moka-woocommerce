@@ -1,23 +1,31 @@
 jQuery(document).ready(function () {
-    console.info('Moka PAY Core Js File loaded, successfully. Version 3.7.5');
-    let binCache = '';
+    console.info('Moka PAY Core Js File loaded, successfully. Version ' + moka_ajax.version);
+    let binCache = false;
 
+    /* 
+    * Bin Cache Clear
+    */
+    jQuery(document).on('update_checkout', function(){
+        binCache = false;
+    });
     /**
      * Bin Number Request 
      */
     jQuery(document).on('blur keyup click change','input#mokapay-card-number', function( e ) {  
         let binValue = jQuery(this).val();
-        let total = jQuery('#mokapay-current-order-total').val();
+        let state = jQuery('#mokapay-current-order-state').val();
         binValue = binValue.replace(/\s/g, '');
         if(binValue.length >= 6 && binValue.substr(0, 6) != binCache) {
-            binCache = binValue.substr(0, 6);
             jQuery.post(moka_ajax.ajax_url + '?_=' + Date.now(), {
                 action : 'optimisthub_ajax',
                 method : 'validate_bin',
                 binNumber : binValue,
-                total : total,
+                state : state,
             }, function(response) {
                 jQuery('#ajaxify-installment-table').html(response.data.data.renderedHtml); 
+                if(response.data.data.cardInformation !== false){
+                    binCache = binValue.substr(0, 6);
+                }
             }, 'json');
         } 
     }); 
@@ -29,7 +37,7 @@ jQuery(document).ready(function () {
     jQuery('.subscription-cancelManually').click(function (e) { 
         e.preventDefault();
         let $orderId = jQuery(this).attr('data-order-id');
-        var cancelSubscription = window.confirm("Onaylıyor iseniz, aboneliğiniz iptal edilecek ve ödemesi yenilenmeyecek.Ancak; aboneliğinizi üyelik sonlanma tarihine dek kullanmaya devam edebileceksiniz.");
+        var cancelSubscription = window.confirm(moka_ajax.subscription_confirm);
         if (cancelSubscription) {
             jQuery.post(moka_ajax.ajax_url + '?_=' + Date.now(), {
                 action  : 'optimisthub_ajax',

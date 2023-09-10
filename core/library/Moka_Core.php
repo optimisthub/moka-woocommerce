@@ -175,9 +175,6 @@ class MokaPayment
     public function generateInstallmentsTableHtml($params)
     {
 
-        $assetDir =  str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
-
-
         $storedData = get_option( 'woocommerce_mokapay-installments' );
         $avaliableInstallmentsCount = data_get($params, 'maxInstallment');
         $paymentId = data_get($params, 'paymentGatewayId');
@@ -190,11 +187,21 @@ class MokaPayment
             $storedData = $installments;
         } 
 
-        $return = '<div class="center-title"> <h2><span>Taksit Tablosu</span> <a class="js-update-comission-rates">Taksit oranlarını Moka üzerinden güncelle</a></h2> <table id="comission-rates"> <thead> <tr><td>Kart</td>';
+        $return = '<div class="center-title"> 
+            <h2>
+                <span>' . __( 'Installment Table', 'moka-woocommerce' ) . '</span> 
+                <button type="button" class="js-update-comission-rates">
+                    ' . __( 'Update installment rates via Moka', 'moka-woocommerce' ) . '
+                </button>
+            </h2> 
+            <table id="comission-rates"> 
+                <thead> 
+                    <tr>
+                        <td>' . __( 'Card', 'moka-woocommerce' ) . '</td>';
 
         foreach($avaliableInstallmentsCount as $perIns)
         {
-            $return.= '<td>'.$perIns.' Taksit</td>';
+            $return.= '<td>' . $perIns . ' ' . __( 'Installment', 'moka-woocommerce' ) . '</td>';
         }
 
         $return.= '</tr></thead>';
@@ -202,7 +209,7 @@ class MokaPayment
         foreach($storedData as $perStoredInstallmentKey => $perStoredInstallment)
         {
             $return.='<tr>';
-                $imagePath =  $assetDir. '/img/cards/banks/';
+                $imagePath =  OPTIMISTHUB_MOKA_URL. 'assets/img/cards/banks/';
        
                 $return.= '<tr>';
                 $cardImageSlug = data_get($perStoredInstallment, 'groupName');
@@ -259,25 +266,22 @@ class MokaPayment
 
         if(!$storedData)
         {
-            return 'Lütfen Moka Pay ayarlarından, taksit seçeneğini aktif edip ayarları kaydedin.';
+            return __( 'Please activate the installment option in the Moka Pay settings and save the settings.', 'moka-woocommerce' );
         }
 
         $return = '<div class="center"> <table id="comission-rates"> <thead> <tr><td>&nbsp;</td>';
     
         foreach(range(1,count(current($storedData)['rates'])) as $perIns)
         {
-            $return.= '<td>'.$perIns.' Taksit</td>';
+            $return.= '<td> ' . $perIns . ' ' . __( 'Installment', 'moka-woocommerce' ) . '</td>';
         }
 
-        $return.= '</tr></thead>';
-
-        $assetDir = str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
-        
+        $return.= '</tr></thead>';        
         foreach($storedData as $perStoredInstallmentKey => $perStoredInstallment)
         {
           
             $return.='<tr>';
-                $imagePath = $assetDir.'img/cards/banks/';
+                $imagePath = OPTIMISTHUB_MOKA_URL . 'assets/img/cards/banks/';
                 $cardImageSlug = data_get($perStoredInstallment, 'groupName');
                 $cardSymbol = '<img style="width:100px !important;max-width:unset;" src="'.$imagePath.$cardImageSlug.'.svg" />';
                 if(!$cardImageSlug)

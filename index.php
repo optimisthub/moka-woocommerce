@@ -3,9 +3,9 @@
  * Plugin Name: Moka Payment Gateway for WooCommerce
  * Plugin URI: https://github.com/optimisthub/moka-woocommerce
  * Description: Moka Payment gateway for woocommerce
- * Version: 3.7.5
+ * Version: 3.7.7
  * Author: Optimist Hub
- * Author URI: https://optimisthub.com?ref=mokaPayment
+ * Author URI: https://optimisthub.com/?utm_source=moka-woocommerce&utm_campaign=moka-woocommerce&utm_content=plugins
  * Domain Path: /languages/ 
  * Text Domain: moka-woocommerce
  */
@@ -14,23 +14,25 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.5');
-
-require __DIR__ . '/vendor/autoload.php';    
+define( 'OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.7' );
+define( 'OPTIMISTHUB_MOKA_BASENAME', plugin_basename( __FILE__ ) );
+define( 'OPTIMISTHUB_MOKA_DIR', plugin_dir_path( __FILE__ ) );
+define( 'OPTIMISTHUB_MOKA_URL', plugin_dir_url( __FILE__ ) );
+define( 'OPTIMISTHUB_MOKA_DOMAIN', 'moka-woocommerce' );
 
 /**
- * Plugin translation hook
+ * Auto load Optimisthub Moka
  *
  * @return void
  */
-function loadOptimisthubMokaTranslations() 
+function loadOptimisthubMoka() 
 {
-	$reformatDirName = str_replace('-master','',dirname( plugin_basename(__FILE__)));
-    $path = dirname( plugin_basename(__FILE__)) . '/languages';
-    $result = load_plugin_textdomain( $reformatDirName, false, $path );
-    if (!$result) {
-        $locale = apply_filters('plugin_locale', get_locale(), $reformatDirName);
-        dd("Could not find $path/" . $reformatDirName . "-$locale.mo.");
+	require __DIR__ . '/vendor/autoload.php';    
+    $path = dirname( plugin_basename(__FILE__) ) . '/languages';
+    $result = load_plugin_textdomain( OPTIMISTHUB_MOKA_DOMAIN, false, $path );
+    if ( !$result ) {
+        $locale = apply_filters('plugin_locale', get_locale(), OPTIMISTHUB_MOKA_DOMAIN);
+        dd( 'Could not find ' . $path . '/' . OPTIMISTHUB_MOKA_DOMAIN . '-' . $locale . '.mo' );
     }
 }
 
@@ -104,10 +106,10 @@ function mokaPaySqlTables()
 		dbDelta( $perQuery ); 
 	} 
 
-	add_option( 'moka_transactions', OPTIMISTHUB_MOKA_PAY_VERSION );
+	update_option( 'moka_transactions', OPTIMISTHUB_MOKA_PAY_VERSION );
 }
 
 register_activation_hook(__FILE__, 'mokaPaySqlTables');
 
-add_action( 'plugins_loaded', 'loadOptimisthubMokaTranslations' ); 
+add_action( 'plugins_loaded', 'loadOptimisthubMoka' ); 
 

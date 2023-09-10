@@ -2,8 +2,6 @@
 
 use Carbon\Carbon;
 
-add_action( 'plugins_loaded', 'initOptimisthubGatewayClass' );
-
 /**
  * Gateway Class
  *
@@ -50,6 +48,7 @@ function initOptimisthubGatewayClass()
             $this->testmode = 'yes' === $this->get_option( 'testmode' );
             $this->installment = 'yes' === $this->get_option( 'installment' );
             $this->enable_3d = 'yes' === $this->get_option( 'enable_3d' );
+            $this->show_installment_total = 'yes' === $this->get_option( 'show_installment_total' );
             $this->company_code = $this->get_option( 'company_code' );
             $this->company_name = $this->get_option( 'company_name' );
             $this->api_username = $this->get_option( 'api_username' );
@@ -62,8 +61,6 @@ function initOptimisthubGatewayClass()
             $this->optimisthubMoka = new MokaPayment();
             $this->maxInstallment = range(1,12);
             $this->userInformation = self::getUserInformationData();
-
-            $this->assets = $this->assetDir();
 
             add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] ); 
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
@@ -156,6 +153,13 @@ function initOptimisthubGatewayClass()
                     'description' => '',
                     'default'     => 'yes'
                 ],
+                'show_installment_total' => [
+                    'title'       => __( 'Show Installment Total Amount', 'moka-woocommerce' ),
+                    'label'       => __( 'Show Installment Total Amount', 'moka-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'description' => '',
+                    'default'     => 'no'
+                ],
                 'order_prefix' => [
                     'title'       => __( 'Order Prefix', 'moka-woocommerce' ),
                     'type'        => 'text',
@@ -199,18 +203,28 @@ function initOptimisthubGatewayClass()
 
             if($pagenow == 'admin.php' && isset($_GET['tab']) && isset($_GET['section']) && $_GET['section'] == 'mokapay')
             {
-                wp_register_style( 'moka-pay-admin',  $this->assets.'/moka-admin.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+                wp_register_style( 'moka-pay-admin',  OPTIMISTHUB_MOKA_URL.'assets/moka-admin.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
                 wp_enqueue_style ( 'moka-pay-admin' );
             } 
 
             if($pagenow == 'admin.php' && isset($_GET['page']) && $_GET['page'] == 'subscription')
             {
-                wp_register_style( 'moka-pay-admin',  $this->assets.'/moka-admin.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
+                wp_register_style( 'moka-pay-admin',  OPTIMISTHUB_MOKA_URL.'assets/moka-admin.css' , false,   OPTIMISTHUB_MOKA_PAY_VERSION );
                 wp_enqueue_style ( 'moka-pay-admin' );
             } 
 
-            wp_enqueue_script( 'moka-pay-corejs', $this->assets.'/moka-admin.js', false, OPTIMISTHUB_MOKA_PAY_VERSION );
-            wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+            wp_enqueue_script( 'moka-pay-corejs', OPTIMISTHUB_MOKA_URL.'assets/moka-admin.js', false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_localize_script( 'moka-pay-corejs', 'moka_ajax', [
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'subscription_confirm' => __( 'If you agree, your subscription will be cancelled and the payment will not be renewed. However; you will be able to continue to use your subscription until the membership expiration date.', 'moka-woocommerce' ),
+                'success_redirection' => __( 'Your transaction has been completed successfully. Within 2 seconds the page will be refreshed', 'moka-woocommerce' ),
+                'update_comission' => __( 'When you do this, all of the instalment data you have entered is deleted and the current ones from Moka Pay servers are overwritten. The process cannot be reversed. To continue, please enter confirmation in the field below and continue the process. Otherwise, your transaction will not continue.', 'moka-woocommerce' ),
+                'version' => OPTIMISTHUB_MOKA_PAY_VERSION,
+                'installment_test' => __( 'Installment Rate Test', 'moka-woocommerce' ),
+                'bin_test' => __( 'Bank Identification Test', 'moka-woocommerce' ),
+                'success' => __( 'Success', 'moka-woocommerce' ),
+                'failed' => __( 'Failed', 'moka-woocommerce' ),
+            ] );
         }
 
         /**
@@ -223,12 +237,18 @@ function initOptimisthubGatewayClass()
             ?>
                 <div class="moka-admin-interface">
                     <div class="left">
-                        <img src="<?php echo plugins_url( 'moka-woocommerce-master/assets/img/mokapos.png' ); ?>" alt="">
+                        <img src="<?php echo OPTIMISTHUB_MOKA_URL.'assets/img/mokapos.png'; ?>" />
                         <h2><?php _e('Moka Pos Settings','moka-woocommerce'); ?></h2>
 
                         <table class="form-table">
                             <?php $this->generate_settings_html(); ?>
                         </table> 
+                        <div class="moka-admin-test-details">
+                            <button type="button" class="moka-admin-dotest">
+                                <?php _e('Test Informations','moka-woocommerce'); ?>
+                            </button>
+                            <div class="moka-admin-test-results"></div>
+                        </div>
                     </div>
                     <div class="right">
                         <div class="optimist">
@@ -262,10 +282,12 @@ function initOptimisthubGatewayClass()
             global $woocommerce;
             $referer = is_wc_endpoint_url( 'order-pay' ) ? 'order-pay' : 'checkout'; 
             $total = data_get($woocommerce, 'cart.total'); 
+            $state = 'cart';
 
             if ( get_query_var('order-pay') ) {
                 $order = wc_get_order(get_query_var('order-pay'));
                 $total = $order->get_total();  
+                $state = 'order';
             } 
 
             $cc_fields = [
@@ -279,11 +301,11 @@ function initOptimisthubGatewayClass()
                             name="' .$payment_id. '-current-step-of-payment" 
                         />
                         <input 
-                            id="'.$payment_id.'-current-order-total" 
-                            class="current-order-total" 
+                            id="'.$payment_id.'-current-order-state" 
+                            class="current-order-state" 
                             type="hidden"  
-                            value="'.$total.'"
-                            name="' .$payment_id. '-current-order-total" 
+                            value="'.$state.'"
+                            name="' .$payment_id. '-current-order-state" 
                         />
                     </p>',
                 'name-on-card' => '
@@ -371,7 +393,7 @@ function initOptimisthubGatewayClass()
             {
                 echo '<div class="mokapay-save-card-info-message">
                 <p>'.__('Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card.', 'moka-woocommerce').'</p>
-                <img src="'.$this->assets.'/img/logo-mavi-moka.svg" alt="Moka POS" style="height:40px" />
+                <img src="'.OPTIMISTHUB_MOKA_URL.'assets/img/logo-mavi-moka.svg" alt="Moka POS" style="height:40px" />
                 </div>';
             }
             do_action( 'woocommerce_credit_card_form_end', $this->id );  
@@ -384,8 +406,18 @@ function initOptimisthubGatewayClass()
          */
         public function payment_scripts() 
         { 
-            wp_enqueue_script( 'moka-pay-corejs', $this->assets .  'moka.js' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
-            wp_localize_script( 'moka-pay-corejs', 'moka_ajax', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+            wp_enqueue_script( 'moka-pay-corejs', OPTIMISTHUB_MOKA_URL . 'assets/moka.js' , false, OPTIMISTHUB_MOKA_PAY_VERSION );
+            wp_localize_script( 'moka-pay-corejs', 'moka_ajax', [
+                'ajax_url' => admin_url( 'admin-ajax.php' ),
+                'subscription_confirm' => __( 'If you agree, your subscription will be cancelled and the payment will not be renewed. However; you will be able to continue to use your subscription until the membership expiration date.', 'moka-woocommerce' ),
+                'success_redirection' => __( 'Your transaction has been completed successfully. Within 2 seconds the page will be refreshed', 'moka-woocommerce' ),
+                'update_comission' => __( 'When you do this, all of the instalment data you have entered is deleted and the current ones from Moka Pay servers are overwritten. The process cannot be reversed. To continue, please enter confirmation in the field below and continue the process. Otherwise, your transaction will not continue.', 'moka-woocommerce' ),
+                'version' => OPTIMISTHUB_MOKA_PAY_VERSION,
+                'installment_test' => __( 'Installment Rate Test', 'moka-woocommerce' ),
+                'bin_test' => __( 'Bank Identification Test', 'moka-woocommerce' ),
+                'success' => __( 'Success', 'moka-woocommerce' ),
+                'failed' => __( 'Failed', 'moka-woocommerce' ),
+            ] );
         }
             
         /**
@@ -400,24 +432,24 @@ function initOptimisthubGatewayClass()
 
             if( empty(data_get($postedData, $this->id.'-name-oncard') )) 
             {
-                wc_add_notice(  __( "<strong>Card holder</strong> is required.", 'moka-woocommerce' ), 'error' );
+                wc_add_notice(  __( '<strong>Card holder</strong> is required.', 'moka-woocommerce' ), 'error' );
                 return false;
             }
 
             if( empty(data_get($postedData, $this->id.'-card-number'))) 
             {
-                wc_add_notice(  __( "<strong>Card Number</strong> is required.", 'moka-woocommerce' ), 'error' );
+                wc_add_notice(  __( '<strong>Card Number</strong> is required.', 'moka-woocommerce' ), 'error' );
                 return false;
             }
 
             if( empty(data_get($postedData, $this->id.'-card-expiry') )) 
             {
-                wc_add_notice(  __( "<strong>Card Expiry</strong> is required.", 'moka-woocommerce' ), 'error' );
+                wc_add_notice(  __( '<strong>Card Expiry</strong> is required.', 'moka-woocommerce' ), 'error' );
                 return false;
             }
             if( empty(data_get($postedData, $this->id.'-card-cvc'))) 
             {
-                wc_add_notice(  __( "<strong>Card CVC</strong> is required.", 'moka-woocommerce' ), 'error' );
+                wc_add_notice(  __( '<strong>Card CVC</strong> is required.', 'moka-woocommerce' ), 'error' );
                 return false;
             }
 
@@ -425,7 +457,7 @@ function initOptimisthubGatewayClass()
             {
                 if( empty(data_get($postedData, $this->id.'-installment'))) 
                 {
-                    wc_add_notice(  __( "<strong>Installment</strong> is required.", 'moka-woocommerce' ), 'error' );
+                    wc_add_notice(  __( '<strong>Installment</strong> is required.', 'moka-woocommerce' ), 'error' );
                     return false;
                 }
             }
@@ -444,7 +476,7 @@ function initOptimisthubGatewayClass()
         { 
 
             $order              = new WC_order($orderId); 
-            $orderDetails       = self::formatOrder($orderId);  
+            $orderDetails       = self::formatOrder($orderId); 
             $currentTotal       = data_get($orderDetails, 'Amount');
             $installmentNumber  = data_get($orderDetails, 'InstallmentNumber');
             $currency           = $order->get_currency();
@@ -462,8 +494,8 @@ function initOptimisthubGatewayClass()
 
                 $order->add_order_note( 
                     sprintf( 
-                        __( 'Sipariş Tutarında, taksitli alışveriş talep edildiğinden dolayı güncelleme yapıldı. %s', 'moka-woocommerce' ), 
-                        $currentTotal. ' '.$currency. ' ['.$installmentNumber.' Taksit]'
+                        __( 'The order amount has been updated due to the request for shopping in installments. %s', 'moka-woocommerce' ), 
+                        $currentTotal. ' '.$currency. ' ['.$installmentNumber.' '.__( 'Installment', 'moka-woocommerce' ).']'
                     ), 
                     false,
                     true
@@ -514,7 +546,7 @@ function initOptimisthubGatewayClass()
             ## Redirect to Reciepent Scenario when Successfully Validated Card Information
             if($callbackResult == 'Success')
             {   
-                $recordParams['result_message'] = 'Kart Bilgileri Başarılı Bir Şekilde Doğrulandı.';
+                $recordParams['result_message'] = __( 'Card details have been successfully verified.', 'moka-woocommerce' );
                 self::saveRecord($recordParams);
                 return [
                     'result' => 'success',
@@ -554,7 +586,7 @@ function initOptimisthubGatewayClass()
                 $currency = data_get($orderDetails,'Currency'); 
 
                 $order->update_status('processing', __('Payment is processing via Moka Pay.', 'moka-woocommerce'));
-                $order->add_order_note( __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> Tutar : '.$total.' '.$currency , false,false );
+                $order->add_order_note( __('Hey, the order is paid by Moka Pay!','moka-woocommerce').'<br> '.__( 'Total.', 'moka-woocommerce' ).' : '.$total.' '.$currency , false,false );
                 $order->payment_complete();
 
                 ## User Role Changer Support
@@ -638,13 +670,13 @@ function initOptimisthubGatewayClass()
 
                 if(isset($_POST) && data_get($_POST, 'resultCode') && data_get($_POST, 'hashValue'))
                 { 
-                    wc_add_notice('Ödemeniz tahsil edilemedi. Lütfen yeniden deneyiniz.', 'notice' );
+                    wc_add_notice( __( 'Your payment could not be collected. Please try again.', 'moka-woocommerce' ), 'notice' );
                     echo '<div class="woocommerce-notices-wrapper"><ul class="woocommerce-error" role="alert"><li class="">'.self::errorMessagesWithErrorCodes(data_get($_POST, 'resultCode')).' : <a class="moka-continue-checkout" href="'.wc_get_checkout_url().'">'.get_the_title(wc_get_page_id('checkout')).'</a></li></ul></div>'; 
                     $recordParams['result_message'] = self::errorMessagesWithErrorCodes(data_get($_POST, 'resultCode'));
                     self::saveRecord($recordParams);  
 
                 } else {
-                    wc_add_notice('Ödemeniz tahsil edilemedi. Lütfen yeniden deneyiniz.', 'notice' );
+                    wc_add_notice( __( 'Your payment could not be collected. Please try again.', 'moka-woocommerce' ), 'notice' );
                     $recordParams['result_message'] = __('Waiting for user payment.', 'moka-woocommerce');
                     self::saveRecord($recordParams);  
                 }
@@ -710,9 +742,8 @@ function initOptimisthubGatewayClass()
             $orderIdTrx = $orderId;
             $orderId    = $orderId.'-'.time();
             $expriyDate = self::formatExperyDate(data_get($postData, $this->id.'-card-expiry'));
-            $rates      = data_get($postData, $this->id.'-installment-rates'); 
-            $rates      = urldecode($rates);
-            $rates      = json_decode($rates);
+
+            $rates = self::prepare_installment( data_get($postData, $this->id.'-order-bankCode'), data_get($postData, $this->id.'-order-bankGroup') );
             
             $selectedInstallment    = data_get($postData, $this->id.'-installment');
             $currentComission       = data_get($rates, $selectedInstallment.'.value'); 
@@ -723,12 +754,13 @@ function initOptimisthubGatewayClass()
             $hasSubscription = $this->isOrderHasSubscriptionProduct($orderItems);
 
             $orderData = [
+                'rates' => $rates,
                 'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
                 'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
                 'ExpMonth'              => (string) data_get($expriyDate,'month' ),
                 'ExpYear'               => (string) self::formatExpiryDate(data_get($expriyDate,'year' )),
                 'CvcNumber'             => (string) data_get($postData, $this->id.'-card-cvc'),
-                'Amount'                => (string) self::calculateComissionRate($getAmount,$currentComission),
+                'Amount'                => (string) self::calculateComissionRate($getAmount, $currentComission),
                 'Currency'              => (string) $order->get_currency() == 'TRY' ? 'TL' : $order->get_currency() ,
                 'InstallmentNumber'     => (int) $selectedInstallment,
                 'ClientIP'              => (string) self::getUserIp(),
@@ -784,28 +816,23 @@ function initOptimisthubGatewayClass()
          */
         private function getUserIp()
         {
-            if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
-                    $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
-                    $_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+            if ( isset($_SERVER["HTTP_CF_CONNECTING_IP"]) ) {
+                $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+                $_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+                $_SERVER['HTTP_X_FORWARDED_FOR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
             }
-            $client  = @$_SERVER['HTTP_CLIENT_IP'];
-            $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
             $remote  = $_SERVER['REMOTE_ADDR'];
 
-            if(filter_var($client, FILTER_VALIDATE_IP))
+            if( isset($_SERVER['HTTP_CLIENT_IP']) && filter_var($_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP) )
             {
-                $ip = $client;
+                $remote = $_SERVER['HTTP_CLIENT_IP'];
             }
-            elseif(filter_var($forward, FILTER_VALIDATE_IP))
+            elseif( isset($_SERVER['HTTP_X_FORWARDED_FOR']) && filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP) )
             {
-                $ip = $forward;
-            }
-            else
-            {
-                $ip = $remote;
+                $remote = $_SERVER['HTTP_X_FORWARDED_FOR'];
             }
 
-            return $ip;
+            return $remote;
         }
 
         /**
@@ -844,8 +871,9 @@ function initOptimisthubGatewayClass()
          */
         private function calculateComissionRate( $total, $percent )
         { 
-            $total = ( ( ($total*$percent)/100) + $total); 
-            return number_format($total,2,'.', '');
+            $realPercent = floatval( floatval($total) * floatval($percent) / 100 );
+            $totalPrice = floatval($total) + $realPercent; 
+            return self::moka_number_format($totalPrice);
         }
 
         /**
@@ -877,7 +905,7 @@ function initOptimisthubGatewayClass()
             $orderFee->amount = $installmentFee;
             $orderFee->taxable = false;
             $orderFee->tax = 0;
-            $orderFee->tax_data = array();
+            $orderFee->tax_data = [];
             $orderFee->tax_class = '';
             
             $order->add_fee($orderFee);
@@ -927,45 +955,45 @@ function initOptimisthubGatewayClass()
             $errorOutput = '';
             switch ($string) {
                 case "PaymentDealer.CheckPaymentDealerAuthentication.InvalidRequest":
-                    $errorOutput = "Hatalı hash bilgisi";
+                    $errorOutput = __( 'Invalid request detected. Try Again.', 'moka-woocommerce' );
                     break;
                 case "Limit is insufficient":
-                    $errorOutput = "Kart limitiniz yetersiz.";
+                    $errorOutput = __( 'Your card limit is insufficient.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.RequiredFields.AmountRequired":
-                    $errorOutput = "Tutar Göndermek Zorunludur.";
+                    $errorOutput = __( 'It is mandatory to send the transaction amount.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.RequiredFields.ExpMonthRequired":
-                    $errorOutput = "Son Kullanım Tarihi Gönderme Zorunludur.";
+                    $errorOutput = __( 'Sending the expiry date is mandatory.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.CheckPaymentDealerAuthentication.InvalidAccount":
-                    $errorOutput = "Böyle bir bayi bulunamadı";
+                    $errorOutput = __( 'No dealer found.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.CheckPaymentDealerAuthentication.VirtualPosNotFound":
-                    $errorOutput = "Bu bayi için sanal pos tanımı yapılmamış";
+                    $errorOutput = __( 'Virtual pos is not defined for the dealer.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.CheckDealerPaymentLimits.DailyDealerLimitExceeded":
-                    $errorOutput = "Bayi için tanımlı günlük limitlerden herhangi biri aşıldı";
+                    $errorOutput = __( 'Any of the daily limits defined for the dealer have been exceeded.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.CheckDealerPaymentLimits.DailyCardLimitExceeded":
-                    $errorOutput = "Gün içinde bu kart kullanılarak daha fazla işlem yapılamaz";
+                    $errorOutput = __( 'No further transactions can be made as the daily limit of the card has been exceeded.', 'moka-woocommerce' );
                 case "PaymentDealer.CheckCardInfo.InvalidCardInfo":
-                    $errorOutput = "Kart bilgilerinde hata var lütfen doğru bilgileri işleyiniz";
+                    $errorOutput = __( 'There is an error in the card details, please check.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.DoDirectPayment3dRequest.InstallmentNotAvailableForForeignCurrencyTransaction":
-                    $errorOutput = "Yabancı para ile taksit yapılamaz";
+                    $errorOutput = __( 'No installments in foreign currency.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForDealer":
-                    $errorOutput = "Bu taksit sayısı bu bayi için yapılamaz";
+                    $errorOutput = __( 'The number of installments is invalid.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.DoDirectPayment3dRequest.InvalidInstallmentNumber":
-                    $errorOutput = "Taksit sayısı 2 ile 9 arasıdır";
+                    $errorOutput = __( 'The number of installments is invalid.', 'moka-woocommerce' );
                     break;
                 case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForVirtualPos":
-                    $errorOutput = "Sanal Pos bu taksit sayısına izin vermiyor";
+                    $errorOutput = __( 'The number of installments is not allowed.', 'moka-woocommerce' );
                     break;
                 default:
-                    $errorOutput = "Beklenmeyen bir hata oluştu";
+                    $errorOutput = __( 'An unexpected error occurred.', 'moka-woocommerce' );
             }
 
             return $errorOutput;
@@ -978,43 +1006,43 @@ function initOptimisthubGatewayClass()
          */
         private function errorMessagesWithErrorCodes($code)
         {
-            $codes =  [
-                '000' => 'Genel Hata',
-                '001' => 'Kart Sahibi Onayı Alınamadı',
-                '002' => 'Kartınızın limiti yetersiz.',
-                '003' => 'Kredi Kartı Numarası Geçerli Formatta Değil',
-                '004' => 'Genel Red',
-                '005' => 'Kart Sahibine Açık Olmayan İşlem',
-                '006' => 'Kartın Son Kullanma Tarihi Hatali',
-                '007' => 'Geçersiz İşlem',
-                '008' => 'Bankaya Bağlanılamadı',
-                '009' => 'Tanımsız Hata Kodu',
-                '010' => 'Banka SSL Hatası',
-                '011' => 'Manual Onay İçin Bankayı Arayınız',
-                '012' => 'Kart Bilgileri Hatalı - Kart No veya CVV2',
-                '013' => 'Visa MC Dışındaki Kartlar 3D Secure Desteklemiyor',
-                '014' => 'Geçersiz Hesap Numarası',
-                '015' => 'Geçersiz CVV',
-                '016' => 'Onay Mekanizması Mevcut Değil',
-                '017' => 'Sistem Hatası',
-                '018' => 'Çalıntı Kart',
-                '019' => 'Kayıp Kart',
-                '020' => 'Kısıtlı Kart',
-                '021' => 'Zaman Aşımı',
-                '022' => 'Geçersiz İşyeri',
-                '023' => 'Sahte Onay',
-                '024' => '3D Onayı Alındı Ancak Para Karttan Çekilemedi',
-                '025' => '3D Onay Alma Hatası',
-                '026' => 'Kart Sahibi Banka veya Kart 3D-Secure Üyesi Değil',
-                '027' => 'Kullanıcı Bu İşlemi Yapmaya Yetkili Değil',
-                '028' => 'Fraud Olasılığı',
-                '029' => 'Kartınız e-ticaret İşlemlerine Kapalıdır',                
+            $codes = [
+                '000' => __('General Error','moka-woocommerce'),
+                '001' => __('Failed to obtain cardholder approval','moka-woocommerce'),
+                '002' => __('Your card has insufficient limit.','moka-woocommerce'),
+                '003' => __('Credit card number not in valid format','moka-woocommerce'),
+                '004' => __('General rejection','moka-woocommerce'),
+                '005' => __('Transaction not open to cardholder','moka-woocommerce'),
+                '006' => __('Card expiry date incorrect','moka-woocommerce'),
+                '007' => __('Invalid transaction','moka-woocommerce'),
+                '008' => __('Failed to connect to bank','moka-woocommerce'),
+                '009' => __('Undefined error','moka-woocommerce'),
+                '010' => __('Bank SSL error','moka-woocommerce'),
+                '011' => __('Call your bank for manual confirmation','moka-woocommerce'),
+                '012' => __('Card details incorrect','moka-woocommerce'),
+                '013' => __('Your card does not support 3D secure','moka-woocommerce'),
+                '014' => __('Invalid account number','moka-woocommerce'),
+                '015' => __('Invalid CVV','moka-woocommerce'),
+                '016' => __('Approval mechanism not available','moka-woocommerce'),
+                '017' => __('System error','moka-woocommerce'),
+                '018' => __('Stolen card','moka-woocommerce'),
+                '019' => __('Lost card','moka-woocommerce'),
+                '020' => __('Restricted card','moka-woocommerce'),
+                '021' => __('Timeout','moka-woocommerce'),
+                '022' => __('Invalid merchant','moka-woocommerce'),
+                '023' => __('Fake approval','moka-woocommerce'),
+                '024' => __('3D confirmation received but money could not be withdrawn from the part','moka-woocommerce'),
+                '025' => __('3D authorisation error','moka-woocommerce'),
+                '026' => __('Bank or Card does not support 3D secure','moka-woocommerce'),
+                '027' => __('User is not authorised to perform this operation','moka-woocommerce'),
+                '028' => __('Fraud possibility','moka-woocommerce'),
+                '029' => __('Your card is closed to internet purchases','moka-woocommerce'),                
             ];
 
             if(in_array($code, array_keys($codes))) {
                 return $codes[$code];
             } else {
-                return 'Beklenmeyen bir hata oluştu';
+                return __('An unexpected error occurred','moka-woocommerce');
             }
         }
 
@@ -1187,18 +1215,6 @@ function initOptimisthubGatewayClass()
         }
 
         /**
-         * Define plugin asset files directory
-         * @since 3.0
-         * @copyright 2022 Optimisthub
-         * @author Fatih Toprak 
-         * @return void
-         */
-        private function assetDir()
-        {
-            return str_replace('/core/library/', '/assets/' , plugin_dir_url( __FILE__ ));
-        }
-
-        /**
          * Set or get order token.
          *
          * @param [array] $params
@@ -1360,6 +1376,55 @@ function initOptimisthubGatewayClass()
             $userId     = $order->get_user_id();
             return $userId;
         }
+
+        private function moka_number_format($price, $decimal = 2){
+            $_price = floatval($price);
+            $_price = number_format( $_price, ($decimal + 1), '.', '');
+            $_price = substr($_price, 0, -1);
+            return $_price;
+        }
+
+        private function prepare_installment($bankCode, $bankGroup) {
+            $installments = self::fetchInstallment();
+            if($bankGroup && $installments)
+            { 
+                $bankCode = mb_strtolower($bankCode); 
+                $bankGroup = mb_strtolower($bankGroup); 
+                foreach($installments as $perInstallment)
+                {
+                    if($perInstallment['groupName'] == $bankGroup)
+                    {
+                        return $perInstallment['rates'];
+                    }
+                } 
+            }    
+        }
+
+        private function fetchInstallment()
+        { 
+            $mokapay_settings = get_option('woocommerce_mokapay_settings');
+            $isInstallmentsActive = data_get($mokapay_settings, 'installment');
+            if($isInstallmentsActive && $isInstallmentsActive == 'yes')
+            {   
+                $installments = get_option('woocommerce_mokapay-installments') ? get_option('woocommerce_mokapay-installments') : self::generateDynamicInstallmentData();
+                
+                return $installments;
+            } 
+        }
+
+        private function generateDynamicInstallmentData()
+        {
+            $list = $this->optimisthubMoka->getInstallments();
+            $list = data_get($list, 'CommissionList');
+
+            if(!$list)
+            {
+                return false;
+            }
+            return $this->optimisthubMoka->formatInstallmentResponse($list);
+        }
         
     }
 }
+
+initOptimisthubGatewayClass();
