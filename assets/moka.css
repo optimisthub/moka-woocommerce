@@ -136,9 +136,7 @@
 }
 
 .min--installment--price {
-    width: 100%; 
     align-items: center;
-    justify-content: space-between;
     background: #e6f1f4;
     border: 1px solid #bdd5dc;
     border-radius: 8px;
@@ -146,5 +144,6 @@
     font-size:17px;
     margin:10px 0;
     cursor: pointer;
+    display:inline-flex;
 }
 .min--installment--price span {font-weight: bold;}

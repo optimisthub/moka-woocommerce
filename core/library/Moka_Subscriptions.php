@@ -22,7 +22,7 @@ class MokaSubscription
     public function __construct()
     {
         $this->mokaOptions = get_option('woocommerce_mokapay_settings');
-        $this->isSubscriptionsEnabled = 'yes' == data_get($this->mokaOptions, 'subscriptions');
+        $this->isSubscriptionsEnabled = 'yes' === data_get($this->mokaOptions, 'subscriptions');
          #$this->optimisthubMokaGateway = new OptimistHub_Moka_Gateway();
         
         register_activation_hook( __FILE__, [$this, 'addProductTypeTaxonomy' ] );
@@ -197,9 +197,9 @@ class MokaSubscription
     {
         global $product_object;
         ?>
-        <div id='<?php echo $this->productType; ?>_type_product_options' class='panel woocommerce_options_panel hidden'>
-          <div class='options_group'>
-            <?php
+<div id='<?php echo $this->productType; ?>_type_product_options' class='panel woocommerce_options_panel hidden'>
+    <div class='options_group'>
+        <?php
                 woocommerce_wp_select(
                     [
                         'id'          => '_period_per',
@@ -243,9 +243,9 @@ class MokaSubscription
                     )
                 );
             ?>
-          </div>
-        </div>
-        <?php
+    </div>
+</div>
+<?php
     }
 
     /**
@@ -303,15 +303,16 @@ class MokaSubscription
                     $period = get_post_meta($productId);
                     $periodString = data_get($period, '_period_per.0'). ' ' .data_get($period,'_period_in.0');       
                 ?>
-    
-                <p class="cart">
-                    <a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" rel="nofollow" class="single_add_to_cart_button button alt">
-                        <?php echo __("Subscribe", "moka-woocommerce"); ?>
-                    </a>
-                </p>
-                <p><?php echo "<br>".__('Renewal Period', 'moka-woocommerce').' : '.data_get($period, '_period_per.0'). ' ' .__(data_get($period,'_period_in.0'), 'moka-woocommerce'); ?>
-                </p>
-                <?php do_action( 'woocommerce_after_add_to_cart_button' );
+
+<p class="cart">
+    <a href="<?php echo esc_url( $product->add_to_cart_url() ); ?>" rel="nofollow"
+        class="single_add_to_cart_button button alt">
+        <?php echo __("Subscribe", "moka-woocommerce"); ?>
+    </a>
+</p>
+<p><?php echo "<br>".__('Renewal Period', 'moka-woocommerce').' : '.data_get($period, '_period_per.0'). ' ' .__(data_get($period,'_period_in.0'), 'moka-woocommerce'); ?>
+</p>
+<?php do_action( 'woocommerce_after_add_to_cart_button' );
             }
         }
     }
@@ -401,14 +402,19 @@ class MokaSubscription
                     $subscriptionNextDate   = data_get($perRecord, 'subscription_next_try');
 
                     $return .= '<tr>';
-                        $return .= '<td class="text-center">'._x( '#', 'hash before order number', 'woocommerce' ).'<a href="'.esc_html($order->get_view_order_url()).'" target="_blank">'.esc_html($order->get_order_number()).'</a></td>';
+                        $return .= '<td class="text-center">'._x( '#', 'hash before order number', 'moka-woocommerce' ).'<a href="'.esc_html($order->get_view_order_url()).'" target="_blank">'.esc_html($order->get_order_number()).'</a></td>';
                         $return .= '<td class="text-center">'.
-                                'Başlangıç : '.esc_html( date('d.m.Y H:i', strtotime($subscriptionDate)) ).
-                                '<br>'.($subscriptionStatus == 0 ? 'Sonraki Ödeme' : 'Bitiş').' : '.esc_html( date('d.m.Y H:i',
+                                __( 'Begining: ', 'moka-woocommerce' ) . esc_html( date_i18n('d.m.Y H:i',
+                                strtotime($subscriptionDate)) ).
+                                '<br>'.($subscriptionStatus == 0 ? __( 'Next Payment', 'moka-woocommerce' ) : __(
+                                'End', 'moka-woocommerce' )).'
+                                : '.esc_html(
+                                date_i18n('d.m.Y H:i',
                                 strtotime($subscriptionNextDate)) )
                             .'</td>';
                         $return .= '<td class="text-center">'.esc_html(data_get($perRecord, 'order_amount',0.0)).' '.esc_html($order->get_currency()).'</td>';
-                        $return .= '<td class="text-center">'.($subscriptionStatus == 0 ? 'Aktif' : 'Sonlandı').'</td>';
+                        $return .= '<td class="text-center">'.($subscriptionStatus == 0 ? __( 'Active',
+                            'moka-woocommerce' ) : __( 'Ended', 'moka-woocommerce' )).'</td>';
                         $return .= '<td class="text-center">
                             '.($subscriptionStatus == 0 ? '<span data-order-id="'.esc_html($orderId).'" class="subscription-cancelManually">İptal</span>' : '<span class="subscription-noActions">Düzenlenemez</span>').'
                         </td>';
@@ -419,7 +425,7 @@ class MokaSubscription
 
             if(!$records)
             {
-                $return = esc_html_e( 'No order has been made yet.', 'woocommerce' );
+                $return = esc_html_e( 'No order has been made yet.', 'moka-woocommerce' );
             }
 
             echo $return;
@@ -507,7 +513,7 @@ class MokaSubscription
             foreach ($records as $perKey => $perValue) {
  
                 $paymentDate = data_get($perValue, 'subscription_next_try');
-                $currentTime = current_datetime()->format('Y-m-d H:i:s');
+                $currentDT = current_datetime();
                 $tryCount    = (int)data_get($perValue, 'try_count'); 
                 $orderId     = data_get($perValue, 'order_id');
 
@@ -532,7 +538,7 @@ class MokaSubscription
 
                     $orderDetails   = json_decode(data_get($perValue, 'order_details'));
                     $payment        = new MokaPayment();
-                    $otherTrxCode   = data_get($orderDetails, 'OtherTrxCode').'-'.date('His',strtotime($currentTime));
+                    $otherTrxCode   = data_get($orderDetails, 'OtherTrxCode').'-'.$currentDT->format('His');
                     $requestParams  = [
                         'CardToken'             => data_get($orderDetails, 'CardToken'),
                         'Amount'                => data_get($orderDetails, 'Amount'),
@@ -560,29 +566,30 @@ class MokaSubscription
                             'amount_paid'   => data_get($orderDetails, 'Amount'),
                             'installment'   => data_get($orderDetails, 'InstallmentNumber'),
                             'result_code'   => data_get($doPayment, 'ResultCode'),
-                            'result_message'=> 'Sistem tarafından abonelik ücreti yenilendi. - İşlem ID : '.data_get($doPayment, 'Data.VirtualPosOrderId'), 
+                            'result_message'=> 'Sistem tarafından abonelik ücreti yenilendi. - İşlem ID :
+                            '.data_get($doPayment, 'Data.VirtualPosOrderId'),
                             'result'        => 0,
-                            'created_at'    => current_datetime()->format('Y-m-d H:i:s')
+                            'created_at'    => $currentDT->format('Y-m-d H:i:s')
                         ]);
 
                         // Update Subscription information
                         $subscriptionPeriod = data_get($perValue, 'subscription_period');
-                        $currentTime = Carbon::parse(current_datetime()->format('Y-m-d H:i:s'));
+                        $currentTime = Carbon::parse($currentDT->format('Y-m-d H:i:s'));
 
                         $__data = explode(' ',$subscriptionPeriod);
 
                         $nextTry = $currentTime::now()->add($__data[0], $__data[1]); 
                  
                         $period = [
-                            'current_time'  => Carbon::parse($currentTime)->format('Y-m-d H:i:s'),
-                            'next_try'      => Carbon::parse($nextTry)->format('Y-m-d H:i:s'),
+                            'current_time'  => $currentDT->format('Y-m-d H:i:s'),
+                            'next_try'      => $nextTry->format('Y-m-d H:i:s'),
                             'period_string' => $subscriptionPeriod
                         ];          
                                 
                         $wpdb->update( $wpdb->prefix.$table, 
                             [
                                 'subscription_period'   => $period['period_string'],
-                                'updated_at'            => current_datetime()->format('Y-m-d H:i:s'),
+                                'updated_at'            => $currentDT->format('Y-m-d H:i:s'),
                                 'subscription_next_try' => $period['next_try'],
                                 'optimist_id'           => $otherTrxCode,
                                 'try_count'             => ($tryCount+1)
@@ -616,8 +623,12 @@ class MokaSubscription
             'version' => OPTIMISTHUB_MOKA_PAY_VERSION,
             'installment_test' => __( 'Installment Rate Test', 'moka-woocommerce' ),
             'bin_test' => __( 'Bank Identification Test', 'moka-woocommerce' ),
+            'remote_test' => __( 'Remote Connection Test', 'moka-woocommerce' ),
             'success' => __( 'Success', 'moka-woocommerce' ),
             'failed' => __( 'Failed', 'moka-woocommerce' ),
+            'download_debug' => __( 'Download debug file', 'moka-woocommerce' ),
+            'clear_debug' => __( 'Clear debug file', 'moka-woocommerce' ),
+            'debug_notfound' => __( 'Cant find debug file', 'moka-woocommerce' ),
         ] );
     }
 

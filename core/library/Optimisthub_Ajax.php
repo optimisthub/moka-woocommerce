@@ -10,8 +10,10 @@ class Optimisthub_Ajax
         $this->mokaPayRequest = new MokaPayment();
         $this->mokaOptions  = get_option('woocommerce_mokapay_settings');
         $this->installments = get_option('woocommerce_mokapay-installments') ? get_option('woocommerce_mokapay-installments') : self::generateDynamicInstallmentData();
-        $this->installment_total = 'yes' === data_get($this->mokaOptions, 'show_installment_total');
-        $this->enableInstallment = 'yes' === data_get($this->mokaOptions, 'installment');
+        $this->installment_total = data_get($this->mokaOptions, 'show_installment_total', 'yes') === 'yes';
+        $this->enableInstallment = data_get($this->mokaOptions, 'installment', 'yes') === 'yes';
+        $this->limitInstallment =  data_get($this->mokaOptions, 'limitInstallment', 12);
+        $this->limitInstallmentByProduct = data_get($this->mokaOptions, 'limitInstallmentByProduct', 'no') === 'yes';
  
         add_action( 'wp_ajax_optimisthub_ajax', array( $this, 'optimisthub_ajax' ) ); 
         add_action( 'wp_ajax_nopriv_optimisthub_ajax', array( $this, 'optimisthub_ajax' ) );
@@ -22,81 +24,72 @@ class Optimisthub_Ajax
      *
      * @return void
      */
-    public function validate_bin($params)
-    { 
-        $avaliableInstallment = null;
-
-        $postData = $params;
+    public function validate_bin($postData)
+    {
+        $result = [
+            'time' => time(),
+            'status' => false,
+            'message' => false,
+            'html' => false,
+            'error' => false,
+        ];
  
-        $action = data_get($postData, 'action');
+        $action = data_get($postData, 'action', false);
 
-        if(!$action)
-        {
-            $error = new WP_Error( '001', 'Action Is Required' );
-            return wp_send_json_error( $error );
+        if( !$action ) {
+            $result['message'] = 'action is required';
+            $result['error'] = true;
         }
 
-        $binNumber = substr(data_get($postData, 'binNumber'),0,6);
+        $binNumber = substr( data_get($postData, 'binNumber'), 0 , 6 );
 
-        $mokaPay = new MokaPayment();
-        $response = $mokaPay->requestBin(['binNumber' => $binNumber]);
-
-        if( !$response )
-        {
-            $error = new WP_Error( '002', 'Response Could Not Fetched.' );
-
-            $data = [
-                'error_message'     => $error,
-                'cardInformation'   => $response, 
-                'installments'      => $avaliableInstallment,
-                'renderedHtml'      => self::renderedHtml($response, []),
-            ]; 
-            wp_send_json_error( [
-                'binNumber' => $binNumber, 
-                'time'      => time(), 
-                'data'      => $data,
-            ] );
+        if( strlen($binNumber)  != 6 ){
+            $result['message'] = 'binNumber is required';
+            $result['error'] = true;
         }
 
-        ## installments
-        $bankCode = data_get($response, 'BankCode'); 
-        $bankGroup = data_get($response, 'GroupName'); 
+        if( !$result['error'] ){
+            $avaliableInstallment = null;
+            $mokaPay = new MokaPayment();
+            $response = $mokaPay->requestBin(['binNumber' => $binNumber]);
 
-        $installments = self::fetchInstallment();
-        
-        if($bankGroup && $installments)
-        { 
-            $bankCode = mb_strtolower($bankCode); 
-            $bankGroup = mb_strtolower($bankGroup); 
-            foreach($installments as $perInstallment)
-            {
-                if($perInstallment['groupName'] == $bankGroup)
-                {
-                    $avaliableInstallment = $perInstallment;
-                }
-            } 
-        }    
-        
-        ## installments
-        $data = [
-            'cardInformation' => $response, 
-            'installments' => $avaliableInstallment,
-            'renderedHtml' => self::renderedHtml($response, [
-                'card'          => $response, 
-                'installments'  => $avaliableInstallment, 
-                'state'         => data_get($postData, 'state'),
-                'bankCode'      => $bankCode,
-                'bankGroup'     => $bankGroup,
-            ]),
-        ];  
+            if( $response['status'] ) {            
+                $bankCode = data_get($response['body'], 'BankCode');
+                $bankGroup = data_get($response['body'], 'GroupName');
 
-        wp_send_json_success( [
-            'binNumber' => $binNumber, 
-            'time'      => time(), 
-            'data'      => $data,
-        ], 200 );
-
-        wp_die();
+                $installments = self::fetchInstallment();
+                
+                if($bankGroup && $installments) { 
+                    $bankCode = mb_strtolower($bankCode); 
+                    $bankGroup = mb_strtolower($bankGroup); 
+                    foreach($installments as $perInstallment) {
+                        if($perInstallment['groupName'] == $bankGroup) {
+                            $avaliableInstallment = $perInstallment;
+                        }
+                    } 
+                }    
+                
+                $result = array_merge($result,
+                    [
+                        'status' => true,
+                        'message' => __( 'Success', 'moka-woocommerce' ),
+                        'cardInformation' => $response['body'],
+                        'installments' => $avaliableInstallment,
+                        'html' => self::renderedHtml($response['body'], [
+                            'card'          => $response['body'], 
+                            'installments'  => $avaliableInstallment, 
+                            'state'         => data_get($postData, 'state'),
+                            'bankCode'      => $bankCode,
+                            'bankGroup'     => $bankGroup,
+                        ]),
+                    ]
+                );  
+            } else {
+                $result['message'] = $response['code'] ?? '002' . $response['error'] ?? 'response could not fetched.';
+                $result['html'] = self::renderedHtml($response['body'], []);
+            }
+        }
+        wp_send_json( $result );
     }
 
     /**
@@ -108,11 +101,11 @@ class Optimisthub_Ajax
     public function clear_installment($params)
     {
         delete_option('woocommerce_mokapay-installments');
-        wp_send_json_success( [
+        wp_send_json( [
+            'status' => true,
             'time' => time(), 
-            'data' => ['message' => 'ok'],
-        ], 200 );
-        wp_die();
+            'message' => __( 'Success', 'moka-woocommerce' ),
+        ] );
     }
     
     /**
@@ -121,50 +114,48 @@ class Optimisthub_Ajax
      * @param [array] $params
      * @return void
      */
-    public function admin_test($params)
+    public function moka_test($params)
     {
-        $test_cards = [
-            '5127541122223332',
-            '4183441122223339',
-            '4397481122223337',
-            '5269551122223339',
-        ];
+        $test_cards = $this->mokaPayRequest->get_test_cards(true);
 
         $result = [
+            'time' => time(),
+            'status' => false,
             'commissioncheck' => false,
             'bincheck' => false,
-            'message' => '',
+            'remote' => false,
+            'message' => false,
         ];
 
-        if(
-            data_get($this->mokaOptions, 'company_code') && 
-            data_get($this->mokaOptions, 'api_username') && 
-            data_get($this->mokaOptions, 'api_password') 
-        ){
-            $commissioncheck = $this->mokaPayRequest->getInstallments();
-            $commissioncheck = data_get($commissioncheck, 'CommissionList');
-            if( $commissioncheck ){
-                $result['commissioncheck'] = true;
+        if( $test_cards ){
+            $result['remote'] = true;
+            if(
+                data_get($this->mokaOptions, 'company_code') && 
+                data_get($this->mokaOptions, 'api_username') && 
+                data_get($this->mokaOptions, 'api_password') 
+            ){
+                $commissioncheck = $this->mokaPayRequest->getInstallments();
                 $result['commissiondata'] = $commissioncheck;
-            }
+                $commissioncheck = data_get($commissioncheck, 'CommissionList');
+                if( $commissioncheck ){
+                    $result['commissioncheck'] = true;
+                }
 
-            $mokaPay = new MokaPayment();
-            $binNumber = substr($test_cards[array_rand($test_cards)], 0, 6);
-            $bincheck = $mokaPay->requestBin(['binNumber' => $binNumber ]);
-            if( $bincheck ){
-                $result['bincheck'] = true;
+                $mokaPay = new MokaPayment();
+                $binNumber = substr($test_cards[array_rand($test_cards)], 0, 6);
+                $bincheck = $mokaPay->requestBin(['binNumber' => $binNumber ]);
                 $result['bindata'] = $bincheck;
-            }
+                if( $bincheck['status'] ){
+                    $result['bincheck'] = true;
+                }
 
-        }else{
-            $result['message'] = __( 'The test function can be performed after saving the merchant information.', 'moka-woocommerce' );
+                $result['status'] = true;
+            }else{
+                $result['message'] = __( 'The test function can be performed after saving the merchant information.', 'moka-woocommerce' );
+            }
         }
 
-        wp_send_json_success( [
-            'time' => time(), 
-            'data' => $result,
-        ], 200 );
-        wp_die();
+        wp_send_json( $result );
     }
 
     /**
@@ -176,78 +167,88 @@ class Optimisthub_Ajax
         $action = data_get($postData, 'action');
         $method = data_get($postData, 'method');
     
-        if($method == 'validate_bin')
-        {
+        if( $method == 'validate_bin' ) {
             self::validate_bin($postData);
         }
 
-        if($method == 'clear_installment')
-        {
+        if( $method == 'clear_installment' ) {
             self::clear_installment($postData);
         }
 
-        if($method == 'cancel_subscription')
-        {
-            self::cancelSubscription($postData);
+        if( $method == 'cancel_subscription' ) {
+            self::cancel_subscription($postData);
         }
 
-        if($method == 'moka_admin_test')
-        {
-            self::admin_test($postData);
+        if( $method == 'moka_test' ) {
+            self::moka_test($postData);
+        }
+
+        if( $method == 'debug_download' ) {
+            self::debug_download();
+        }
+        
+        if( $method == 'debug_clear' ) {
+            self::debug_clear();
         }
 
         wp_die();
     }
 
-    public function cancelSubscription( $params )
+    public function cancel_subscription( $params )
     {
         global $wpdb; 
-        $orderId    = data_get($params, 'orderId');
 
-        if(!$orderId)
-        {
-            wp_send_json_success( [
-                'time' => time(), 
-                'data' => ['error' => 'Hata : Sipariş bulunamadı.'],
-            ], 200 );
+        $result = [
+            'time' => time(),
+            'status' => false,
+            'message' => false,
+            'error' => false,
+        ];
+
+        $orderId = data_get($params, 'orderId', false);
+        $orderId = intval($orderId) > 0 ? intval($orderId) : false;
+
+        if( !$orderId ) {
+            $result['message'] = __( 'Order identifier not found', 'moka-woocommerce' );
+            $result['error'] = true;
         }
 
-        $table      = 'moka_subscriptions';
-        $records    = $wpdb->get_row("SELECT * FROM $wpdb->prefix$table WHERE order_id = '$orderId' AND subscription_status = 0");
-
-        if(!$records || empty($records))
-        {
-            wp_send_json_success( [
-                'time' => time(), 
-                'data' => ['error' => 'Hata : Kayıt Bulunamadı.'],
-            ], 200 );
+        if( !wc_get_order($orderId) ){
+            $result['message'] = __( 'Order not found', 'moka-woocommerce' );
+            $result['error'] = true;
         }
 
-        if($records)
-        {
+        $records = $wpdb->get_row( 
+            $wpdb->prepare( 'SELECT * FROM ' . $wpdb->prefix . 'moka_subscriptions WHERE order_id = %d AND subscription_status = 0', $orderId ) 
+        );
+
+        if( !$records ){
+            $result['message'] = __( 'Subscription not found', 'moka-woocommerce' );
+            $result['error'] = true;
+        }
+
+        if( $records && !$result['error'] ) {
             $date = current_datetime()->format('Y-m-d H:i:s');
  
             $updateStatus = $wpdb->query(
-                $wpdb->prepare( "UPDATE $wpdb->prefix$table SET subscription_status = %s WHERE order_id = %d", '1', $orderId ),
+                $wpdb->prepare( 'UPDATE ' . $wpdb->prefix . 'moka_subscriptions SET subscription_status = %d WHERE
+                order_id = %d', 1, $orderId ),
             );   
 
-            if(!$updateStatus)
-            {
-                wp_send_json_success( [
-                    'time' => time(), 
-                    'data' => ['error' => 'Hata : '.$wpdb->last_query ],
-                ], 200 );
-            }
-
-            if($updateStatus)
-            {
-                $wpdb->query( $wpdb->prepare( "UPDATE $wpdb->prefix$table SET updated_at = %s WHERE order_id = %d",$date, $orderId ) ); 
-                wp_send_json_success( [
-                    'time' => time(), 
-                    'data' => ['messsage' => 'Abonelik başarılı bir şekilde iptal edildi. Lütfen bekleyiniz.'],
-                ], 200 );
+            if( $updateStatus ) {
+                $wpdb->query( 
+                    $wpdb->prepare( 'UPDATE ' . $wpdb->prefix . 'moka_subscriptions SET updated_at = %s WHERE order_id = %d', $date, $orderId ) 
+                );
+                
+                $result['status'] = true;
+                $result['message'] = __( 'Subscription has been successfully canceled. Please wait.', 'moka-woocommerce'
+                );
+            } else {
+                $result['message'] = __( 'An unexpected error occurred', 'moka-woocommerce' );
             }
         }
+
+        wp_send_json($result);
     }
 
     /**
@@ -257,10 +258,10 @@ class Optimisthub_Ajax
      */
     private function fetchInstallment()
     { 
-        $isInstallmentsActive = data_get($this->mokaOptions, 'installment');
-        if($isInstallmentsActive && $isInstallmentsActive == 'yes')
+        $isInstallmentsActive = data_get($this->mokaOptions, 'installment', 'yes') === 'yes';
+        if( $isInstallmentsActive )
         {
-            return $this->installments;
+            return self::calculateMaxInstallment($this->installments);
         } 
     }
 
@@ -289,7 +290,7 @@ class Optimisthub_Ajax
         $bankCode = data_get($params, 'bankCode');
         $bankGroup = data_get($params, 'bankGroup');
 
-        if(!isset($installmentRates[1])){
+        if( !isset($installmentRates[1]) ){
             $installmentRates[1] = [
                 'active' => 1,
                 'value' => 0,
@@ -307,8 +308,7 @@ class Optimisthub_Ajax
             return $formHtml;
         }
 
-        if($installmentRates)
-        {
+        if($installmentRates) {
             $formHtml .='<fieldset style="padding-bottom:30px"><p class="form-row form-row-wide">';
                 #$formHtml .= '<img class="aligncenter" src="'.data_get($params, 'card.CardTemplate').'" />';
                 $formHtml .= '<label>'.__( "Installment Shopping", 'moka-woocommerce' ).'</label>';
@@ -336,9 +336,7 @@ class Optimisthub_Ajax
                  </style>
                 ';
 
-               # $formHtml .= '<select name="mokapay-installment" class="input-select">';
-                foreach(range(1, $maxInstallment) as $kk => $perInstallmentKey)
-                {
+                foreach(range(1, $maxInstallment) as $kk => $perInstallmentKey) {
                     if($installmentRates[$perInstallmentKey]['active'] == 1)
                     {
                         $optionValue = $perInstallmentKey == 1 ? __( "Cash In Advence", 'moka-woocommerce' ) : $perInstallmentKey. ' '. __( "Installment", 'moka-woocommerce' );
@@ -428,6 +426,74 @@ class Optimisthub_Ajax
         $_price = number_format( $_price, ($decimal + 1), '.', '');
         $_price = substr($_price, 0, -1);
         return $_price;
+    }
+
+    private function calculateMaxInstallment($installments){
+        global $woocommerce;
+
+        $_limitInstallment = intval($this->limitInstallment);
+
+        if( $this->limitInstallmentByProduct ) {
+            $cart_contents = $woocommerce->cart->get_cart();
+            if($cart_contents && !empty($cart_contents)){
+                foreach($cart_contents as $cart_content){
+                    $product_limitInstallment = get_post_meta($cart_content['product_id'] , '_limitInstallment', true);
+                    if(
+                        $product_limitInstallment &&
+                        intval($product_limitInstallment)>0 &&
+                        $_limitInstallment > intval($product_limitInstallment)
+                    ){
+                        $_limitInstallment = intval($product_limitInstallment);
+                    }
+                }
+            }
+        }
+
+    
+
+        $_temp = [];
+        foreach($installments as $installment_key => $installment){
+            $_temp[$installment_key] = $installment;
+            foreach($installment['rates'] as $rate_key => $rate){
+                if($rate_key > $_limitInstallment){
+                    unset($_temp[$installment_key]['rates'][$rate_key]);
+                }
+            }
+        }
+        $installments = $_temp;
+
+        return $installments;
+    }
+
+    private function debug_download(){
+        $result = [
+            'time' => time(),
+            'status' => false,
+            'message' => __( "Cant find debug file", 'moka-woocommerce' )
+        ];
+        $filename = $this->mokaPayRequest->debug_file();
+        if( file_exists(OPTIMISTHUB_MOKA_DIR . $filename) ){
+            $result['status'] = true;
+            $result['message'] = __( 'Success', 'moka-woocommerce' );
+            $result['file'] = OPTIMISTHUB_MOKA_URL . $filename;
+            $result['filename'] = wp_generate_uuid4().'.log';
+        }
+        wp_send_json($result);
+    }
+
+    private function debug_clear(){
+        $result = [
+            'time' => time(),
+            'status' => false,
+            'message' => __( "Cant find debug file", 'moka-woocommerce' )
+        ];
+        $filename = $this->mokaPayRequest->debug_file();
+        if( file_exists(OPTIMISTHUB_MOKA_DIR . $filename) ){
+            unlink(OPTIMISTHUB_MOKA_URL . $filename);
+            $result['status'] = true;
+            $result['message'] = __( 'Success', 'moka-woocommerce' );
+        }
+        wp_send_json($result);
     }
 
 }

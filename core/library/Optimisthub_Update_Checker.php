@@ -21,7 +21,7 @@ class Optimisthub_Update_Checker
         $this->version          = OPTIMISTHUB_MOKA_PAY_VERSION;
         $this->cache_key        = 'moka_woocommerce_update_check';
         $this->cache_allowed    = true;
-        $this->endpoint         = 'https://moka.wooxup.com/check';
+        $this->endpoint         = OPTIMISTHUB_MOKA_UPDATE . 'check';
         $this->platform         = 'wordpress'; 
         
         add_filter( 'plugins_api', [ $this, 'info' ], 20, 3 );
@@ -42,18 +42,12 @@ class Optimisthub_Update_Checker
         }else{    
             $remote = wp_remote_post( $this->endpoint,
                 [
-                    'method'        => 'POST',
-                    'timeout'       => 30,
-                    'httpversion'   => '1.0',
-                    'blocking'      => true,
-                    'headers'       => [],
+                    'timeout'       => 25,
                     'body'          => 
                     [
                         'platform'  => $this->platform,
                         'version'   => $this->version,
                     ],
-                    'cookies'       => [],
-                    'sslverify'     => false,
                 ]
             );    
 
@@ -183,8 +177,8 @@ class Optimisthub_Update_Checker
         global $options;
         if (
             $this->cache_allowed
-            && isset($options['action']) && $options['action'] && 'update' === data_get($options, 'action') 
-            && isset($options['type']) && $options['type'] && 'plugin' === data_get($options, 'type') 
+            && isset($options['action']) && $options['action'] && 'update' == data_get($options, 'action') 
+            && isset($options['type']) && $options['type'] && 'plugin' == data_get($options, 'type') 
         ) {
             delete_transient( $this->cache_key );
         }

@@ -45,9 +45,9 @@ function initOptimisthubGatewayClass()
             $this->title = $this->get_option( 'title' );
             $this->description = $this->get_option( 'description' );
             $this->enabled = $this->get_option( 'enabled' );
-            $this->testmode = 'yes' === $this->get_option( 'testmode' );
-            $this->installment = 'yes' === $this->get_option( 'installment' );
-            $this->enable_3d = 'yes' === $this->get_option( 'enable_3d' );
+            $this->testmode = 'yes' === $this->get_option( 'testmode', 'no' );
+            $this->installment = 'yes' === $this->get_option( 'installment', 'yes' );
+            $this->enable_3d = 'yes' === $this->get_option( 'enable_3d', 'yes' );
             $this->show_installment_total = 'yes' === $this->get_option( 'show_installment_total' );
             $this->company_code = $this->get_option( 'company_code' );
             $this->company_name = $this->get_option( 'company_name' );
@@ -56,9 +56,14 @@ function initOptimisthubGatewayClass()
             $this->order_prefix = $this->get_option( 'order_prefix' );
             $this->order_status = $this->get_option( 'order_status' );
             $this->subscriptions = $this->get_option( 'subscriptions' );
-            $this->installment_message = $this->get_option( 'installment_message' );
-            $this->isSubscriptionsEnabled = 'yes' == $this->subscriptions; 
+            $this->installment_message = 'yes' === $this->get_option( 'installment_message', 'yes' );
+            $this->installment_tab_enable = 'yes' === $this->get_option( 'installment_tab_enable', 'yes' );
+            $this->installment_tab_position =  $this->get_option( 'installment_tab_position', 20 );
+            $this->isSubscriptionsEnabled = 'yes' === $this->subscriptions; 
             $this->optimisthubMoka = new MokaPayment();
+            $this->limitInstallment =  $this->get_option( 'limitInstallment', 12 );
+            $this->limitInstallmentByProduct = 'yes' === $this->get_option( 'limitInstallmentByProduct', 'no' );
+            $this->debugMode = 'yes' === $this->get_option( 'debugMode', 'no' );
             $this->maxInstallment = range(1,12);
             $this->userInformation = self::getUserInformationData();
 
@@ -66,10 +71,15 @@ function initOptimisthubGatewayClass()
             add_action( 'wp_enqueue_scripts', [ $this, 'payment_scripts' ] ); 
             add_filter( 'woocommerce_credit_card_form_fields' , [$this,'payment_form_fields'] , 10, 2 ); 
             add_action( 'admin_head', [$this, 'admin_css']);   
-            add_action( 'woocommerce_receipt_'.$this->id, [$this, 'receipt_page']);  
+            add_action( 'woocommerce_receipt_'.$this->id, [$this, 'receipt_page']); 
+            add_filter( 'woocommerce_generate_mokahr_html', [$this, 'mokahr_html']);
 
             self::__saveRates();
             
+        }
+
+        public function mokahr_html(){
+            return '<tr valign="top"><td colspan="2"><hr /></td></tr>';
         }
         
         /**
@@ -88,7 +98,6 @@ function initOptimisthubGatewayClass()
                     'description' => '',
                     'default'     => 'yes'
                 ],
-                
                 'title' => [
                     'title'       => __( 'Title', 'moka-woocommerce' ),
                     'type'        => 'text',
@@ -102,76 +111,8 @@ function initOptimisthubGatewayClass()
                     'description' => __( 'This controls the description which the user sees during checkout.', 'moka-woocommerce' ),
                     'default'     => __( 'Pay with your credit card via our super-cool payment gateway.', 'moka-woocommerce' ),
                 ],
-                'testmode' => [
-                    'title'       => 'Test '.__( 'Enable/Disable', 'moka-woocommerce' ),
-                    'label'       => __('Enable Test Mode?', 'moka-woocommerce' ),
-                    'type'        => 'checkbox',
-                    'description' => __('Place the payment gateway in test mode using test API keys.', 'moka-woocommerce' ),
-                    'default'     => 'yes',
-                    'desc_tip'    => true,
-                ],
-                'subscriptions' => [
-                    'title'       => __( 'Subscription', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
-                    'label'       => __('Enable subscription ?', 'moka-woocommerce' ),
-                    'type'        => 'checkbox',
-                    'description' => __('It allows you to sell products via subscription method on your site.' , 'moka-woocommerce'),
-                    'default'     => 'no',
-                    'desc_tip'    => true,
-                ],
-                'installment_message' => [
-                    'title'       => __( 'Show Installment Message under the price_html ?', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
-                    'label'       => __('Show Installment Message under the price_html ?', 'moka-woocommerce' ),
-                    'type'        => 'checkbox', 
-                    'default'     => 'yes',
-                    'desc_tip'    => true,
-                ],
-                'installment_tab_enable' => [
-                    'title'       => __( 'Installment table display on product pages', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
-                    'label'       => __('If you want the installment table to be displayed as a product tab on the product pages, turn it on.', 'moka-woocommerce' ),
-                    'type'        => 'checkbox', 
-                    'default'     => 'yes',
-                    'desc_tip'    => true,
-                ],
-                'installment_tab_position' => [
-                    'title'       => __( 'Position of Installment Options Tab among other tabs', 'moka-woocommerce' ),
-                    'type'        => 'text', 
-                    'default'     => '20',
-                    'label'       => __('The default value is 20. You can change the tab position according to the features provided by your theme or plugins. Example (like 40,60,90.)', 'moka-woocommerce' ),
-                    'desc_tip'    => true,
-                ],
-
-                'installment' => [
-                    'title'       => __( 'Installement', 'moka-woocommerce' ),
-                    'label'       => __('Enable/Disable Installement ?', 'moka-woocommerce' ),
-                    'type'        => 'checkbox', 
-                    'default'     => 'yes',
-                ],
-                'enable_3d' => [
-                    'title'       => __( 'Enable 3D', 'moka-woocommerce' ),
-                    'label'       => __( 'Enable 3d Payment?', 'moka-woocommerce' ),
-                    'type'        => 'checkbox',
-                    'description' => '',
-                    'default'     => 'yes'
-                ],
-                'show_installment_total' => [
-                    'title'       => __( 'Show Installment Total Amount', 'moka-woocommerce' ),
-                    'label'       => __( 'Show Installment Total Amount', 'moka-woocommerce' ),
-                    'type'        => 'checkbox',
-                    'description' => '',
-                    'default'     => 'no'
-                ],
-                'order_prefix' => [
-                    'title'       => __( 'Order Prefix', 'moka-woocommerce' ),
-                    'type'        => 'text',
-                    'description' => __( 'This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)', 'moka-woocommerce' ),
-                    'default'     => self::generateDefaultOrderPrefix(),
-                ],
-                'order_status' => [
-                    'title'       => __( 'Order Status', 'moka-woocommerce' ),
-                    'type'        => 'select',
-                    'description' => __( 'You can choose what the status of the order will be when your payments are successfully completed.', 'moka-woocommerce' ),
-                    'options'     => self::getOrderStatuses(),
-                    'default'     => 'wc-completed',
+                'mokahr1' => [
+                    'type' => 'mokahr',
                 ],
                 'company_code' => [
                     'title'       => __( 'Company Code', 'moka-woocommerce' ),
@@ -188,6 +129,129 @@ function initOptimisthubGatewayClass()
                 'api_password' => [
                     'title'       => __( 'Api Password', 'moka-woocommerce' ),
                     'type'        => 'text', 
+                ],
+                'mokahr2' => [
+                    'type' => 'mokahr',
+                ],
+                'testmode' => [
+                    'title'       => 'Test '.__( 'Enable/Disable', 'moka-woocommerce' ),
+                    'label'       => __('Enable Test Mode?', 'moka-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'description' => __('Place the payment gateway in test mode using test API keys.', 'moka-woocommerce' ),
+                    'default'     => 'yes',
+                    'desc_tip'    => true,
+                ],
+                'mokahr3' => [
+                    'type' => 'mokahr',
+                ],
+                'subscriptions' => [
+                    'title'       => __( 'Subscription', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
+                    'label'       => __('Enable subscription ?', 'moka-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'description' => __('It allows you to sell products via subscription method on your site.' , 'moka-woocommerce'),
+                    'default'     => 'no',
+                    'desc_tip'    => true,
+                ],
+                'mokahr4' => [
+                    'type' => 'mokahr',
+                ],
+                'enable_3d' => [
+                    'title'       => __( 'Enable 3D', 'moka-woocommerce' ),
+                    'label'       => __( 'Enable 3d Payment?', 'moka-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'description' => '',
+                    'default'     => 'yes'
+                ],
+                'mokahr5' => [
+                    'type' => 'mokahr',
+                ],
+                'installment' => [
+                    'title'       => __( 'Installement', 'moka-woocommerce' ),
+                    'label'       => __('Enable/Disable Installement ?', 'moka-woocommerce' ),
+                    'type'        => 'checkbox', 
+                    'default'     => 'yes',
+                ],
+                'limitInstallment' => [
+                    'title' => __( 'Limit Installement', 'moka-woocommerce' ),
+                    'label' => __( 'Limit Installement', 'moka-woocommerce' ),
+                    'type' => 'select',
+                    'options' => [
+                        1 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 1 ),
+                        2 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 2 ),
+                        3 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 2 ),
+                        4 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 4 ),
+                        5 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 5 ),
+                        6 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 6 ),
+                        7 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 7 ),
+                        8 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 8 ),
+                        9 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 9 ),
+                        10 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 10 ),
+                        11 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 11 ),
+                        12 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 12 ),
+                    ],
+                    'description' => '',
+                    'default' => '12'
+                ],
+                'limitInstallmentByProduct' => [
+                    'title' => __( 'Limit Installement By Product', 'moka-woocommerce' ),
+                    'label' => __( 'Enable/Disable Installement by Product ?', 'moka-woocommerce' ),
+                    'type' => 'checkbox',
+                    'description' => '',
+                    'default' => 'no'
+                ],
+                'installment_message' => [
+                    'title'       => __( 'Show Installment Message under the price_html ?', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
+                    'label'       => __('Show Installment Message under the price_html ?', 'moka-woocommerce' ),
+                    'type'        => 'checkbox', 
+                    'default'     => 'yes',
+                    'desc_tip'    => true,
+                ],
+                'show_installment_total' => [
+                    'title'       => __( 'Show Installment Total Amount', 'moka-woocommerce' ),
+                    'label'       => __( 'Show Installment Total Amount', 'moka-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'description' => '',
+                    'default'     => 'no'
+                ],
+                'installment_tab_enable' => [
+                    'title'       => __( 'Installment table display on product pages', 'moka-woocommerce' ) .' -  '. __( 'Enable/Disable', 'moka-woocommerce' ),
+                    'label'       => __('If you want the installment table to be displayed as a product tab on the product pages, turn it on.', 'moka-woocommerce' ),
+                    'type'        => 'checkbox', 
+                    'default'     => 'yes',
+                    'desc_tip'    => true,
+                ],
+                'installment_tab_position' => [
+                    'title'       => __( 'Position of Installment Options Tab among other tabs', 'moka-woocommerce' ),
+                    'type'        => 'number', 
+                    'default'     => 20,
+                    'label'       => __('The default value is 20. You can change the tab position according to the features provided by your theme or plugins. Example (like 40,60,90.)', 'moka-woocommerce' ),
+                    'desc_tip'    => true,
+                ],
+                'mokahr6' => [
+                    'type' => 'mokahr',
+                ],
+                'order_prefix' => [
+                    'title'       => __( 'Order Prefix', 'moka-woocommerce' ),
+                    'type'        => 'text',
+                    'description' => __( 'This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)', 'moka-woocommerce' ),
+                    'default'     => self::generateDefaultOrderPrefix(),
+                ],
+                'order_status' => [
+                    'title'       => __( 'Order Status', 'moka-woocommerce' ),
+                    'type'        => 'select',
+                    'description' => __( 'You can choose what the status of the order will be when your payments are successfully completed.', 'moka-woocommerce' ),
+                    'options'     => self::getOrderStatuses(),
+                    'default'     => 'wc-completed',
+                ],
+                'mokahr7' => [
+                    'type' => 'mokahr',
+                ],
+                'debugMode' => [
+                    'title'       => __( 'Enable/Disable Debug Mode', 'moka-woocommerce' ),
+                    'label'       => __( 'Enable/Disable Debug Mode', 'moka-woocommerce' ),
+                    'type'        => 'checkbox',
+                    'description' => '',
+                    'default'     => 'no'
                 ],
             ];		
         }
@@ -222,8 +286,12 @@ function initOptimisthubGatewayClass()
                 'version' => OPTIMISTHUB_MOKA_PAY_VERSION,
                 'installment_test' => __( 'Installment Rate Test', 'moka-woocommerce' ),
                 'bin_test' => __( 'Bank Identification Test', 'moka-woocommerce' ),
+                'remote_test' => __( 'Remote Connection Test', 'moka-woocommerce' ),
                 'success' => __( 'Success', 'moka-woocommerce' ),
                 'failed' => __( 'Failed', 'moka-woocommerce' ),
+                'download_debug' => __( 'Download debug file', 'moka-woocommerce' ),
+                'clear_debug' => __( 'Clear debug file', 'moka-woocommerce' ),
+                'debug_notfound' => __( 'Cant find debug file', 'moka-woocommerce' ),
             ] );
         }
 
@@ -235,37 +303,40 @@ function initOptimisthubGatewayClass()
         public function admin_options() 
         {
             ?>
-                <div class="moka-admin-interface">
-                    <div class="left">
-                        <img src="<?php echo OPTIMISTHUB_MOKA_URL.'assets/img/mokapos.png'; ?>" />
-                        <h2><?php _e('Moka Pos Settings','moka-woocommerce'); ?></h2>
+<div class="moka-admin-interface">
+    <div class="left">
+        <img src="<?php echo OPTIMISTHUB_MOKA_URL.'assets/img/mokapos.png'; ?>" />
+        <h2><?php _e('Moka Pos Settings','moka-woocommerce'); ?></h2>
 
-                        <table class="form-table">
-                            <?php $this->generate_settings_html(); ?>
-                        </table> 
-                        <div class="moka-admin-test-details">
-                            <button type="button" class="moka-admin-dotest">
-                                <?php _e('Test Informations','moka-woocommerce'); ?>
-                            </button>
-                            <div class="moka-admin-test-results"></div>
-                        </div>
-                    </div>
-                    <div class="right">
-                        <div class="optimist">
-                            <?php include __DIR__ .'/static/Optimisthub.php' ?>
-                        </div>
-                    </div>
-                </div>
-                <div class="moka-admin-interface">
-                    <?php  
-                        $this->optimisthubMoka->generateInstallmentsTableHtml(
-                        [
-                            'maxInstallment' => $this->maxInstallment,
-                            'paymentGatewayId' => $this->id
-                        ]);
-                   ?>
-                </div>
-            <?php
+        <table class="form-table">
+            <?php $this->generate_settings_html(); ?>
+        </table>
+        <div class="moka-admin-test-details">
+            <button type="button" class="moka-admin-savesettings">
+                <?php _e('Save Settings','moka-woocommerce'); ?>
+            </button>
+            <button type="button" class="moka-admin-dotest">
+                <?php _e('Test Informations','moka-woocommerce'); ?>
+            </button>
+        </div>
+        <div class="moka-admin-test-results"></div>
+    </div>
+    <div class="right">
+        <div class="optimist">
+            <?php include __DIR__ .'/static/Optimisthub.php' ?>
+        </div>
+    </div>
+</div>
+<div class="moka-admin-interface">
+    <?php  
+        $this->optimisthubMoka->generateInstallmentsTableHtml(
+        [
+            'maxInstallment' => $this->maxInstallment,
+            'paymentGatewayId' => $this->id
+        ]);
+    ?>
+</div>
+<?php
 
         }
         
@@ -375,7 +446,8 @@ function initOptimisthubGatewayClass()
     
             if ( $this->description ) { 
                 if ( $this->testmode ) {
-                    $this->description .=  __( "TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href='#''>documentation</a>", 'moka-woocommerce' );
+                    $this->description .= __( 'TEST MODE ENABLED. In test mode, you can use the card numbers listed in
+                    <a href="https://developer.moka.com/">documentation</a>', 'moka-woocommerce' );
                     $this->description  = trim( $this->description );
                 } 
                 echo wpautop( wp_kses_post( $this->description ) ).'<br>';
@@ -415,8 +487,12 @@ function initOptimisthubGatewayClass()
                 'version' => OPTIMISTHUB_MOKA_PAY_VERSION,
                 'installment_test' => __( 'Installment Rate Test', 'moka-woocommerce' ),
                 'bin_test' => __( 'Bank Identification Test', 'moka-woocommerce' ),
+                'remote_test' => __( 'Remote Connection Test', 'moka-woocommerce' ),
                 'success' => __( 'Success', 'moka-woocommerce' ),
                 'failed' => __( 'Failed', 'moka-woocommerce' ),
+                'download_debug' => __( 'Download debug file', 'moka-woocommerce' ),
+                'clear_debug' => __( 'Clear debug file', 'moka-woocommerce' ),
+                'debug_notfound' => __( 'Cant find debug file', 'moka-woocommerce' ),
             ] );
         }
             
@@ -518,7 +594,7 @@ function initOptimisthubGatewayClass()
                     'id_order'      => $orderId,
                     'order_details' => $this->formatOrderDetailsForLog($orderDetails), 
                     'optimist_id'   => data_get($orderDetails,'OtherTrxCode'), 
-                    'created_at'    => date('Y-m-d H:i:s'),      
+                    'created_at'    => date_i18n('Y-m-d H:i:s'),      
                 ]
             );
 
@@ -533,7 +609,7 @@ function initOptimisthubGatewayClass()
                 'result_code'   => $callbackResult,
                 'result_message'=> self::mokaPosErrorMessages($callbackResult),
                 'result'        => 1, // 1 False 0 True
-                'created_at'    => date('Y-m-d H:i:s'), 
+                'created_at'    => date_i18n('Y-m-d H:i:s'), 
             ]; 
 
             ## Display Error on Checkout
@@ -573,7 +649,7 @@ function initOptimisthubGatewayClass()
                 'result_code'   => data_get($_POST, 'resultMessage'),
                 'result_message'=> self::mokaPosErrorMessages(data_get($_POST, 'resultCode')),
                 'result'        => 1, // 1 False 0 True
-                'created_at'    => date('Y-m-d H:i:s'), 
+                'created_at'    => date_i18n('Y-m-d H:i:s'), 
             ];
 
             $order = new WC_order($orderId);
@@ -689,18 +765,6 @@ function initOptimisthubGatewayClass()
         }
 
         /**
-         * Check isOption Has on Db.
-         *
-         * @param [type] $name
-         * @param boolean $site_wide
-         * @return void
-         */
-        private function option_exists($name, $site_wide=false){
-            global $wpdb; 
-            return $wpdb->query("SELECT * FROM ". ($site_wide ? $wpdb->base_prefix : $wpdb->prefix). "options WHERE option_name ='$name' LIMIT 1");
-        }
-
-        /**
          * Set Cookies
          *
          * @param [array] $params
@@ -737,7 +801,12 @@ function initOptimisthubGatewayClass()
             global $woocommerce; 
             $postData = $_POST;
  
-            $order = self::fetchOrder($orderId);   
+            $order = self::fetchOrder($orderId);  
+            $getAmount = $order->get_total();
+            $customerId = $order->get_user_id();
+
+            $orderItems = $order->get_items();
+            $hasSubscription = $this->isOrderHasSubscriptionProduct($orderItems);
  
             $orderIdTrx = $orderId;
             $orderId    = $orderId.'-'.time();
@@ -745,16 +814,13 @@ function initOptimisthubGatewayClass()
 
             $rates = self::prepare_installment( data_get($postData, $this->id.'-order-bankCode'), data_get($postData, $this->id.'-order-bankGroup') );
             
-            $selectedInstallment    = data_get($postData, $this->id.'-installment');
-            $currentComission       = data_get($rates, $selectedInstallment.'.value'); 
-            $getAmount = $order->get_total();
-            $customerId = $order->get_user_id();
+            $selectedInstallment = data_get($postData, $this->id.'-installment');
+            $selectedInstallment = self::calculateMaxInstallment($orderItems, $selectedInstallment);
 
-            $orderItems = $order->get_items();
-            $hasSubscription = $this->isOrderHasSubscriptionProduct($orderItems);
+            $currentComission = data_get($rates, $selectedInstallment.'.value'); 
 
             $orderData = [
-                'rates' => $rates,
+                'rates'                 => $rates,
                 'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
                 'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
                 'ExpMonth'              => (string) data_get($expriyDate,'month' ),
@@ -777,27 +843,25 @@ function initOptimisthubGatewayClass()
                     "BuyerAddress"      => (string) $order->get_billing_address_1(). ' ' .$order->get_billing_address_2(). ' ' .$order->get_billing_city(),
                 ],
                 'CustomerDetails'       => [
-                    'CustomerCode' => (string) $this->company_code.'-OPT-'.$customerId,
-                    'FirstName' => (string) $order->get_billing_first_name(),
-                    'LastName' => (string) $order->get_billing_last_name(),
-                    'Gender' => '',
-                    'BirthDate' => '',
-                    'GsmNumber' => (string) $order->get_billing_phone(),
-                    'Email' => (string) $order->get_billing_email(),
-                    'Address' => (string) (string) $order->get_billing_address_1(). ' ' .$order->get_billing_address_2(). ' ' .$order->get_billing_city(),
+                    'CustomerCode'          => (string) $this->company_code.'-OPT-'.$customerId,
+                    'FirstName'             => (string) $order->get_billing_first_name(),
+                    'LastName'              => (string) $order->get_billing_last_name(),
+                    'Gender'                => '',
+                    'BirthDate'             => '',
+                    'GsmNumber'             => (string) $order->get_billing_phone(),
+                    'Email'                 => (string) $order->get_billing_email(),
+                    'Address'               => (string) (string) $order->get_billing_address_1(). ' ' .$order->get_billing_address_2(). ' ' .$order->get_billing_city(),
                     'CardHolderFullName'    => (string) data_get($postData, $this->id.'-name-oncard'),
                     'ExpMonth'              => (string) data_get($expriyDate,'month' ),
                     'ExpYear'               => (string) self::formatExpiryDate(data_get($expriyDate,'year' )),
                     'CardNumber'            => (string) self::formatCartNumber(data_get($postData, $this->id.'-card-number')),
                     'CardName'              => (string) $order->get_billing_first_name(). '\'s saved card',
                     'MokaStores'            => [
-                        'orderData'             => $order,
-                        'customerId'            => $customerId,
+                        'orderData'     => $order,
+                        'customerId'    => $customerId,
                     ]
-                ]
-
-                // TODO : Basket Product Details
-                //'BasketProduct'         => self::formatBaksetProducts($order), 
+                ],
+                'BasketProduct'         => self::formatBaksetProducts($orderItems), 
             ]; 
 
             if($hasSubscription)
@@ -871,9 +935,11 @@ function initOptimisthubGatewayClass()
          */
         private function calculateComissionRate( $total, $percent )
         { 
-            $realPercent = floatval( floatval($total) * floatval($percent) / 100 );
-            $totalPrice = floatval($total) + $realPercent; 
-            return self::moka_number_format($totalPrice);
+            if($total && $percent){
+                $realPercent = floatval( floatval($total) * floatval($percent) / 100 );
+                $total = floatval($total) + $realPercent;
+            }
+            return self::moka_number_format($total);
         }
 
         /**
@@ -898,17 +964,21 @@ function initOptimisthubGatewayClass()
             $installmentFee = data_get($params, 'currentOrderTotal') - data_get($params, 'orderTotal'); 
             
             $order = self::fetchOrder(data_get($params, 'orderId'));
-            
-            $orderFee = new stdClass();
-            $orderFee->id = $this->id.'-installment-fee';
-            $orderFee->name = __('Installment Fee', 'moka-woocommerce');
-            $orderFee->amount = $installmentFee;
-            $orderFee->taxable = false;
-            $orderFee->tax = 0;
-            $orderFee->tax_data = [];
-            $orderFee->tax_class = '';
-            
-            $order->add_fee($orderFee);
+                     
+            $orderFee = new \WC_Order_Item_Fee();
+            $orderFee->set_props(
+                [
+                    'name' => __('Installment Fee', 'moka-woocommerce'),
+                    'tax_class' => '',
+                    'total' => $installmentFee,
+                    'total_tax' => 0,
+                    'taxes' => [],
+                    'order_id' => $order->get_id(),
+                ]
+            );
+            $orderFee->save();
+
+            $order->add_item( $orderFee );
             $order->calculate_totals(true);
             $order->save();
         }
@@ -1057,11 +1127,7 @@ function initOptimisthubGatewayClass()
 
             if(data_get($_POST, $optionKey))
             {  
-                if (self::option_exists($optionKey))
-                {
-                    delete_option($optionKey); 
-                }
-
+                delete_option($optionKey); 
                 return $this->optimisthubMoka->setInstallments($_POST[$optionKey]);
             }
         }
@@ -1136,35 +1202,30 @@ function initOptimisthubGatewayClass()
          */
         private function generateDefaultOrderPrefix()
         {
-            return substr(strtoupper(hash('sha256',str_replace(['http://', 'https://'],'  ', get_bloginfo('wpurl') ))), 0, 8);
+            return substr( strtoupper( hash('sha256', str_replace( ['http://', 'https://'], '', get_bloginfo('wpurl') ) ) ), 0, 8 );
         }
 
         /**
          * Format Order Items
          *
-         * Reference : https://stackoverflow.com/a/40715347/1137492
          * @return array
          */
-        private function formatBaksetProducts( $order )
+        private function formatBaksetProducts( $orderItems )
         {
             $output = [];
-
-            if($order)
-            {
-                foreach ($order->get_items() as $item_id => $item ) 
-                {
-                    $product = $item->get_product(); 
-                    $productName = $item->get_name(); 
-                    $itemQuantity = $item->get_quantity();
-                    $itemTotal     = $item->get_total(); 
+            foreach ($orderItems  as $orderItem )
+            {   
+                if($orderItem->get_type() == 'line_item'){
+                    $orderData = $orderItem->get_data();
                     $output[] = [
-                        //'ProductId' => $product->get_id(),
-                        'ProductCode' => $productName,
-                        'UnitPrice' => $itemTotal,
-                        'Quantity' => $itemQuantity,
+                        'ProductId' => ( (isset($orderData['variation_id']) && intval($orderData['variation_id'])>0) ?
+                        $orderData['variation_id'] : $orderData['product_id'] ),
+                        'ProductCode' => $orderData['name'],
+                        'UnitPrice' => self::moka_number_format( floatval($orderData['total']) + floatval($orderData['total_tax']) ),
+                        'Quantity' => $orderData['quantity'],
                     ];
-                } 
-            }
+                }
+            } 
 
             return $output;
         }
@@ -1245,7 +1306,7 @@ function initOptimisthubGatewayClass()
          */
         private function setCustomerDataToOrderMeta($params)
         {
-            update_post_meta(data_get($params, 'OrderId'), '__moka_customer', json_encode($params));
+            update_post_meta(data_get($params, 'OrderId'), '__moka_customer', $params);
         }
 
         /**
@@ -1259,7 +1320,9 @@ function initOptimisthubGatewayClass()
          */
         private function formatSubsRecord($params)
         {  
-            unset($params['CvcNumber']);
+            if( isset( $params['CvcNumber'] ) ) {
+                unset($params['CvcNumber']);
+            }
             $params['hideCardNumber'] = true;
             return $params;
         }
@@ -1275,25 +1338,35 @@ function initOptimisthubGatewayClass()
          */
         private function formatOrderDetailsForLog($param)
         { 
-            unset($params['CvcNumber']);
-            unset($params['ExpYear']);
-            unset($params['ExpMonth']);
-            unset($params['CustomerDetails']['ExpYear']);
-            unset($params['CustomerDetails']['ExpMonth']);
+            
+            if( isset( $params['CvcNumber'] ) ) {
+                unset($params['CvcNumber']);
+            }
+            if( isset( $params['ExpYear'] ) ) {
+                unset($params['ExpYear']);
+            }
+            if( isset( $params['ExpMonth'] ) ) {
+                unset($params['ExpMonth']);
+            }
+            if( isset( $params['CustomerDetails'] ) ) {
+                if( isset( $params['CustomerDetails']['ExpYear'] ) ) {
+                    unset($params['CustomerDetails']['ExpYear']);
+                }
+                if( isset( $params['CustomerDetails']['ExpYear'] ) ) {
+                    unset($params['CustomerDetails']['ExpMonth']);
+                }
+            }
 
-            if(data_get($param, 'hideCardNumber'))
-            {
-                if(data_get($param, 'CardNumber'))
-                {
+            if( data_get($param, 'hideCardNumber') ) {
+                if(data_get($param, 'CardNumber')) {
                     $param['CardNumber'] = '**** **** **** '.substr($param['CardNumber'], -4);
                 } 
-                if(data_get($param, 'CustomerDetails.CardNumber'))
-                {
+                if(data_get($param, 'CustomerDetails.CardNumber')) {
                     $param['CustomerDetails']['CardNumber'] = '**** **** **** '.substr($param['CustomerDetails']['CardNumber'], -4);
                 }
             }
            
-            return json_encode($param,true);
+            return json_encode($param, true);
         } 
 
         /**
@@ -1306,17 +1379,13 @@ function initOptimisthubGatewayClass()
          */
         private function isOrderHasSubscriptionProduct($orderItems)
         {
-            $hasSubscription = null;
+            $hasSubscription = false;
 
-            if($orderItems)
-            {
-                foreach ( $orderItems as $itemId => $item ) 
-                {
+            if($orderItems) {
+                foreach ( $orderItems as $itemId => $item ) {
                     $productId = $item->get_product_id();
                     $product   = wc_get_product( $productId );
-                    $type      = $product->get_type(); 
-                    if($type === 'subscription')
-                    {
+                    if($product->get_type() == 'subscription') {
                         $hasSubscription = true;
                     }
                 }
@@ -1335,15 +1404,11 @@ function initOptimisthubGatewayClass()
         {
             $period = null;
 
-            if($orderItems)
-            {
-                foreach ( $orderItems as $itemId => $item ) 
-                {
+            if($orderItems) {
+                foreach ( $orderItems as $itemId => $item )  {
                     $productId = $item->get_product_id();
                     $product   = wc_get_product( $productId );
-                    $type      = $product->get_type(); 
-                    if($type === 'subscription')
-                    {
+                    if($product->get_type() == 'subscription') {
                         $__data = get_post_meta($productId);
                         $__per  = data_get($__data, '_period_per.0', null);
                         $__in   = data_get($__data, '_period_in.0', null);
@@ -1372,7 +1437,6 @@ function initOptimisthubGatewayClass()
         private function getOrderCustomerId($orderId)
         {
             $order      = wc_get_order($orderId);
-            $orderId    = $order->id;
             $userId     = $order->get_user_id();
             return $userId;
         }
@@ -1386,8 +1450,7 @@ function initOptimisthubGatewayClass()
 
         private function prepare_installment($bankCode, $bankGroup) {
             $installments = self::fetchInstallment();
-            if($bankGroup && $installments)
-            { 
+            if($bankGroup && $installments) { 
                 $bankCode = mb_strtolower($bankCode); 
                 $bankGroup = mb_strtolower($bankGroup); 
                 foreach($installments as $perInstallment)
@@ -1397,15 +1460,15 @@ function initOptimisthubGatewayClass()
                         return $perInstallment['rates'];
                     }
                 } 
-            }    
+            } 
+            return false;
         }
 
         private function fetchInstallment()
         { 
             $mokapay_settings = get_option('woocommerce_mokapay_settings');
-            $isInstallmentsActive = data_get($mokapay_settings, 'installment');
-            if($isInstallmentsActive && $isInstallmentsActive == 'yes')
-            {   
+            $isInstallmentsActive = data_get($mokapay_settings, 'installment', 'yes') === 'yes';
+            if( $isInstallmentsActive ) {   
                 $installments = get_option('woocommerce_mokapay-installments') ? get_option('woocommerce_mokapay-installments') : self::generateDynamicInstallmentData();
                 
                 return $installments;
@@ -1417,11 +1480,42 @@ function initOptimisthubGatewayClass()
             $list = $this->optimisthubMoka->getInstallments();
             $list = data_get($list, 'CommissionList');
 
-            if(!$list)
-            {
+            if( !$list ) {
                 return false;
             }
             return $this->optimisthubMoka->formatInstallmentResponse($list);
+        }
+
+        private function calculateMaxInstallment($orderItems, $selectedInstallment){
+            if( $selectedInstallment > 1 ){
+                if( $this->limitInstallmentByProduct ) {
+                    if( $orderItems && !empty($orderItems) ){
+                        foreach($orderItems as $orderItem){
+                            $orderItemData = $orderItem->get_data();
+                            if(
+                                $orderItem->get_type() == 'line_item' && 
+                                isset($orderItemData['product_id']) && intval($orderItemData['product_id'])>0
+                            ){
+                                $product_limitInstallment = get_post_meta($orderItemData['product_id'], '_limitInstallment',
+                                true);
+                                if(
+                                    $product_limitInstallment && 
+                                    intval($product_limitInstallment)>0 &&
+                                    $selectedInstallment > intval($product_limitInstallment)
+                                ){
+                                    $selectedInstallment = intval($product_limitInstallment);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if(intval($selectedInstallment) > intval($this->limitInstallment)){
+                    $selectedInstallment = intval($this->limitInstallment);
+                }
+            }
+
+            return $selectedInstallment;
         }
         
     }
