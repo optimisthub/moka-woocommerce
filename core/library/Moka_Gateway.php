@@ -861,7 +861,7 @@ function initOptimisthubGatewayClass()
                         'customerId'    => $customerId,
                     ]
                 ],
-                'BasketProduct'         => self::formatBaksetProducts($orderItems), 
+                //'BasketProduct'         => self::formatBaksetProducts($orderItems), 
             ]; 
 
             if($hasSubscription)
