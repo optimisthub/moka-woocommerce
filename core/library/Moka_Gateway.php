@@ -860,7 +860,7 @@ function initOptimisthubGatewayClass()
                         'orderData'     => $order,
                         'customerId'    => $customerId,
                     ]
-                ],
+                ], 
                 //'BasketProduct'         => self::formatBaksetProducts($orderItems), 
             ]; 
 
