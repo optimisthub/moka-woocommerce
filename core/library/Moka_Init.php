@@ -9,9 +9,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Moka_Init
 {
-
-	const MAX_INSTALLMENT_SIZE = 12;
-
 	public function __construct()
 	{
 		add_action( 'wp_enqueue_scripts', [$this, 'pluginStyles'] );
@@ -25,7 +22,63 @@ class Moka_Init
 		add_filter( 'woocommerce_product_tabs', [$this, 'generateInstallmentProductTab'] );
 		add_filter( 'woocommerce_get_price_html', [$this, 'renderMinInstallmentMessage'] );
 
+		add_action( 'add_meta_boxes', [ $this, 'add_meta_box' ] );
+		add_action( 'save_post', [ $this, 'save_meta_box' ] );
 
+	}
+
+	public function add_meta_box( $post_type ) {
+        if ( $post_type == 'product' ) {
+			$options = get_option( 'woocommerce_mokapay_settings' );
+			$limitInstallmentByProduct = data_get($options, 'limitInstallmentByProduct', 'no') === 'yes';
+			if( $limitInstallmentByProduct ){
+				add_meta_box(
+					'moka_installment_limit',
+					__( 'Installment Limit', 'moka-woocommerce' ),
+					[ $this, 'render_meta_box_content' ],
+					$post_type,
+					'side'
+				);
+			}
+        }
+    }
+
+	public function save_meta_box( $post_id ) {
+
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return ;
+		}
+
+		if ( 'product' != $_POST['post_type'] || !current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+
+		if(isset($_POST['_limitInstallment'])){
+			if(intval($_POST['_limitInstallment'])>0){
+				update_post_meta( $post_id, '_limitInstallment', intval($_POST['_limitInstallment']) );
+			}else{
+				delete_post_meta( $post_id, '_limitInstallment' );
+			}
+		}
+	}
+
+	public function render_meta_box_content( $post ) {
+		$limitInstallment = get_post_meta( $post->ID, '_limitInstallment', true );
+	?>
+<select name="_limitInstallment">
+	<option value="0"><?php _e( 'Default', 'moka-woocommerce' ); ?></option>
+
+	<?php
+			foreach(range(1, 12) as $_ment){
+			?>
+	<option value="<?php echo $_ment; ?>" <?php selected($limitInstallment, $_ment); ?>>
+		<?php printf( __( '%s Installement', 'moka-woocommerce' ), $_ment ); ?>
+	</option>
+	<?php
+			}
+			?>
+</select>
+<?php
 	}
 
 	public function pluginStyles()
@@ -92,16 +145,15 @@ class Moka_Init
 	public function generateInstallmentProductTab($tabs)
 	{
 		$options = get_option( 'woocommerce_mokapay_settings' );
-		$isavaliable = data_get($options, 'installment_tab_enable');
-		$tabPosition = data_get($options, 'installment_tab_position',20);
+		$isavaliable = data_get($options, 'installment_tab_enable', 'yes') === 'yes';
+		$tabPosition = data_get($options, 'installment_tab_position', 20);
 		
-		if($isavaliable && $isavaliable=='yes')
-		{
-			$tabs['installment_tab'] = array(
+		if( $isavaliable ) {
+			$tabs['installment_tab'] = [
 				'title'     => __( 'Installment Options', 'moka-woocommerce' ),
 				'priority'  => $tabPosition,
 				'callback'  => [$this, 'generateInstallmentProductTabContent']
-			);
+			];
 		}
 
 		return $tabs;
@@ -113,61 +165,69 @@ class Moka_Init
 
 		$installments = get_option( 'woocommerce_mokapay-installments' );
 
-		if(!$installments)
-		{
+		if( !$installments ) {
 			return;
 		}
 
 		$productPrice = $product->get_price();
 
-		if(!$productPrice)
-		{
+		if( !$productPrice ) {
 			return;
 		}
 
+		$mokapay_settings = get_option( 'woocommerce_mokapay_settings' );
+		$maxInstallment = self::calculateMaxInstallment($mokapay_settings, $product->get_id());
+
 		$return = [ '<div class="installment--table--container">' ];
- 
-		unset($installments['0-genel']);
+		
+		if($installments && !empty($installments)){
+			if(isset($installments['0-genel'])){ unset($installments['0-genel']); }
 
-		foreach ($installments as $perKey => $perValue) {
-			
-			
-			$rates = data_get($perValue, 'rates');
-			if($rates)
-			{
-				unset($rates[0]);
-				unset($rates[1]);
+			foreach ($installments as $perKey => $perValue) {
 				
-				$_thiz_data = [];
-				$_any_data = false;
-				foreach ($rates as $perRateKey => $perRateValue) 
+				
+				$rates = data_get($perValue, 'rates');
+				if($rates)
 				{
-					if($perRateValue['value']>=0 && $perRateValue['active']==1)
+					if(isset($rates[0])){ unset($rates[0]); }
+					if(isset($rates[1])){ unset($rates[1]); }
+					
+					$_thiz_data = [];
+					$_any_data = false;
+					foreach ($rates as $perRateKey => $perRateValue) 
 					{
-						$_any_data = true;
-						$returnPrice = self::calculateComission($perRateKey, $perRateValue['value'], $productPrice);
-						
-						$_thiz_data[] = '<div class="perrate">
-						
-							<div class="perInstallment">'.$perRateKey.'</div>
-							<div class="perUnitPrice">'.self::moka_price($returnPrice['unit_price']).'</div>
-							<div class="perTotal">'.self::moka_price($returnPrice['total_price']).'</div>
-							
-						</div>'; 
+						if($perRateValue['value']>=0 && $perRateValue['active']==1)
+						{
+							if($perRateKey <= $maxInstallment){
+								$_any_data = true;
+								$returnPrice = self::calculateComission($perRateKey, $perRateValue['value'], $productPrice);
 
-					} else {
-						$_thiz_data[] = '<div class="perrate"><div class="empty">-</div></div>';
+								$_thiz_data[] = '<div class="perrate">
+
+									<div class="perInstallment">'.$perRateKey.'</div>
+									<div class="perUnitPrice">'.self::moka_price($returnPrice['unit_price']).'</div>
+									<div class="perTotal">'.self::moka_price($returnPrice['total_price']).'</div>
+
+								</div>';
+							}
+						} else {
+							$_thiz_data[] = '<div class="perrate"><div class="empty">-</div></div>';
+						}
+					}
+					if($_thiz_data  && $_any_data){
+						$return[] = '<div class="installment--table--column">';
+						$return[] = '<div class="installment--table--head"><img src="'.OPTIMISTHUB_MOKA_URL.'assets/img/cards/banks/'.self::getCardName($perKey).'" title="'.$perKey.'" alt="'.$perKey.'" width="90" height="35"/></div>';
+						$return[] = '<div class="installment--table--table-head">
+							<div>'.__( 'Installment', 'moka-woocommerce' ).'</div>
+							<div>'.__( 'Installment Amount', 'moka-woocommerce' ).'</div>
+							<div>'.__( 'Total Amount', 'moka-woocommerce' ).'</div>
+						</div>';
+						$return[] = implode('', $_thiz_data);
+						$return[] = '</div>';
 					}
 				}
-				if($_thiz_data  && $_any_data){
-					$return[] = '<div class="installment--table--column">';
-					$return[] = '<div class="installment--table--head"><img src="'.OPTIMISTHUB_MOKA_URL.'assets/img/cards/banks/'.self::getCardName($perKey).'" title="'.$perKey.'" alt="'.$perKey.'" width="90" height="35"/></div>';
-					$return[] = '<div class="installment--table--table-head"><div>Taksit</div><div>Taksit Tutarı</div> <div>Toplam Tutar</div></div>';
-					$return[] = implode('', $_thiz_data);
-					$return[] = '</div>';
-				}
+				
 			}
-			
 		}
 
 		$return[] = '</div>';
@@ -187,18 +247,19 @@ class Moka_Init
 			$productPrice = $product->get_price();
 
 			$options = get_option( 'woocommerce_mokapay_settings' );
-			$isavaliable = data_get($options, 'installment_message');
-			$stock = $product->get_stock_quantity(); 
+			$isavaliable = data_get($options, 'installment_message', 'yes') === 'yes';
+			$limitInstallment = data_get($options, 'limitInstallment');
+			$stock = $product->get_stock_status() == 'instock' ? true : false; 
 
 			if(
-				
-				$stock>0 && $isavaliable == 'yes' && !is_shop() && $woocommerce_loop['name'] == '' && $product->is_type( 'simple' ) || 
-				$stock>0 && $isavaliable == 'yes' && !is_shop() && $woocommerce_loop['name'] == '' && $product->is_type( 'variable' )
+				($stock && $isavaliable && $woocommerce_loop['name'] == '') && 
+				in_array($product->get_type(), ['simple','variable']) 
 			)
 			{
 				$installments = get_option( 'woocommerce_mokapay-installments' );
-				$minRate = data_get(current($installments), 'rates.12.value');
-				$minRatePrice = self::calculateComission(self::MAX_INSTALLMENT_SIZE, $minRate, $productPrice);
+				$maxInstallment = self::calculateMaxInstallment($options, $product->get_id());
+				$minRate = data_get(end($installments), 'rates.'.$maxInstallment.'.value');
+				$minRatePrice = self::calculateComission($limitInstallment, $minRate, $productPrice);
 		
 				$return .= ' 
 					<div class="min--installment--price"><span>'.self::moka_price($minRatePrice['unit_price']). '</span> ' .' \' '.__( 'With installments starting from', 'moka-woocommerce' ).' ...</div>';
@@ -261,6 +322,27 @@ class Moka_Init
         $_price = substr($_price, 0, -1);
         return $_price;
     }
+
+	private function calculateMaxInstallment($mokapay_settings, $product_id){
+		$selectedInstallment = data_get($mokapay_settings, 'limitInstallment', 12);
+		$limitInstallmentByProduct = data_get($mokapay_settings, 'limitInstallmentByProduct', 'no') === 'yes';
+		if( $limitInstallmentByProduct ) {
+			$product_limitInstallment = get_post_meta($product_id, '_limitInstallment', true);
+			if(
+				$product_limitInstallment && 
+				intval($product_limitInstallment)>0 &&
+				$selectedInstallment > intval($product_limitInstallment)
+			){
+				$selectedInstallment = intval($product_limitInstallment);
+			}
+		}
+
+		if(intval($selectedInstallment) > intval(data_get($mokapay_settings, 'limitInstallment', 12))){
+			$selectedInstallment = intval(data_get($mokapay_settings, 'limitInstallment', 12));
+		}
+
+		return $selectedInstallment;
+	}
 
 }
 

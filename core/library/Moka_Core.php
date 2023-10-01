@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 class MokaPayment
 {
     private $mokaOptions            = [];
+    private $debugMode              = false;
+    private $debugFile              = false;
     private $apiHost                = null;
     private $productionApiHost      = 'https://service.moka.com';
     private $testApiHost            = 'https://service.refmoka.com'; 
@@ -13,6 +15,8 @@ class MokaPayment
     public function __construct() 
     {
         $this->mokaOptions  = get_option('woocommerce_mokapay_settings');
+        $this->debugMode    = data_get($this->mokaOptions, 'debugMode') === 'yes';
+        $this->debugFile    = $this->debug_file();
         $this->apiHost      = self::apiHost($this->mokaOptions);
         self::mokaKey($this->mokaOptions);  
     }
@@ -47,15 +51,15 @@ class MokaPayment
             'PaymentDealerRequest' => $params
         ]; 
  
-        $paymentRequest = self::doRequest($method, $postParams);
+        $response = self::doRequest($method, $postParams);
  
-        if($paymentRequest && data_get($paymentRequest, 'response.code') && data_get($paymentRequest, 'response.code') == 200)
+        if($response['status'] && $response['code'] == 200)
         {
-            $responseBody = data_get($paymentRequest, 'body');
-            $responseBody = json_decode($responseBody, true);
+            $responseBody = json_decode($response['body'], true);
             return $responseBody;
         }
-        return $paymentRequest;
+
+        return $response['body'];
     }
 
     /**
@@ -81,6 +85,13 @@ class MokaPayment
     {
         global $mokaKey;
 
+        $response = [
+            'status' => false,
+            'body' => [],
+            'error' => false,
+            'code' => '123',
+        ];
+
         $postParams = [
             'PaymentDealerAuthentication' => 
             [
@@ -95,17 +106,21 @@ class MokaPayment
             ]
         ]; 
 
-        $response = self::doRequest('/PaymentDealer/GetBankCardInformation',$postParams);
+        $_response = self::doRequest('/PaymentDealer/GetBankCardInformation',$postParams);
+
+        self::save_log( __METHOD__, $_response );
         
-        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
-        {
-            $responseBody = data_get($response, 'body');
-            $responseBody = json_decode($responseBody, true);
-            $responseBody = data_get($responseBody, 'Data');
-            return $responseBody;
+        if($_response['status'] &&  $_response['code'] == 200) {
+            $responseBody = json_decode($_response['body'], true);
+            $response['status'] = true;
+            $response['code'] = $_response['code'];
+            $response['body'] = data_get($responseBody, 'Data');
+            return $response;
         }
-        
-        return $response;        
+
+        $response['error'] = $_response['error'];
+
+        return $response;
     }
 
     /**
@@ -131,17 +146,17 @@ class MokaPayment
             ]
         ]; 
 
-        $response = self::doRequest('/Dealer/GetDealer',$postParams);
+        $response = self::doRequest('/Dealer/GetDealer', $postParams);
 
-        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
-        {
-            $responseBody = data_get($response, 'body');
-            $responseBody = json_decode($responseBody, true);
+        self::save_log( __METHOD__, $response );
+
+        if($response['status'] && $response['code'] == 200) {
+            $responseBody = json_decode($response['body'], true);
             $responseBody = data_get($responseBody, 'Data'); 
             return $responseBody;
         }
         
-        return $response; 
+        return $response['body']; 
     }
 
     /**
@@ -205,50 +220,52 @@ class MokaPayment
         }
 
         $return.= '</tr></thead>';
- 
-        foreach($storedData as $perStoredInstallmentKey => $perStoredInstallment)
-        {
-            $return.='<tr>';
-                $imagePath =  OPTIMISTHUB_MOKA_URL. 'assets/img/cards/banks/';
-       
-                $return.= '<tr>';
-                $cardImageSlug = data_get($perStoredInstallment, 'groupName');
-                $slug = sanitize_title(data_get($perStoredInstallment, 'bankName')); 
-                $cardSymbol = '<img src="'.$imagePath.$cardImageSlug.'.svg"/>';
+        
+        if($storedData && !empty($storedData)){
+            foreach($storedData as $perStoredInstallmentKey => $perStoredInstallment)
+            {
+                $return.='<tr>';
+                    $imagePath =  OPTIMISTHUB_MOKA_URL. 'assets/img/cards/banks/';
+        
+                    $return.= '<tr>';
+                    $cardImageSlug = data_get($perStoredInstallment, 'groupName');
+                    $slug = sanitize_title(data_get($perStoredInstallment, 'bankName')); 
+                    $cardSymbol = '<img src="'.$imagePath.$cardImageSlug.'.svg"/>';
 
-                if(!$cardImageSlug)
-                {
-                    $cardSymbol = data_get($perStoredInstallment, 'bankName');
-                }
+                    if(!$cardImageSlug)
+                    {
+                        $cardSymbol = data_get($perStoredInstallment, 'bankName');
+                    }
 
-                $return.= '<td width="100">'.$cardSymbol.'</td>';
+                    $return.= '<td width="100">'.$cardSymbol.'</td>';
 
-                $rates = data_get($perStoredInstallment, 'rates');
+                    $rates = data_get($perStoredInstallment, 'rates');
 
-                $return.='<input type="hidden" name="woocommerce_'.$paymentId.'-installments['.$slug.'][groupName]" value="'.data_get($perStoredInstallment, 'groupName').'">';
-                $return.='<input type="hidden" name="woocommerce_'.$paymentId.'-installments['.$slug.'][bankName]" value="'.data_get($perStoredInstallment, 'bankName').'">';
+                    $return.='<input type="hidden" name="woocommerce_'.$paymentId.'-installments['.$slug.'][groupName]" value="'.data_get($perStoredInstallment, 'groupName').'">';
+                    $return.='<input type="hidden" name="woocommerce_'.$paymentId.'-installments['.$slug.'][bankName]" value="'.data_get($perStoredInstallment, 'bankName').'">';
 
-                for ($i=1; $i < count($rates)+1 ; $i++) { 
-                    $return.='<td>';
-                        
-                        $isActive = data_get($rates, $i.'.active');
-                 
-                        if($isActive == 0)
-                        {
-                            $return.='<input type="hidden" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][active]" value="1">';
+                    for ($i=1; $i < count($rates)+1 ; $i++) { 
+                        $return.='<td>';
                             
-                            $return.='<input type="checkbox" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][active]" value="0">';
-                        } else {
-                            $return.='<input type="hidden" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][active]" value="0">';
-                            
-                            $return.='<input type="checkbox" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][active]" value="1" checked="checked">';
-                        }
-
-                        $return.='<input type="number" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][value]" step="0.01" maxlength="4" size="4"  value="'.$rates[$i]['value'].'" />'; 
+                            $isActive = data_get($rates, $i.'.active');
                     
-                    $return.='</td>';
-                }
-            $return.='</tr>';
+                            if($isActive == 0)
+                            {
+                                $return.='<input type="hidden" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][active]" value="1">';
+                                
+                                $return.='<input type="checkbox" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][active]" value="0">';
+                            } else {
+                                $return.='<input type="hidden" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][active]" value="0">';
+                                
+                                $return.='<input type="checkbox" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][active]" value="1" checked="checked">';
+                            }
+
+                            $return.='<input type="number" name="woocommerce_'.$paymentId.'-installments['.$slug.'][rates]['.$i.'][value]" step="0.01" maxlength="4" size="4"  value="'.$rates[$i]['value'].'" />'; 
+                        
+                        $return.='</td>';
+                    }
+                $return.='</tr>';
+            }
         }
 
         $return.= '</table></div>';  
@@ -342,31 +359,47 @@ class MokaPayment
      * @return void
      */
     private function doRequest($method, $params)
-    {
-        $remote_request = wp_remote_post($this->apiHost.$method,
+    {   
+        $response = [
+            'status' => false,
+            'code' => 0,
+            'body' => '',
+            'error' => [],
+        ];
+
+        $remote_request = wp_remote_post($this->apiHost . $method,
             [
-                'method'        => 'POST',
-                'timeout'       => 45,
-                'redirection'   => 5,
-                'httpversion'   => '1.0',
-                'blocking'      => true,
+                'user-agent'    => OPTIMISTHUB_MOKA_BASENAME . OPTIMISTHUB_MOKA_PAY_VERSION,
+                'timeout'       => 25,
                 'headers'       => 
                 [
                     'Content-Type'  => 'application/json'
                 ],
                 'body'          => json_encode($params),
-                'cookies'       => [],
-                'sslverify'     => false,
             ]
         );
-        if(
-        !is_wp_error( $remote_request ) && 
-        200 == wp_remote_retrieve_response_code( $remote_request ) && 
-        !empty( wp_remote_retrieve_body( $remote_request ) )
-        ) {
-            return $remote_request;
+        
+        if( is_wp_error($remote_request) ){
+            $response['error'][] = $remote_request->get_error_message();
+            return $response;
         }
-        return false;  
+
+        $response['code'] = wp_remote_retrieve_response_code( $remote_request );
+
+        if( 200 != $response['code'] ){
+            $response['error'][] = 'Invalid http header '.$response['code'];
+        }
+
+        if( !empty( wp_remote_retrieve_body( $remote_request ) ) ) {
+            $response['body'] = wp_remote_retrieve_body( $remote_request );
+            $response['status'] = true;
+        }
+
+        $response['error'] = implode( '-and-', $response['error'] );
+
+        self::save_log( __METHOD__, ['method' => $method, 'response' => $response] );
+
+        return $response;
     }
 
     /**
@@ -469,10 +502,9 @@ class MokaPayment
         $response = self::doRequest('/DealerCustomer/AddCustomerWithCard',$postParams);
  
 
-        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        if($response['status'] && $response['code'] == 200)
         {
-            $responseBody = data_get($response, 'body');
-            $responseBody = json_decode($responseBody, true);
+            $responseBody = json_decode($response['body'], true);
             $responseBodyResultsCode = data_get($responseBody, 'ResultCode');
             $responseBody = data_get($responseBody, 'Data');
  
@@ -498,7 +530,7 @@ class MokaPayment
             return $responseBody;
         }
 
-        return $response; 
+        return $response['body']; 
     }
 
     /**
@@ -529,15 +561,14 @@ class MokaPayment
 
         $response = self::doRequest('/DealerCustomer/GetCustomer',$postParams);
         
-        if($resposne && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        if($response['status'] && $response['code'] == 200)
         {
-            $responseBody = data_get($response, 'body');
-            $responseBody = json_decode($responseBody, true);
+            $responseBody = json_decode($response['body'], true);
             $responseBody = data_get($responseBody, 'Data');
             return $responseBody;
         }
         
-        return $response; 
+        return $response['body']; 
     }
     /**
      * Add Customer Card
@@ -572,15 +603,14 @@ class MokaPayment
 
         $response = self::doRequest('/DealerCustomer/AddCard',$postParams);
         
-        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        if($response['status'] && $response['code'] == 200)
         {
-            $responseBody = data_get($response, 'body');
-            $responseBody = json_decode($responseBody, true);
+            $responseBody = json_decode($response['body'], true);
             $responseBody = data_get($responseBody, 'Data');
             return $responseBody;
         }
         
-        return $response; 
+        return $response['body']; 
     }
 
     /**
@@ -609,17 +639,83 @@ class MokaPayment
             ]
         ]; 
 
-        $response = self::doRequest('/DealerCustomer/RemoveCard',$postParams);
-        
-        if($response && data_get($response, 'response.code') && data_get($response, 'response.code') == 200)
+        $response = self::doRequest('/DealerCustomer/RemoveCard', $postParams);
+
+        if($response['status'] && $response['code'] == 200)
         {
-            $responseBody = data_get($response, 'body');
-            $responseBody = json_decode($responseBody, true);
+            $responseBody = json_decode($response['body'], true);
             $responseBody = data_get($responseBody, 'Data');
             return $responseBody;
         }
         
-        return $response; 
+        return $response['body'];
+    }
+
+    public function get_test_cards($force = false){
+        $cards = get_transient( 'moka_test_cards' );
+        if( $cards && !$force ){
+            return $cards;
+        }else{
+            $remote = wp_remote_post( OPTIMISTHUB_MOKA_UPDATE . 'cards',
+                [
+                    'timeout'       => 25,
+                    'body'          => 
+                    [
+                        'platform'  => 'wordpress',
+                        'version'   => OPTIMISTHUB_MOKA_PAY_VERSION,
+                    ],
+                ]
+            );
+
+            self::save_log( __METHOD__, [ wp_remote_retrieve_body( $remote ) ] );
+
+            if(
+                is_wp_error( $remote )
+                || 200 != wp_remote_retrieve_response_code( $remote )
+                || empty( wp_remote_retrieve_body( $remote ) )
+            ) {
+                return false;
+            }
+
+            $remote = json_decode( wp_remote_retrieve_body( $remote ), true );
+
+            if( !$remote || !isset($remote['data']) ) {
+                return false;
+            }
+
+            $cards = data_get($remote, 'data');
+
+            set_transient( 'moka_test_cards', $cards, DAY_IN_SECONDS );
+
+            return $cards;
+        }
+
+        return false;
+    }
+
+    public function debug_file(){
+        $check = get_option( 'woocommerce_mokapay_debugfile' );
+        if($check){
+            return $check;
+        }
+        $filename = wp_generate_uuid4().'.log';
+        update_option( 'woocommerce_mokapay_debugfile', $filename );
+        return $filename;
+    }
+
+    private function save_log( $type, $data ){
+        if( $this->debugMode ){
+            $log_data = [
+                '============================' . date_i18n('d.m.Y H:i:s') . '============================',
+                $type. ' => '.serialize($data),
+                '============================' . date_i18n('d.m.Y H:i:s') . '============================',
+            ];
+            if(is_writable(OPTIMISTHUB_MOKA_DIR)){
+                file_put_contents( OPTIMISTHUB_MOKA_DIR . $this->debugFile, implode(PHP_EOL, $log_data).PHP_EOL,
+            FILE_APPEND );
+            }
+            
+        }
     }
 
 }

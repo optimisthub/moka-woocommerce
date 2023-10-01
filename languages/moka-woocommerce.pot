@@ -2,38 +2,39 @@
 # This file is distributed under the same license as the Moka Payment Gateway for WooCommerce plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Moka Payment Gateway for WooCommerce 3.7.6\n"
+"Project-Id-Version: Moka Payment Gateway for WooCommerce 3.7.8\n"
 "Report-Msgid-Bugs-To: https://github.com/optimisthub/moka-woocommerce\n"
 "Last-Translator: Cuneyt Cil <trgino@trgino.com>\n"
 "Language-Team: Optimisthub <hi@optimisthub.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-09-10T19:23:52+03:00\n"
+"POT-Creation-Date: 2023-10-01T19:23:52+03:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.6.0\n"
 "X-Domain: moka-woocommerce\n"
 
-#: core/library/Moka_Core.php:192
+#: core/library/Moka_Core.php:207
 msgid "Installment Table"
 msgstr ""
 
-#: core/library/Moka_Core.php:194
+#: core/library/Moka_Core.php:209
 msgid "Update installment rates via Moka"
 msgstr ""
 
-#: core/library/Moka_Core.php:200
+#: core/library/Moka_Core.php:215
 msgid "Card"
 msgstr ""
 
-#: core/library/Moka_Core.php:204
-#: core/library/Moka_Core.php:276
-#: core/library/Moka_Gateway.php:498
-#: core/library/Optimisthub_Ajax.php:344
+#: core/library/Moka_Core.php:219
+#: core/library/Moka_Core.php:293
+#: core/library/Moka_Gateway.php:574
+#: core/library/Moka_Init.php:221
+#: core/library/Optimisthub_Ajax.php:342
 msgid "Installment"
 msgstr ""
 
-#: core/library/Moka_Core.php:269
+#: core/library/Moka_Core.php:286
 msgid "Please activate the installment option in the Moka Pay settings and save the settings."
 msgstr ""
 
@@ -41,453 +42,540 @@ msgstr ""
 msgid "Moka by Isbank WooCommerce Gateway"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:85
-#: core/library/Moka_Gateway.php:106
-#: core/library/Moka_Gateway.php:114
-#: core/library/Moka_Gateway.php:122
-#: core/library/Moka_Gateway.php:129
+#: core/library/Moka_Gateway.php:95
+#: core/library/Moka_Gateway.php:137
+#: core/library/Moka_Gateway.php:148
+#: core/library/Moka_Gateway.php:203
+#: core/library/Moka_Gateway.php:217
 msgid "Enable/Disable"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:86
+#: core/library/Moka_Gateway.php:96
 msgid "Enable Moka Pay Gateway?"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:93
+#: core/library/Moka_Gateway.php:102
 msgid "Title"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:95
+#: core/library/Moka_Gateway.php:104
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:96
+#: core/library/Moka_Gateway.php:105
 msgid "Credit Card"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:100
+#: core/library/Moka_Gateway.php:109
 msgid "Description"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:102
+#: core/library/Moka_Gateway.php:111
 msgid "This controls the description which the user sees during checkout."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:103
+#: core/library/Moka_Gateway.php:112
 msgid "Pay with your credit card via our super-cool payment gateway."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:107
-msgid "Enable Test Mode?"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:109
-msgid "Place the payment gateway in test mode using test API keys."
-msgstr ""
-
-#: core/library/Moka_Gateway.php:114
-#: core/library/Moka_Subscriptions.php:351
-#: core/library/Moka_Subscriptions.php:438
-#: core/library/Moka_Subscriptions.php:439
-#: core/library/Moka_Subscriptions.php:460
-msgid "Subscription"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:115
-msgid "Enable subscription ?"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:117
-msgid "It allows you to sell products via subscription method on your site."
+#: core/library/Moka_Gateway.php:118
+msgid "Company Code"
 msgstr ""
 
 #: core/library/Moka_Gateway.php:122
-#: core/library/Moka_Gateway.php:123
-msgid "Show Installment Message under the price_html ?"
+msgid "Company Name"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:129
-msgid "Installment table display on product pages"
+#: core/library/Moka_Gateway.php:126
+msgid "Api Username"
 msgstr ""
 
 #: core/library/Moka_Gateway.php:130
-msgid "If you want the installment table to be displayed as a product tab on the product pages, turn it on."
+msgid "Api Password"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:136
-msgid "Position of Installment Options Tab among other tabs"
+#: core/library/Moka_Gateway.php:138
+msgid "Enable Test Mode?"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:139
-msgid "The default value is 20. You can change the tab position according to the features provided by your theme or plugins. Example (like 40,60,90.)"
+#: core/library/Moka_Gateway.php:140
+msgid "Place the payment gateway in test mode using test API keys."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:144
+#: core/library/Moka_Gateway.php:148
+#: core/library/Moka_Subscriptions.php:352
+#: core/library/Moka_Subscriptions.php:444
+#: core/library/Moka_Subscriptions.php:445
+#: core/library/Moka_Subscriptions.php:466
+msgid "Subscription"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:149
+msgid "Enable subscription ?"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:151
+msgid "It allows you to sell products via subscription method on your site."
+msgstr ""
+
+#: core/library/Moka_Gateway.php:159
+msgid "Enable 3D"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:160
+msgid "Enable 3d Payment?"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:169
 #: core/library/Optimisthub_Transaction_History.php:71
 msgid "Installement"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:145
+#: core/library/Moka_Gateway.php:170
 msgid "Enable/Disable Installement ?"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:150
-msgid "Enable 3D"
+#: core/library/Moka_Gateway.php:175
+#: core/library/Moka_Gateway.php:176
+msgid "Limit Installement"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:151
-msgid "Enable 3d Payment?"
+#: core/library/Moka_Gateway.php:179
+#: core/library/Moka_Gateway.php:180
+#: core/library/Moka_Gateway.php:181
+#: core/library/Moka_Gateway.php:182
+#: core/library/Moka_Gateway.php:183
+#: core/library/Moka_Gateway.php:184
+#: core/library/Moka_Gateway.php:185
+#: core/library/Moka_Gateway.php:186
+#: core/library/Moka_Gateway.php:187
+#: core/library/Moka_Gateway.php:188
+#: core/library/Moka_Gateway.php:189
+#: core/library/Moka_Gateway.php:190
+#: core/library/Moka_Init.php:75
+msgid "%s Installement"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:157
-#: core/library/Moka_Gateway.php:158
+#: core/library/Moka_Gateway.php:196
+msgid "Limit Installement By Product"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:197
+msgid "Enable/Disable Installement by Product ?"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:203
+#: core/library/Moka_Gateway.php:204
+msgid "Show Installment Message under the price_html ?"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:210
+#: core/library/Moka_Gateway.php:211
 msgid "Show Installment Total Amount"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:164
-msgid "Order Prefix"
+#: core/library/Moka_Gateway.php:217
+msgid "Installment table display on product pages"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:166
-msgid "This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:170
-msgid "Order Status"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:172
-msgid "You can choose what the status of the order will be when your payments are successfully completed."
-msgstr ""
-
-#: core/library/Moka_Gateway.php:177
-msgid "Company Code"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:181
-msgid "Company Name"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:185
-msgid "Api Username"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:189
-msgid "Api Password"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:219
-#: core/library/Moka_Gateway.php:412
-#: core/library/Moka_Subscriptions.php:613
-msgid "If you agree, your subscription will be cancelled and the payment will not be renewed. However; you will be able to continue to use your subscription until the membership expiration date."
-msgstr ""
-
-#: core/library/Moka_Gateway.php:220
-#: core/library/Moka_Gateway.php:413
-#: core/library/Moka_Subscriptions.php:614
-msgid "Your transaction has been completed successfully. Within 2 seconds the page will be refreshed"
-msgstr ""
-
-#: core/library/Moka_Gateway.php:221
-#: core/library/Moka_Gateway.php:414
-#: core/library/Moka_Subscriptions.php:615
-msgid "When you do this, all of the instalment data you have entered is deleted and the current ones from Moka Pay servers are overwritten. The process cannot be reversed. To continue, please enter confirmation in the field below and continue the process. Otherwise, your transaction will not continue."
-msgstr ""
-
-#: core/library/Moka_Gateway.php:223
-#: core/library/Moka_Gateway.php:416
-#: core/library/Moka_Subscriptions.php:617
-msgid "Installment Rate Test"
+#: core/library/Moka_Gateway.php:218
+msgid "If you want the installment table to be displayed as a product tab on the product pages, turn it on."
 msgstr ""
 
 #: core/library/Moka_Gateway.php:224
-#: core/library/Moka_Gateway.php:417
-#: core/library/Moka_Subscriptions.php:618
+msgid "Position of Installment Options Tab among other tabs"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:227
+msgid "The default value is 20. You can change the tab position according to the features provided by your theme or plugins. Example (like 40,60,90.)"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:234
+msgid "Order Prefix"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:236
+msgid "This field provides convenience for the separation of orders during reporting for the Moka POS module used in more than one site. (Optional)"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:240
+msgid "Order Status"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:242
+msgid "You can choose what the status of the order will be when your payments are successfully completed."
+msgstr ""
+
+#: core/library/Moka_Gateway.php:250
+#: core/library/Moka_Gateway.php:251
+msgid "Enable/Disable Debug Mode"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:283
+#: core/library/Moka_Gateway.php:484
+#: core/library/Moka_Subscriptions.php:620
+msgid "If you agree, your subscription will be cancelled and the payment will not be renewed. However; you will be able to continue to use your subscription until the membership expiration date."
+msgstr ""
+
+#: core/library/Moka_Gateway.php:284
+#: core/library/Moka_Gateway.php:485
+#: core/library/Moka_Subscriptions.php:621
+msgid "Your transaction has been completed successfully. Within 2 seconds the page will be refreshed"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:285
+#: core/library/Moka_Gateway.php:486
+#: core/library/Moka_Subscriptions.php:622
+msgid "When you do this, all of the instalment data you have entered is deleted and the current ones from Moka Pay servers are overwritten. The process cannot be reversed. To continue, please enter confirmation in the field below and continue the process. Otherwise, your transaction will not continue."
+msgstr ""
+
+#: core/library/Moka_Gateway.php:287
+#: core/library/Moka_Gateway.php:488
+#: core/library/Moka_Subscriptions.php:624
+msgid "Installment Rate Test"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:288
+#: core/library/Moka_Gateway.php:489
+#: core/library/Moka_Subscriptions.php:625
 msgid "Bank Identification Test"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:225
-#: core/library/Moka_Gateway.php:418
-#: core/library/Moka_Subscriptions.php:619
+#: core/library/Moka_Gateway.php:289
+#: core/library/Moka_Gateway.php:490
+#: core/library/Moka_Subscriptions.php:626
+msgid "Remote Connection Test"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:290
+#: core/library/Moka_Gateway.php:491
+#: core/library/Moka_Subscriptions.php:627
+#: core/library/Optimisthub_Ajax.php:75
+#: core/library/Optimisthub_Ajax.php:107
+#: core/library/Optimisthub_Ajax.php:477
+#: core/library/Optimisthub_Ajax.php:494
 msgid "Success"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:226
-#: core/library/Moka_Gateway.php:419
-#: core/library/Moka_Subscriptions.php:620
+#: core/library/Moka_Gateway.php:291
+#: core/library/Moka_Gateway.php:492
+#: core/library/Moka_Subscriptions.php:628
 msgid "Failed"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:241
+#: core/library/Moka_Gateway.php:292
+#: core/library/Moka_Gateway.php:493
+#: core/library/Moka_Subscriptions.php:629
+msgid "Download debug file"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:293
+#: core/library/Moka_Gateway.php:494
+#: core/library/Moka_Subscriptions.php:630
+msgid "Clear debug file"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:294
+#: core/library/Moka_Gateway.php:495
+#: core/library/Moka_Subscriptions.php:631
+#: core/library/Optimisthub_Ajax.php:472
+#: core/library/Optimisthub_Ajax.php:488
+msgid "Cant find debug file"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:309
 msgid "Moka Pos Settings"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:248
+#: core/library/Moka_Gateway.php:316
+msgid "Save Settings"
+msgstr ""
+
+#: core/library/Moka_Gateway.php:319
 msgid "Test Informations"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:313
-#: core/library/Moka_Gateway.php:320
+#: core/library/Moka_Gateway.php:384
+#: core/library/Moka_Gateway.php:391
 msgid "Name On Card"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:326
+#: core/library/Moka_Gateway.php:397
 msgid "Card Number"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:353
+#: core/library/Moka_Gateway.php:424
 msgid "Card Code"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:378
-msgid "TEST MODE ENABLED. In test mode, you can use the card numbers listed in <a href='#''>documentation</a>"
+#: core/library/Moka_Gateway.php:449
+msgid ""
+"TEST MODE ENABLED. In test mode, you can use the card numbers listed in\r\n"
+"                    <a href=\"https://developer.moka.com/\">documentation</a>"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:395
+#: core/library/Moka_Gateway.php:467
 msgid "Your card information that you have added during the payment will be kept by Moka with the assurance of Moka. Your next subscription payment will be taken with this card."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:435
+#: core/library/Moka_Gateway.php:511
 msgid "<strong>Card holder</strong> is required."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:441
+#: core/library/Moka_Gateway.php:517
 msgid "<strong>Card Number</strong> is required."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:447
+#: core/library/Moka_Gateway.php:523
 msgid "<strong>Card Expiry</strong> is required."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:452
+#: core/library/Moka_Gateway.php:528
 msgid "<strong>Card CVC</strong> is required."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:460
+#: core/library/Moka_Gateway.php:536
 msgid "<strong>Installment</strong> is required."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:497
+#: core/library/Moka_Gateway.php:573
 msgid "The order amount has been updated due to the request for shopping in installments. %s"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:549
+#: core/library/Moka_Gateway.php:625
 msgid "Card details have been successfully verified."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:588
+#: core/library/Moka_Gateway.php:664
 msgid "Payment is processing via Moka Pay."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:589
-#: core/library/Moka_Gateway.php:606
+#: core/library/Moka_Gateway.php:665
+#: core/library/Moka_Gateway.php:682
 msgid "Hey, the order is paid by Moka Pay!"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:589
+#: core/library/Moka_Gateway.php:665
 msgid "Total."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:601
+#: core/library/Moka_Gateway.php:677
 msgid "Payment Completed"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:669
-#: core/library/Moka_Gateway.php:680
+#: core/library/Moka_Gateway.php:745
+#: core/library/Moka_Gateway.php:756
 msgid "Waiting for user payment."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:673
-#: core/library/Moka_Gateway.php:679
+#: core/library/Moka_Gateway.php:749
+#: core/library/Moka_Gateway.php:755
 msgid "Your payment could not be collected. Please try again."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:904
+#: core/library/Moka_Gateway.php:971
 msgid "Installment Fee"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:958
+#: core/library/Moka_Gateway.php:1028
 msgid "Invalid request detected. Try Again."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:961
+#: core/library/Moka_Gateway.php:1031
 msgid "Your card limit is insufficient."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:964
+#: core/library/Moka_Gateway.php:1034
 msgid "It is mandatory to send the transaction amount."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:967
+#: core/library/Moka_Gateway.php:1037
 msgid "Sending the expiry date is mandatory."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:970
+#: core/library/Moka_Gateway.php:1040
 msgid "No dealer found."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:973
+#: core/library/Moka_Gateway.php:1043
 msgid "Virtual pos is not defined for the dealer."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:976
+#: core/library/Moka_Gateway.php:1046
 msgid "Any of the daily limits defined for the dealer have been exceeded."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:979
+#: core/library/Moka_Gateway.php:1049
 msgid "No further transactions can be made as the daily limit of the card has been exceeded."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:981
+#: core/library/Moka_Gateway.php:1051
 msgid "There is an error in the card details, please check."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:984
+#: core/library/Moka_Gateway.php:1054
 msgid "No installments in foreign currency."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:987
-#: core/library/Moka_Gateway.php:990
+#: core/library/Moka_Gateway.php:1057
+#: core/library/Moka_Gateway.php:1060
 msgid "The number of installments is invalid."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:993
+#: core/library/Moka_Gateway.php:1063
 msgid "The number of installments is not allowed."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:996
+#: core/library/Moka_Gateway.php:1066
 msgid "An unexpected error occurred."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1010
+#: core/library/Moka_Gateway.php:1080
 msgid "General Error"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1011
+#: core/library/Moka_Gateway.php:1081
 msgid "Failed to obtain cardholder approval"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1012
+#: core/library/Moka_Gateway.php:1082
 msgid "Your card has insufficient limit."
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1013
+#: core/library/Moka_Gateway.php:1083
 msgid "Credit card number not in valid format"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1014
+#: core/library/Moka_Gateway.php:1084
 msgid "General rejection"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1015
+#: core/library/Moka_Gateway.php:1085
 msgid "Transaction not open to cardholder"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1016
+#: core/library/Moka_Gateway.php:1086
 msgid "Card expiry date incorrect"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1017
+#: core/library/Moka_Gateway.php:1087
 msgid "Invalid transaction"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1018
+#: core/library/Moka_Gateway.php:1088
 msgid "Failed to connect to bank"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1019
+#: core/library/Moka_Gateway.php:1089
 msgid "Undefined error"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1020
+#: core/library/Moka_Gateway.php:1090
 msgid "Bank SSL error"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1021
+#: core/library/Moka_Gateway.php:1091
 msgid "Call your bank for manual confirmation"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1022
+#: core/library/Moka_Gateway.php:1092
 msgid "Card details incorrect"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1023
+#: core/library/Moka_Gateway.php:1093
 msgid "Your card does not support 3D secure"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1024
+#: core/library/Moka_Gateway.php:1094
 msgid "Invalid account number"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1025
+#: core/library/Moka_Gateway.php:1095
 msgid "Invalid CVV"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1026
+#: core/library/Moka_Gateway.php:1096
 msgid "Approval mechanism not available"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1027
+#: core/library/Moka_Gateway.php:1097
 msgid "System error"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1028
+#: core/library/Moka_Gateway.php:1098
 msgid "Stolen card"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1029
+#: core/library/Moka_Gateway.php:1099
 msgid "Lost card"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1030
+#: core/library/Moka_Gateway.php:1100
 msgid "Restricted card"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1031
+#: core/library/Moka_Gateway.php:1101
 msgid "Timeout"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1032
+#: core/library/Moka_Gateway.php:1102
 msgid "Invalid merchant"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1033
+#: core/library/Moka_Gateway.php:1103
 msgid "Fake approval"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1034
+#: core/library/Moka_Gateway.php:1104
 msgid "3D confirmation received but money could not be withdrawn from the part"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1035
+#: core/library/Moka_Gateway.php:1105
 msgid "3D authorisation error"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1036
+#: core/library/Moka_Gateway.php:1106
 msgid "Bank or Card does not support 3D secure"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1037
+#: core/library/Moka_Gateway.php:1107
 msgid "User is not authorised to perform this operation"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1038
+#: core/library/Moka_Gateway.php:1108
 msgid "Fraud possibility"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1039
+#: core/library/Moka_Gateway.php:1109
 msgid "Your card is closed to internet purchases"
 msgstr ""
 
-#: core/library/Moka_Gateway.php:1045
+#: core/library/Moka_Gateway.php:1115
+#: core/library/Optimisthub_Ajax.php:247
 msgid "An unexpected error occurred"
 msgstr ""
 
-#: core/library/Moka_Init.php:101
+#: core/library/Moka_Init.php:37
+msgid "Installment Limit"
+msgstr ""
+
+#: core/library/Moka_Init.php:69
+msgid "Default"
+msgstr ""
+
+#: core/library/Moka_Init.php:153
 msgid "Installment Options"
 msgstr ""
 
-#: core/library/Moka_Init.php:204
+#: core/library/Moka_Init.php:222
+msgid "Installment Amount"
+msgstr ""
+
+#: core/library/Moka_Init.php:223
+msgid "Total Amount"
+msgstr ""
+
+#: core/library/Moka_Init.php:265
 msgid "With installments starting from"
 msgstr ""
 
@@ -531,13 +619,43 @@ msgid "Subscription Price"
 msgstr ""
 
 #: core/library/Moka_Subscriptions.php:282
-#: core/library/Moka_Subscriptions.php:309
-#: core/library/Moka_Subscriptions.php:487
+#: core/library/Moka_Subscriptions.php:310
+#: core/library/Moka_Subscriptions.php:493
 msgid "Subscribe"
 msgstr ""
 
-#: core/library/Moka_Subscriptions.php:312
+#: core/library/Moka_Subscriptions.php:313
 msgid "Renewal Period"
+msgstr ""
+
+#: core/library/Moka_Subscriptions.php:405
+msgctxt "hash before order number"
+msgid "#"
+msgstr ""
+
+#: core/library/Moka_Subscriptions.php:407
+msgid "Begining: "
+msgstr ""
+
+#: core/library/Moka_Subscriptions.php:409
+msgid "Next Payment"
+msgstr ""
+
+#: core/library/Moka_Subscriptions.php:409
+msgid "End"
+msgstr ""
+
+#: core/library/Moka_Subscriptions.php:416
+#: core/library/Moka_Subscriptions_History.php:197
+msgid "Active"
+msgstr ""
+
+#: core/library/Moka_Subscriptions.php:417
+msgid "Ended"
+msgstr ""
+
+#: core/library/Moka_Subscriptions.php:428
+msgid "No order has been made yet."
 msgstr ""
 
 #: core/library/Moka_Subscriptions_History.php:57
@@ -570,10 +688,6 @@ msgid "Actions"
 msgstr ""
 
 #: core/library/Moka_Subscriptions_History.php:197
-msgid "Active"
-msgstr ""
-
-#: core/library/Moka_Subscriptions_History.php:197
 msgid "Passive"
 msgstr ""
 
@@ -589,15 +703,31 @@ msgstr ""
 msgid "Payment Failed"
 msgstr ""
 
-#: core/library/Optimisthub_Ajax.php:160
+#: core/library/Optimisthub_Ajax.php:154
 msgid "The test function can be performed after saving the merchant information."
+msgstr ""
+
+#: core/library/Optimisthub_Ajax.php:212
+msgid "Order identifier not found"
+msgstr ""
+
+#: core/library/Optimisthub_Ajax.php:217
+msgid "Order not found"
+msgstr ""
+
+#: core/library/Optimisthub_Ajax.php:226
+msgid "Subscription not found"
+msgstr ""
+
+#: core/library/Optimisthub_Ajax.php:244
+msgid "Subscription has been successfully canceled. Please wait."
 msgstr ""
 
 #: core/library/Optimisthub_Ajax.php:314
 msgid "Installment Shopping"
 msgstr ""
 
-#: core/library/Optimisthub_Ajax.php:344
+#: core/library/Optimisthub_Ajax.php:342
 msgid "Cash In Advence"
 msgstr ""
 

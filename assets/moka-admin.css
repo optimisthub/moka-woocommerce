@@ -7,6 +7,10 @@ mark {background-color:unset !important;color:#fff;padding:4px 10px;border-radiu
 .subscription-noActions { padding:4px 0;border-bottom:1px solid #6c6c6c;color:#6c6c6c;opacity: 0.8;cursor: help;}
 .moka-success{background:#04aa6d;color:#fff;}
 .moka-failed{background:#b13f3f;color:#fff;}
+.moka-admin-test-details { display:flex; justify-content: space-between;}
 .moka-admin-test-results {overflow:hidden;overflow-y:auto; max-height:200px; background: #fff; padding: 1rem; margin: 1rem 0;}
+.moka-admin-test-results:empty {display:none;}
 .js-update-comission-rates,.moka-admin-dotest {color:#fff;background:#333!important;padding:10px;cursor:pointer;font-size:12px}
 .js-update-comission-rates:hover, .moka-admin-dotest:hover {background:#d00!important}
+.moka-admin-savesettings{color:#fff;background:#d00!important;padding:10px;cursor:pointer;font-size:12px}
+.moka-admin-savesettings:hover {background:#333!important}

@@ -195,8 +195,8 @@ class Optimisthub_Moka_Subscriptions_History_List_Tabley extends WP_List_Table
                         data_get($orderDetails, 'CardNumber').'<br>',
                     'subscription_period' => data_get($perRow, 'subscription_period', null),
                     'subscription_status' => $status == 0 ? '<mark class="active_subs">'.__( 'Active', 'moka-woocommerce' ).'</mark>' : '<mark class="passive_subs">'.__( 'Passive', 'moka-woocommerce' ).'</mark>',
-                    'created_at' => date('d.m.Y.H:i:s', strtotime(data_get($perRow, 'created_at', null))),
-                    'actions' => self::statusString($status,$orderId,$perRow)
+                    'created_at' => date_i18n('d.m.Y H:i:s', strtotime(data_get($perRow, 'created_at', null))),
+                    'actions' => self::statusString($status, $orderId, $perRow)
                 ];
             }
         }
