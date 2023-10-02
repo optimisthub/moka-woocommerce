@@ -236,7 +236,7 @@ msgstr "Taksitli Alışveriş aktifleştirilsin mi?"
 
 #: core/library/Moka_Gateway.php:197
 msgid "Enable/Disable Installement by Product ?"
-msgstr "Ürün göre taksit Aktif/Pasif ?"
+msgstr "Ürüne göre taksit Aktif/Pasif ?"
 
 #: core/library/Moka_Subscriptions.php:409
 msgid "End"
