@@ -450,7 +450,7 @@ function initOptimisthubGatewayClass()
                     <a href="https://developer.moka.com/">documentation</a>', 'moka-woocommerce' );
                     $this->description  = trim( $this->description );
                 } 
-                echo wpautop( wp_kses_post( $this->description ) ).'<br>';
+                echo wpautop( wp_kses_post( $this->description ) );
             } 
              
             do_action( 'woocommerce_credit_card_form_start', $this->id );
@@ -747,7 +747,7 @@ function initOptimisthubGatewayClass()
                 if(isset($_POST) && data_get($_POST, 'resultCode') && data_get($_POST, 'hashValue'))
                 { 
                     wc_add_notice( __( 'Your payment could not be collected. Please try again.', 'moka-woocommerce' ), 'notice' );
-                    echo '<div class="woocommerce-notices-wrapper"><ul class="woocommerce-error" role="alert"><li class="">'.self::errorMessagesWithErrorCodes(data_get($_POST, 'resultCode')).' : <a class="moka-continue-checkout" href="'.wc_get_checkout_url().'">'.get_the_title(wc_get_page_id('checkout')).'</a></li></ul></div>'; 
+                    echo '<div class="woocommerce-notices-wrapper"><ul class="woocommerce-error" role="alert"><li class="">'.self::errorMessagesWithErrorCodes(data_get($_POST, 'resultCode')).' : <a class="button" href="'.wc_get_checkout_url().'">'.get_the_title(wc_get_page_id('checkout')).'</a></li></ul></div>'; 
                     $recordParams['result_message'] = self::errorMessagesWithErrorCodes(data_get($_POST, 'resultCode'));
                     self::saveRecord($recordParams);  
 
@@ -1027,6 +1027,104 @@ function initOptimisthubGatewayClass()
                 case "PaymentDealer.CheckPaymentDealerAuthentication.InvalidRequest":
                     $errorOutput = __( 'Invalid request detected. Try Again.', 'moka-woocommerce' );
                     break;
+                case "PaymentDealer.CheckPaymentDealerAuthentication.InvalidAccount":
+                    $errorOutput = __( 'No dealer found.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.CheckPaymentDealerAuthentication.VirtualPosNotFound":
+                    $errorOutput = __( 'Virtual pos is not defined for the dealer.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.CheckDealerPaymentLimits.DailyDealerLimitExceeded":
+                    $errorOutput = __( 'Any of the daily limits defined for the dealer have been exceeded.',
+                'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.CheckCardInfo.InvalidCardInfo":
+                    $errorOutput = __( 'There is an error in the card details, please check.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.CheckDealerPaymentLimits.DailyCardLimitExceeded":
+                    $errorOutput = __( 'No further transactions can be made as the daily limit of the card has been
+                exceeded.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.InvalidRequest":
+                    $errorOutput = __( 'Invalid request detected. Try Again.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.RedirectUrlRequired":
+                    $errorOutput = __( 'Redirect Url Required.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.InvalidCurrencyCode":
+                    $errorOutput = __( 'Invalid Currency Code.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.InvalidInstallmentNumber":
+                    $errorOutput = __( 'The number of installments is invalid.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.InstallmentNotAvailableForForeignCurrencyTransaction":
+                    $errorOutput = __( 'No installments in foreign currency.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.ForeignCurrencyNotAvailableForThisDealer":
+                    $errorOutput = __( 'No installments in foreign currency.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.PaymentMustBeAuthorization":
+                    $errorOutput = __( 'Payment Must Be Authorization.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.AuthorizationForbiddenForThisDealer":
+                    $errorOutput = __( 'Authorization Forbidden For This Dealer.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.PoolPaymentNotAvailableForDealer":
+                    $errorOutput = __( 'Pool Payment Not Available For This Dealer.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.PoolPaymentRequiredForDealer":
+                    $errorOutput = __( 'Pool Payment Required For This Dealer.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.TokenizationNotAvailableForDealer":
+                    $errorOutput = __( 'Tokenization Not Available For This Dealer.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.CardTokenCannotUseWithSaveCard":
+                    $errorOutput = __( 'Card Token Cannot Use With Save Card.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.CardTokenNotFound":
+                    $errorOutput = __( 'Card Token Not Found.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.OnlyCardTokenOrCardNumber":
+                    $errorOutput = __( 'Only Card Token Or Card Number.' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.ChannelPermissionNotAvailable":
+                    $errorOutput = __( 'Channel Permission Not Available.' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.IpAddressNotAllowed":
+                    $errorOutput = __( 'IP address is not available for this operation.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.VirtualPosNotAvailable":
+                    $errorOutput = __( 'Virtual Pos Not Available.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForVirtualPos":
+                    $errorOutput = __( 'The number of installments is not allowed.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForDealer":
+                    $errorOutput = __( 'The number of installments is invalid.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.DealerCommissionRateNotFound":
+                    $errorOutput = __( 'Dealer Commission Rate Not Found.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.DealerGroupCommissionRateNotFound":
+                    $errorOutput = __( 'Dealer Group Commission Rate Not Found.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.InvalidSubMerchantName":
+                    $errorOutput = __( 'Invalid Sub Merchant Name.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.InvalidUnitPrice":
+                    $errorOutput = __( 'Invalid Unit Price.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.InvalidQuantityValue":
+                    $errorOutput = __( 'Invalid Quantity Value.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.BasketAmountIsNotEqualPaymentAmount":
+                    $errorOutput = __( 'Basket Amount Is Not Equal Payment Amount.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.BasketProductNotFoundInYourProductList":
+                    $errorOutput = __( 'Basket Product Not Found In Your Product List.', 'moka-woocommerce' );
+                    break;
+                case "PaymentDealer.DoDirectPayment3dRequest.MustBeOneOfDealerProductIdOrProductCode":
+                    $errorOutput = __( 'Must Be One Of Dealer Product Id Or Product Code.', 'moka-woocommerce' );
+                    break;
                 case "Limit is insufficient":
                     $errorOutput = __( 'Your card limit is insufficient.', 'moka-woocommerce' );
                     break;
@@ -1035,32 +1133,6 @@ function initOptimisthubGatewayClass()
                     break;
                 case "PaymentDealer.RequiredFields.ExpMonthRequired":
                     $errorOutput = __( 'Sending the expiry date is mandatory.', 'moka-woocommerce' );
-                    break;
-                case "PaymentDealer.CheckPaymentDealerAuthentication.InvalidAccount":
-                    $errorOutput = __( 'No dealer found.', 'moka-woocommerce' );
-                    break;
-                case "PaymentDealer.CheckPaymentDealerAuthentication.VirtualPosNotFound":
-                    $errorOutput = __( 'Virtual pos is not defined for the dealer.', 'moka-woocommerce' );
-                    break;
-                case "PaymentDealer.CheckDealerPaymentLimits.DailyDealerLimitExceeded":
-                    $errorOutput = __( 'Any of the daily limits defined for the dealer have been exceeded.', 'moka-woocommerce' );
-                    break;
-                case "PaymentDealer.CheckDealerPaymentLimits.DailyCardLimitExceeded":
-                    $errorOutput = __( 'No further transactions can be made as the daily limit of the card has been exceeded.', 'moka-woocommerce' );
-                case "PaymentDealer.CheckCardInfo.InvalidCardInfo":
-                    $errorOutput = __( 'There is an error in the card details, please check.', 'moka-woocommerce' );
-                    break;
-                case "PaymentDealer.DoDirectPayment3dRequest.InstallmentNotAvailableForForeignCurrencyTransaction":
-                    $errorOutput = __( 'No installments in foreign currency.', 'moka-woocommerce' );
-                    break;
-                case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForDealer":
-                    $errorOutput = __( 'The number of installments is invalid.', 'moka-woocommerce' );
-                    break;
-                case "PaymentDealer.DoDirectPayment3dRequest.InvalidInstallmentNumber":
-                    $errorOutput = __( 'The number of installments is invalid.', 'moka-woocommerce' );
-                    break;
-                case "PaymentDealer.DoDirectPayment3dRequest.ThisInstallmentNumberNotAvailableForVirtualPos":
-                    $errorOutput = __( 'The number of installments is not allowed.', 'moka-woocommerce' );
                     break;
                 default:
                     $errorOutput = __( 'An unexpected error occurred.', 'moka-woocommerce' );
@@ -1107,6 +1179,7 @@ function initOptimisthubGatewayClass()
                 '027' => __('User is not authorised to perform this operation','moka-woocommerce'),
                 '028' => __('Fraud possibility','moka-woocommerce'),
                 '029' => __('Your card is closed to internet purchases','moka-woocommerce'),                
+                '030' => __('Bank Declined Transaction','moka-woocommerce'),
             ];
 
             if(in_array($code, array_keys($codes))) {

@@ -3,18 +3,18 @@
  * Plugin Name: Moka Payment Gateway for WooCommerce
  * Plugin URI: https://github.com/optimisthub/moka-woocommerce
  * Description: Moka Payment gateway for woocommerce
- * Version: 3.7.8
+ * Version: 3.7.9
  * Author: Optimist Hub
  * Author URI: https://optimisthub.com/?utm_source=moka-woocommerce&utm_campaign=moka-woocommerce&utm_content=plugins
  * Domain Path: /languages/ 
  * Text Domain: moka-woocommerce
  */
 
-if (!defined('ABSPATH')) {
+if ( !defined('ABSPATH') ) {
     exit;
 }
 
-define( 'OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.8' );
+define( 'OPTIMISTHUB_MOKA_PAY_VERSION', '3.7.9' );
 define( 'OPTIMISTHUB_MOKA_BASENAME', plugin_basename( __FILE__ ) );
 define( 'OPTIMISTHUB_MOKA_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OPTIMISTHUB_MOKA_URL', plugin_dir_url( __FILE__ ) );
@@ -30,11 +30,7 @@ function loadOptimisthubMoka()
 {
 	require __DIR__ . '/vendor/autoload.php';    
     $path = dirname( plugin_basename(__FILE__) ) . '/languages';
-    $result = load_plugin_textdomain( OPTIMISTHUB_MOKA_DOMAIN, false, $path );
-    if ( !$result ) {
-        $locale = apply_filters('plugin_locale', get_locale(), OPTIMISTHUB_MOKA_DOMAIN);
-        dd( 'Could not find ' . $path . '/' . OPTIMISTHUB_MOKA_DOMAIN . '-' . $locale . '.mo' );
-    }
+    load_plugin_textdomain( OPTIMISTHUB_MOKA_DOMAIN, false, $path );
 }
 
 /**

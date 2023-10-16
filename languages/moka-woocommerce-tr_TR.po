@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-08T11:49:40+00:00\n"
-"PO-Revision-Date: 2023-10-01 14:11+0000\n"
-"Last-Translator: Cuneyt Cil <trgino@trgino.com>\n"
+"PO-Revision-Date: 2023-10-16 17:59+0000\n"
+"Last-Translator: Administrator\n"
 "Language-Team: Türkçe\n"
 "Language: tr_TR\n"
 "MIME-Version: 1.0\n"
@@ -13,6 +13,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Domain: moka-woocommerce\n"
+"X-Loco-Version: 2.6.6; wp-6.3.2"
 
 #: core/library/Moka_Gateway.php:179 core/library/Moka_Gateway.php:180
 #: core/library/Moka_Gateway.php:181 core/library/Moka_Gateway.php:182
@@ -24,11 +25,11 @@ msgstr ""
 msgid "%s Installement"
 msgstr "%s Taksit"
 
-#: core/library/Moka_Gateway.php:1105
+#: core/library/Moka_Gateway.php:1177
 msgid "3D authorisation error"
 msgstr "3D onay alma hatası"
 
-#: core/library/Moka_Gateway.php:1104
+#: core/library/Moka_Gateway.php:1176
 msgid "3D confirmation received but money could not be withdrawn from the part"
 msgstr "3D onayı alındı ancak para parttan çekilemedi"
 
@@ -66,15 +67,15 @@ msgstr "Aktif"
 msgid "Amount"
 msgstr "Tutar"
 
-#: core/library/Moka_Gateway.php:1115 core/library/Optimisthub_Ajax.php:247
+#: core/library/Moka_Gateway.php:1188 core/library/Optimisthub_Ajax.php:247
 msgid "An unexpected error occurred"
 msgstr "Beklenmeyen bir hata oluştu"
 
-#: core/library/Moka_Gateway.php:1066
+#: core/library/Moka_Gateway.php:1138
 msgid "An unexpected error occurred."
 msgstr "Beklenmeyen bir hata oluştu."
 
-#: core/library/Moka_Gateway.php:1046
+#: core/library/Moka_Gateway.php:1037
 msgid "Any of the daily limits defined for the dealer have been exceeded."
 msgstr "Kartın günlük limiti aşıldığı için daha fazla işlem yapılamaz."
 
@@ -86,28 +87,44 @@ msgstr "Api Şifresi"
 msgid "Api Username"
 msgstr "Api Kullanıcı Adı"
 
-#: core/library/Moka_Gateway.php:1096
+#: core/library/Moka_Gateway.php:1168
 msgid "Approval mechanism not available"
 msgstr "Onay mekanizması mevcut değil"
+
+#: core/library/Moka_Gateway.php:1069
+msgid "Authorization Forbidden For This Dealer."
+msgstr "Üye İş Yerinin Yetkilendirmesi Yoktur."
+
+#: core/library/Moka_Gateway.php:1182
+msgid "Bank Declined Transaction"
+msgstr "Banka İşlemi Reddetti"
 
 #: core/library/Moka_Gateway.php:288 core/library/Moka_Gateway.php:489
 #: core/library/Moka_Subscriptions.php:625
 msgid "Bank Identification Test"
 msgstr "Banka Tanımlama Testi"
 
-#: core/library/Moka_Gateway.php:1106
+#: core/library/Moka_Gateway.php:1178
 msgid "Bank or Card does not support 3D secure"
 msgstr "Banka veya Kart 3D secure desteklemiyor"
 
-#: core/library/Moka_Gateway.php:1090
+#: core/library/Moka_Gateway.php:1162
 msgid "Bank SSL error"
 msgstr "Banka SSL hatası"
+
+#: core/library/Moka_Gateway.php:1120
+msgid "Basket Amount Is Not Equal Payment Amount."
+msgstr "Sepet Tutarı Ödeme Tutarına Eşit Değil."
+
+#: core/library/Moka_Gateway.php:1123
+msgid "Basket Product Not Found In Your Product List."
+msgstr "Sepetteki Ürün, Ürün Listenizde Bulunamadı."
 
 #: core/library/Moka_Subscriptions.php:407
 msgid "Begining: "
 msgstr "Başlangıç:"
 
-#: core/library/Moka_Gateway.php:1091
+#: core/library/Moka_Gateway.php:1163
 msgid "Call your bank for manual confirmation"
 msgstr "Manual onay için bankanızı arayınız"
 
@@ -133,17 +150,25 @@ msgstr "Güvenlik Kodunuz"
 msgid "Card details have been successfully verified."
 msgstr "Kart bilgileri başarıyla doğrulandı."
 
-#: core/library/Moka_Gateway.php:1092
+#: core/library/Moka_Gateway.php:1164
 msgid "Card details incorrect"
 msgstr "Kart bilgileri hatalı"
 
-#: core/library/Moka_Gateway.php:1086
+#: core/library/Moka_Gateway.php:1158
 msgid "Card expiry date incorrect"
 msgstr "Kartın son kullanma tarihi hatalı"
 
 #: core/library/Moka_Gateway.php:397
 msgid "Card Number"
 msgstr "Kart Numaranız"
+
+#: core/library/Moka_Gateway.php:1081
+msgid "Card Token Cannot Use With Save Card."
+msgstr "Kart Doğrulaması, Kart Kayıt İşlemi İçin Kullanılamaz."
+
+#: core/library/Moka_Gateway.php:1084
+msgid "Card Token Not Found."
+msgstr "Kart Doğrulaması Bulunamadı."
 
 #: core/library/Optimisthub_Ajax.php:342
 msgid "Cash In Advence"
@@ -170,7 +195,7 @@ msgstr "Oluşturulma"
 msgid "Credit Card"
 msgstr "Kredi Kartı"
 
-#: core/library/Moka_Gateway.php:1083
+#: core/library/Moka_Gateway.php:1155
 msgid "Credit card number not in valid format"
 msgstr "Kredi kartı numarası geçerli formatta değil"
 
@@ -182,6 +207,14 @@ msgstr "Müşteri Id"
 #| msgid "day"
 msgid "Day"
 msgstr "Gün"
+
+#: core/library/Moka_Gateway.php:1105
+msgid "Dealer Commission Rate Not Found."
+msgstr "Üye İş Yeri Komisyon Oranı Bulunamadı."
+
+#: core/library/Moka_Gateway.php:1108
+msgid "Dealer Group Commission Rate Not Found."
+msgstr "Üye İş Yeri Komisyon Oranı Bulunamadı."
 
 #: core/library/Moka_Init.php:69
 msgid "Default"
@@ -251,27 +284,27 @@ msgstr "Bitti"
 msgid "Failed"
 msgstr "Başarısız"
 
-#: core/library/Moka_Gateway.php:1088
+#: core/library/Moka_Gateway.php:1160
 msgid "Failed to connect to bank"
 msgstr "Bankaya bağlanılamadı"
 
-#: core/library/Moka_Gateway.php:1081
+#: core/library/Moka_Gateway.php:1153
 msgid "Failed to obtain cardholder approval"
 msgstr "Kart sahibi onayı alınamadı"
 
-#: core/library/Moka_Gateway.php:1103
+#: core/library/Moka_Gateway.php:1175
 msgid "Fake approval"
 msgstr "Sahte onay"
 
-#: core/library/Moka_Gateway.php:1108
+#: core/library/Moka_Gateway.php:1180
 msgid "Fraud possibility"
 msgstr "Fraud olasılığı"
 
-#: core/library/Moka_Gateway.php:1080
+#: core/library/Moka_Gateway.php:1152
 msgid "General Error"
 msgstr "Genel Hata"
 
-#: core/library/Moka_Gateway.php:1084
+#: core/library/Moka_Gateway.php:1156
 msgid "General rejection"
 msgstr "Genel red"
 
@@ -347,31 +380,51 @@ msgstr "Taksit Tablosu"
 msgid "Installment table display on product pages"
 msgstr "Ürün sayfalarında taksit tablosu gösterimi"
 
-#: core/library/Moka_Gateway.php:1094
+#: core/library/Moka_Gateway.php:1166
 msgid "Invalid account number"
 msgstr "Geçersiz hesap numarası"
 
-#: core/library/Moka_Gateway.php:1095
+#: core/library/Moka_Gateway.php:1054
+msgid "Invalid Currency Code."
+msgstr "Geçersiz Para Birimi Kodu."
+
+#: core/library/Moka_Gateway.php:1167
 msgid "Invalid CVV"
 msgstr "Geçersiz CVV"
 
-#: core/library/Moka_Gateway.php:1102
+#: core/library/Moka_Gateway.php:1174
 msgid "Invalid merchant"
 msgstr "Geçersiz işyeri"
 
-#: core/library/Moka_Gateway.php:1028
+#: core/library/Moka_Gateway.php:1117
+msgid "Invalid Quantity Value."
+msgstr "Geçersiz Miktar Değeri."
+
+#: core/library/Moka_Gateway.php:1028 core/library/Moka_Gateway.php:1048
 msgid "Invalid request detected. Try Again."
 msgstr "Geçersiz istek tespit edildi. Tekrar deneyiniz."
 
-#: core/library/Moka_Gateway.php:1087
+#: core/library/Moka_Gateway.php:1111
+msgid "Invalid Sub Merchant Name."
+msgstr "Geçersiz Alt Satıcı Adı."
+
+#: core/library/Moka_Gateway.php:1159
 msgid "Invalid transaction"
 msgstr "Geçersiz işlem"
+
+#: core/library/Moka_Gateway.php:1114
+msgid "Invalid Unit Price."
+msgstr "Geçersiz Birim Fiyat."
+
+#: core/library/Moka_Gateway.php:1093
+msgid "IP address is not available for this operation."
+msgstr "IP adresi bu işlem için kullanılamaz."
 
 #: core/library/Moka_Gateway.php:151
 msgid "It allows you to sell products via subscription method on your site."
 msgstr "Siteniz üzerinden abonelik yöntemi ile ürün satışı yapmanızı sağlar."
 
-#: core/library/Moka_Gateway.php:1034
+#: core/library/Moka_Gateway.php:1132
 msgid "It is mandatory to send the transaction amount."
 msgstr "İşlem tutarı göndermek zorunludur."
 
@@ -383,7 +436,7 @@ msgstr "Taksit Limitle"
 msgid "Limit Installement By Product"
 msgstr "Ürüne Göre Taksit Limitle"
 
-#: core/library/Moka_Gateway.php:1099
+#: core/library/Moka_Gateway.php:1171
 msgid "Lost card"
 msgstr "Kayıp kart"
 
@@ -405,6 +458,10 @@ msgstr "Moka Pos Ayarları"
 msgid "Month"
 msgstr "Ay"
 
+#: core/library/Moka_Gateway.php:1126
+msgid "Must Be One Of Dealer Product Id Or Product Code."
+msgstr "Bayi Ürün Kimliği veya Ürün Kodundan Biri Olmalıdır."
+
 #: core/library/Moka_Gateway.php:384 core/library/Moka_Gateway.php:391
 msgid "Name On Card"
 msgstr "Kart Üzerindeki İsim"
@@ -413,17 +470,20 @@ msgstr "Kart Üzerindeki İsim"
 msgid "Next Payment"
 msgstr "Sonraki Ödeme"
 
-#: core/library/Moka_Gateway.php:1040
+#: core/library/Moka_Gateway.php:1031
 msgid "No dealer found."
 msgstr "Üye işyeri bulunamadı."
 
-#: core/library/Moka_Gateway.php:1049
+#: core/library/Moka_Gateway.php:1044
+#| msgid ""
+#| "No further transactions can be made as the daily limit of the card has "
+#| "been exceeded."
 msgid ""
-"No further transactions can be made as the daily limit of the card has been "
-"exceeded."
+"No further transactions can be made as the daily limit of the card has been\n"
+"                exceeded."
 msgstr "Kartın günlük limiti aşıldığı için daha fazla işlem yapılamaz."
 
-#: core/library/Moka_Gateway.php:1054
+#: core/library/Moka_Gateway.php:1060 core/library/Moka_Gateway.php:1063
 msgid "No installments in foreign currency."
 msgstr "Döviz ile taksit yapılamaz."
 
@@ -481,6 +541,10 @@ msgstr "Ödeme Başarısız"
 msgid "Payment is processing via Moka Pay."
 msgstr "Moka Pay ile ödeme işlemi tamamlanıyor."
 
+#: core/library/Moka_Gateway.php:1066
+msgid "Payment Must Be Authorization."
+msgstr "Ödeme Yetkilendirmesi Olmalıdır."
+
 #: core/library/Moka_Subscriptions.php:216
 #: core/library/Moka_Subscriptions.php:232
 #: core/library/Moka_Subscriptions_History.php:61
@@ -501,9 +565,21 @@ msgid ""
 msgstr ""
 "Lütfen Moka Pay ayarlarından, taksit seçeneğini aktif edip ayarları kaydedin."
 
+#: core/library/Moka_Gateway.php:1072
+msgid "Pool Payment Not Available For This Dealer."
+msgstr "Havuz Ödemesi Üye İş Yeri İçin Mevcut Değildir."
+
+#: core/library/Moka_Gateway.php:1075
+msgid "Pool Payment Required For This Dealer."
+msgstr "Üye İş Yeri İçin Havuz Ödemesi Gerekmektedir."
+
 #: core/library/Moka_Gateway.php:224
 msgid "Position of Installment Options Tab among other tabs"
 msgstr "Taksit Seçenekleri Sekmesinin diğer sekmeler arasındaki pozisyonu"
+
+#: core/library/Moka_Gateway.php:1051
+msgid "Redirect Url Required."
+msgstr "Yönlendirme URL'si Gereklidir."
 
 #: core/library/Moka_Gateway.php:289 core/library/Moka_Gateway.php:490
 #: core/library/Moka_Subscriptions.php:626
@@ -514,7 +590,7 @@ msgstr "Sunucu Bağlantı Testi"
 msgid "Renewal Period"
 msgstr "Yenilenme Periyodu"
 
-#: core/library/Moka_Gateway.php:1100
+#: core/library/Moka_Gateway.php:1172
 msgid "Restricted card"
 msgstr "Kısıtlı kart"
 
@@ -522,7 +598,7 @@ msgstr "Kısıtlı kart"
 msgid "Save Settings"
 msgstr "Ayarları Kaydet"
 
-#: core/library/Moka_Gateway.php:1037
+#: core/library/Moka_Gateway.php:1135
 msgid "Sending the expiry date is mandatory."
 msgstr "Son kullanım tarihi gönderme zorunludur."
 
@@ -538,7 +614,7 @@ msgstr "Taksit Toplam Tutarını Göster"
 msgid "Status"
 msgstr "Durum"
 
-#: core/library/Moka_Gateway.php:1098
+#: core/library/Moka_Gateway.php:1170
 msgid "Stolen card"
 msgstr "Çalıntı kart"
 
@@ -587,7 +663,7 @@ msgstr "Abonelikler"
 msgid "Success"
 msgstr "Başarılı"
 
-#: core/library/Moka_Gateway.php:1097
+#: core/library/Moka_Gateway.php:1169
 msgid "System error"
 msgstr "Sistem hatası"
 
@@ -596,6 +672,10 @@ msgid "Test Informations"
 msgstr "Üye İşyeri Bilgilerini Test Et"
 
 #: core/library/Moka_Gateway.php:449
+#| msgid ""
+#| "TEST MODE ENABLED. In test mode, you can use the card numbers listed in\n"
+#| "                    <a href=\"https://developer.moka.com/\">"
+#| "documentation</a>"
 msgid ""
 "TEST MODE ENABLED. In test mode, you can use the card numbers listed in\n"
 "                    <a href=\"https://developer.moka.com/\">documentation</a>"
@@ -612,11 +692,11 @@ msgstr ""
 "sağladığı niteliklere göre sekme pozisyonunu değiştirebilirsiniz. Örnek (40,"
 "60,90 gibi.)"
 
-#: core/library/Moka_Gateway.php:1057 core/library/Moka_Gateway.php:1060
+#: core/library/Moka_Gateway.php:1057 core/library/Moka_Gateway.php:1102
 msgid "The number of installments is invalid."
 msgstr "Taksit sayısı geçersiz."
 
-#: core/library/Moka_Gateway.php:1063
+#: core/library/Moka_Gateway.php:1099
 msgid "The number of installments is not allowed."
 msgstr "Taksit sayısına izin verilmiyor."
 
@@ -634,7 +714,7 @@ msgid ""
 msgstr ""
 "Test fonksiyonu, üye işyeri bilgilerini kaydettikten sonra yapılabilir."
 
-#: core/library/Moka_Gateway.php:1051
+#: core/library/Moka_Gateway.php:1041
 msgid "There is an error in the card details, please check."
 msgstr "Kart bilgilerinde hata var lütfen kontrol ediniz."
 
@@ -654,13 +734,17 @@ msgstr ""
 "Bu alan birden çok sitede kullanılan Moka POS modülü için raporlama "
 "esnasında siparişlerin ayrıştırılmasında kolaylık sağlar. (Opsiyonel)"
 
-#: core/library/Moka_Gateway.php:1101
+#: core/library/Moka_Gateway.php:1173
 msgid "Timeout"
 msgstr "Zaman aşımı"
 
 #: core/library/Moka_Gateway.php:102
 msgid "Title"
 msgstr "Başlık"
+
+#: core/library/Moka_Gateway.php:1078
+msgid "Tokenization Not Available For This Dealer."
+msgstr "Üye İş Yeri Tokenizasyon İçin Yetkili Değildir."
 
 #: core/library/Moka_Init.php:223
 msgid "Total Amount"
@@ -674,11 +758,11 @@ msgstr "Toplam."
 msgid "Transaction Id"
 msgstr "İşlem Id"
 
-#: core/library/Moka_Gateway.php:1085
+#: core/library/Moka_Gateway.php:1157
 msgid "Transaction not open to cardholder"
 msgstr "Kart sahibine açık olmayan işlem"
 
-#: core/library/Moka_Gateway.php:1089
+#: core/library/Moka_Gateway.php:1161
 msgid "Undefined error"
 msgstr "Tanımsız hata"
 
@@ -690,13 +774,17 @@ msgstr "Taksit oranlarını Moka ile Güncelle"
 msgid "User ID"
 msgstr "Kullanıcı"
 
-#: core/library/Moka_Gateway.php:1107
+#: core/library/Moka_Gateway.php:1179
 msgid "User is not authorised to perform this operation"
 msgstr "Kullanıcı bu işlemi yapmaya yetkili değil"
 
-#: core/library/Moka_Gateway.php:1043
+#: core/library/Moka_Gateway.php:1034
 msgid "Virtual pos is not defined for the dealer."
 msgstr "Üye işyeri için sanal pos tanımı yapılmamış."
+
+#: core/library/Moka_Gateway.php:1096
+msgid "Virtual Pos Not Available."
+msgstr "Sanal Pos Kullanılamıyor."
 
 #: core/library/Moka_Gateway.php:745 core/library/Moka_Gateway.php:756
 msgid "Waiting for user payment."
@@ -737,11 +825,11 @@ msgstr ""
 "Ödemeleriniz başarılı bir şekilde tamamlandığında siparişin durumunun ne "
 "olacağını seçebilirsiniz."
 
-#: core/library/Moka_Gateway.php:1093
+#: core/library/Moka_Gateway.php:1165
 msgid "Your card does not support 3D secure"
 msgstr "Katınız 3D secure desteklemiyor"
 
-#: core/library/Moka_Gateway.php:1082
+#: core/library/Moka_Gateway.php:1154
 msgid "Your card has insufficient limit."
 msgstr "Kartınızın limiti yetersiz."
 
@@ -754,11 +842,11 @@ msgstr ""
 "Ödeme esnasında eklemiş olduğunuz kart bilgileriniz, Moka güvencesi ile Moka "
 "tarafından saklanacaktır. Sonraki abonelik ödemeniz bu kart ile alınacaktır."
 
-#: core/library/Moka_Gateway.php:1109
+#: core/library/Moka_Gateway.php:1181
 msgid "Your card is closed to internet purchases"
 msgstr "Kartınız internet alışverişlerine kapalıdır"
 
-#: core/library/Moka_Gateway.php:1031
+#: core/library/Moka_Gateway.php:1129
 msgid "Your card limit is insufficient."
 msgstr "Kart limitiniz yetersiz."
 
