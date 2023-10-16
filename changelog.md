@@ -1,4 +1,12 @@
-#### Version 3.7.8
+#### Version 3.7.9
+- Improvement : Debug file anonymization
+- Improvement : Missing language values
+- Issue : Bin test unnecessary requests
+- Issue : Form unnecessary line break
+- Issue : Connection test fix
+- Issue : Secure Renegotiation
+
+#### Version 3.7.8 Beta
 - Feauture : Limit instalment.
 - Feauture : Limit instalment by product
 - Feauture : Remote connection test

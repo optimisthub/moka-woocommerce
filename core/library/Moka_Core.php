@@ -695,11 +695,13 @@ class MokaPayment
 
     public function debug_file(){
         $check = get_option( 'woocommerce_mokapay_debugfile' );
-        if($check){
+        $version = get_option( 'woocommerce_mokapay_version' );
+        if( $check && $version == OPTIMISTHUB_MOKA_PAY_VERSION ){
             return $check;
         }
-        $filename = wp_generate_uuid4().'.log';
+        $filename = wp_generate_uuid4().'.moka';
         update_option( 'woocommerce_mokapay_debugfile', $filename );
+        update_option( 'woocommerce_mokapay_version', OPTIMISTHUB_MOKA_PAY_VERSION );
         return $filename;
     }
 
@@ -708,6 +710,8 @@ class MokaPayment
             $log_data = [
                 '============================' . date_i18n('d.m.Y H:i:s') . '============================',
                 $type. ' => '.serialize($data),
+                '========SERVER_ADDR=========' . $_SERVER['SERVER_ADDR'] . '============================',
+                '========REMOTE_ADDR=========' . $_SERVER['REMOTE_ADDR'] . '============================',
                 '============================' . date_i18n('d.m.Y H:i:s') . '============================',
             ];
             if(is_writable(OPTIMISTHUB_MOKA_DIR)){

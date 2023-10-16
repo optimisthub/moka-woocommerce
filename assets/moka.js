@@ -1,7 +1,8 @@
 jQuery(document).ready(function () {
-    console.info('Moka PAY Core Js File loaded, successfully. Version ' + moka_ajax.version);
+    console.info('%cMoka PAY Core Js File loaded, successfully. Version ' + moka_ajax.version, 'background:#3465b1; color:#ffffff; padding:1px 3px;');
     let binCache = false;
     let binXhr = false;
+    let binInstallment = 1;
 
     /* 
     * Bin Cache Clear
@@ -9,12 +10,13 @@ jQuery(document).ready(function () {
     jQuery(document).on('update_checkout', function () {
         binCache = false;
         binXhr = false;
+        jQuery('input[name="mokapay-installment').val(binInstallment);
     });
 
     /**
      * Bin Number Request 
      */
-    jQuery(document).on('blur keyup click change', 'input#mokapay-card-number', function (e) {
+    jQuery(document).on('input', 'input#mokapay-card-number', function (e) {
         let binValue = jQuery(this).val();
         let state = jQuery('#mokapay-current-order-state').val();
         binValue = binValue.replace(/\s/g, '');
@@ -29,15 +31,24 @@ jQuery(document).ready(function () {
                 state: state,
             }, function (response) {
                 binXhr = false;
+                binInstallment = 1;
                 if (response.status === true) {
                     binCache = binValue.substr(0, 6);
                     jQuery('#ajaxify-installment-table').html(response.html);
                 }
             }, 'json').fail(function () {
                 binXhr = false;
+                binInstallment = 1;
                 $('input#mokapay-card-number').trigger('change');
             });
         }
+    });
+
+    /**
+     * Installment Change 
+     */
+    jQuery(document).on('change', 'input[name="mokapay-installment"]', function (e) {
+        binInstallment = jQuery(this).val();
     });
 
     /**
