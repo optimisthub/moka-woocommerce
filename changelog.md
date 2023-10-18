@@ -1,3 +1,7 @@
+#### Version 3.8.0
+- Improvement : Additional Filters
+- Issue : Minumum Installment Message
+
 #### Version 3.7.9
 - Improvement : Debug file anonymization
 - Improvement : Missing language values

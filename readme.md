@@ -39,6 +39,10 @@ For sandbox usage : https://developer.moka.com/home.php?page=test-kartlari
 
 Version history : https://github.com/optimisthub/moka-woocommerce/wiki/Changelog
 
+### Filters & Actions 
+
+Filters & Actions : https://github.com/optimisthub/moka-woocommerce/wiki/Filters-&-Actions
+
 ### Other integrations
 
 - Moka PHP Client : https://github.com/optimisthub/moka-php 
