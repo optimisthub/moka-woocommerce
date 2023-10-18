@@ -247,8 +247,9 @@ class Moka_Init
 			$productPrice = $product->get_price();
 
 			$options = get_option( 'woocommerce_mokapay_settings' );
-			$isavaliable = data_get($options, 'installment_message', 'yes') === 'yes';
-			$limitInstallment = data_get($options, 'limitInstallment');
+			$isavaliable = data_get( $options, 'installment_message', 'yes' ) === 'yes';
+			$isavaliable = apply_filters( 'mokapay_mininstallment_message_avaliable', $isavaliable, $product);
+			$limitInstallment = data_get( $options, 'limitInstallment', 12 );
 			$stock = $product->get_stock_status() == 'instock' ? true : false; 
 
 			if(
@@ -257,12 +258,16 @@ class Moka_Init
 			)
 			{
 				$installments = get_option( 'woocommerce_mokapay-installments' );
-				$maxInstallment = self::calculateMaxInstallment($options, $product->get_id());
-				$minRate = data_get(end($installments), 'rates.'.$maxInstallment.'.value');
-				$minRatePrice = self::calculateComission($limitInstallment, $minRate, $productPrice);
-		
-				$return .= ' 
-					<div class="min--installment--price"><span>'.self::moka_price($minRatePrice['unit_price']). '</span> ' .' \' '.__( 'With installments starting from', 'moka-woocommerce' ).' ...</div>';
+				if($installments && !empty($installments)){
+					$maxInstallment = self::calculateMaxInstallment($options, $product->get_id());
+					$minRate = data_get(end($installments), 'rates.'.$maxInstallment.'.value');
+					if($minRate){
+						$minRatePrice = self::calculateComission($limitInstallment, $minRate, $productPrice);
+						
+						$return_html = apply_filters( 'mokapay_mininstallment_message', '<div class="min--installment--price"><span>'.self::moka_price($minRatePrice['unit_price']). '</span> ' .' '.__( 'With installments starting from', 'moka-woocommerce' ).' ...</div>', self::moka_price($minRatePrice['unit_price']), $product );
+						$return .= $return_html;
+					}
+				}
 			} else {
 				$return = $price;
 			}
