@@ -1200,7 +1200,6 @@ function initOptimisthubGatewayClass()
 
             if(data_get($_POST, $optionKey))
             {  
-                delete_option($optionKey); 
                 return $this->optimisthubMoka->setInstallments($_POST[$optionKey]);
             }
         }

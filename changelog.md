@@ -1,3 +1,6 @@
+#### Version 3.8.1
+- Issue : Installments Rate Save
+
 #### Version 3.8.0
 - Improvement : Additional Filters
 - Issue : Minumum Installment Message
