@@ -281,8 +281,16 @@ class Optimisthub_Ajax
         if($orderState == 'cart'){
             $orderTotal = data_get($woocommerce, 'cart.total');
         }elseif($orderState == 'order'){
-            $order = wc_get_order(get_query_var('order-pay'));
-            $orderTotal = $order->get_total();  
+            if(get_query_var('order-pay')){
+                $order = wc_get_order(get_query_var('order-pay'));
+                if($order){
+                    $orderTotal = $order->get_total();
+                }else{
+                    $orderTotal = data_get($woocommerce, 'cart.total');
+                }
+            }else{
+                $orderTotal = data_get($woocommerce, 'cart.total');
+            }
         }
 
         $installmentRates = data_get($params, 'installments.rates');

@@ -1,3 +1,6 @@
+#### Version 3.8.2
+- Issue : Order total at pay for order state
+
 #### Version 3.8.1
 - Issue : Installments Rate Save
 
