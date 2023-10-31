@@ -147,7 +147,8 @@ class Optimisthub_Update_Checker
         $remote = $this->request();
         
         if(
-            $remote
+            $remote 
+            && data_get($remote, 'version') 
             && version_compare( $this->version, $remote->version, '<' )
         ) {
             $_response = new stdClass();
@@ -157,7 +158,13 @@ class Optimisthub_Update_Checker
             $_response->tested        = data_get($remote, 'tested');
             $_response->package       = data_get($remote, 'download_url');
 
-            $transient->response[ $_response->plugin ] = $_response;
+            if( is_array($transient->response) ){
+                $transient->response[ $_response->plugin ] = $_response;
+            }else{
+                $transient->response = [
+                    $_response->plugin => $_response,
+                ];
+            }
 
         } 
 

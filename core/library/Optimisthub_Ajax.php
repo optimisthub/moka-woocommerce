@@ -190,6 +190,10 @@ class Optimisthub_Ajax
         if( $method == 'debug_clear' ) {
             self::debug_clear();
         }
+        
+        if( $method == 'update_check' ) {
+            self::update_check();
+        }
 
         wp_die();
     }
@@ -501,6 +505,16 @@ class Optimisthub_Ajax
             $result['status'] = true;
             $result['message'] = __( 'Success', 'moka-woocommerce' );
         }
+        wp_send_json($result);
+    }
+    
+    private function update_check(){
+        $result = [
+            'time' => time(),
+            'status' => true,
+            'message' => __( 'Success', 'moka-woocommerce' )
+        ];
+        wp_update_plugins();
         wp_send_json($result);
     }
 

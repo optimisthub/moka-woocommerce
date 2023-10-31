@@ -170,4 +170,30 @@ jQuery(document).ready(function ($) {
             });
         }
     }
+
+    $('.moka-woocommerce-check-update').click(function (e) {
+        e.preventDefault();
+        let _thiz = $(this);
+        if (!_thiz.hasClass('checking')) {
+            _thiz.addClass('checking');
+            _thiz.text(_thiz.attr('data-check'));
+            $.post(moka_ajax.ajax_url, {
+                action: 'optimisthub_ajax',
+                method: 'update_check'
+            }, function (response) {
+                _thiz.removeClass('checking');
+                _thiz.text(_thiz.attr('data-default'));
+                if (response.status === true) {
+                    alert(response.message);
+                    setTimeout(function () {
+                        window.location.reload(true);
+                    }, 1250);
+                }
+            }, 'json').fail(function () {
+                _thiz.removeClass('checking');
+                _thiz.text(_thiz.attr('data-default'));
+                alert(moka_ajax.failed);
+            });
+        }
+    });
 });

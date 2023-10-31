@@ -1,3 +1,9 @@
+#### Version 3.8.3
+- Improvement : Force update check
+- Improvement : Translations Update
+- Issue : Self update error at some cases
+- Issue : Installment fee tax
+
 #### Version 3.8.2
 - Issue : Order total at pay for order state
 
@@ -17,11 +23,11 @@
 - Issue : Secure Renegotiation
 
 #### Version 3.7.8 Beta
-- Feauture : Limit instalment.
-- Feauture : Limit instalment by product
-- Feauture : Remote connection test
-- Feauture : Dealer informations test
-- Feauture : Debug mode
+- Feature : Limit instalment.
+- Feature : Limit instalment by product
+- Feature : Remote connection test
+- Feature : Dealer informations test
+- Feature : Debug mode
 - Improvement : Translations updated
 - Security : Subscription queries updated
 
@@ -31,7 +37,7 @@
 - Improvement : Installment tab.
 - Improvement : Performence issue.
 - Improvement : Translations updated.
-- Feauture : Option to show instalment total amount.
+- Feature : Option to show instalment total amount.
 - Security : Installement rate calculation logic has been changed.
 - Security : Oder Total calculation logic has been changed.
 

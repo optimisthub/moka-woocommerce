@@ -25,6 +25,24 @@ class Moka_Init
 		add_action( 'add_meta_boxes', [ $this, 'add_meta_box' ] );
 		add_action( 'save_post', [ $this, 'save_meta_box' ] );
 
+		add_filter( 'plugin_row_meta', [ $this, 'plugin_row_meta' ], 10, 2 );
+
+	}
+
+	public function plugin_row_meta( $links, $file ) {
+		if ( plugin_basename( OPTIMISTHUB_MOKA_FILE ) !== $file ) {
+			return $links;
+		}
+
+		$more = [
+			'<a href="https://github.com/optimisthub/moka-woocommerce/wiki" target="_blank">' . __( 'Wiki', 'moka-woocommerce' ) . '</a>',
+			'<a href="https://github.com/optimisthub/moka-woocommerce/issues" target="_blank">' . __( 'Report Issue',
+				'moka-woocommerce' ) .
+				'</a>',
+			'<a href="#" class="moka-woocommerce-check-update" data-default="' . __( 'Check Update', 'moka-woocommerce' ) . '" data-check="' . __( 'Checking', 'moka-woocommerce' ) . '">' . __( 'Check Update', 'moka-woocommerce' ) . '</a>',
+		];
+
+		return array_merge( $links, $more );
 	}
 
 	public function add_meta_box( $post_type ) {
