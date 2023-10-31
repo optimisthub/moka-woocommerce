@@ -966,7 +966,7 @@ function initOptimisthubGatewayClass()
             $order = self::fetchOrder(data_get($params, 'orderId'));
                      
             $orderFee = new \WC_Order_Item_Fee();
-            $orderFee->set_props(
+            /*$orderFee->set_props(
                 [
                     'name' => __('Installment Fee', 'moka-woocommerce'),
                     'tax_class' => '',
@@ -975,9 +975,13 @@ function initOptimisthubGatewayClass()
                     'taxes' => [],
                     'order_id' => $order->get_id(),
                 ]
-            );
-            $orderFee->save();
-
+            );*/
+            $orderFee->set_name( __('Installment Fee', 'moka-woocommerce') );
+            $orderFee->set_amount( $installmentFee );
+            $orderFee->set_tax_class( '' );
+            $orderFee->set_tax_status( 'none' );
+            $orderFee->set_total( $installmentFee );
+            
             $order->add_item( $orderFee );
             $order->calculate_totals(true);
             $order->save();
