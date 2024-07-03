@@ -178,7 +178,7 @@ function initOptimisthubGatewayClass()
                     'options' => [
                         1 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 1 ),
                         2 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 2 ),
-                        3 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 2 ),
+                        3 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 3 ),
                         4 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 4 ),
                         5 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 5 ),
                         6 => sprintf( __( '%s Installement', 'moka-woocommerce' ), 6 ),
