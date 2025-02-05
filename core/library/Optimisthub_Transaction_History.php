@@ -12,6 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Optimisthub_Transaction_History
 {
 
+    public $tableName ;
+    
     public function __construct()
     {
         global $wpdb;

@@ -14,8 +14,14 @@ function initOptimisthubGatewayClass()
     {
         return;
     }
+
     
     class OptimistHub_Moka_Gateway extends WC_Payment_Gateway {
+
+        public $testmode, $installment, $enable_3d, $show_installment_total, $company_code, $company_name,
+        $api_username, $api_password, $order_prefix, $order_status, $subscriptions, $installment_message,
+        $installment_tab_enable, $installment_tab_position, $isSubscriptionsEnabled, $optimisthubMoka,
+        $limitInstallment, $limitInstallmentByProduct, $debugMode, $maxInstallment, $userInformation;
 
         public function __construct() 
         {  

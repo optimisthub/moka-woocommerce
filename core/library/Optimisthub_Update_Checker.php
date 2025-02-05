@@ -10,10 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Optimisthub_Update_Checker 
 {
-    public $plugin_slug;
-    public $version;
-    public $cache_key;
-    public $cache_allowed;
+    public $plugin_slug, $version, $cache_key, $cache_allowed, $endpoint, $platform;
 
     public function __construct()
     {

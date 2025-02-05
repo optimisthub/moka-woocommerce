@@ -5,6 +5,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Optimisthub_Ajax
 {
+    public $mokaPayRequest, $mokaOptions, $installments, $installment_total, $enableInstallment, $limitInstallment,
+    $limitInstallmentByProduct;
+
     public function __construct() 
     {
         $this->mokaPayRequest = new MokaPayment();
