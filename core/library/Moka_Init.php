@@ -67,8 +67,11 @@ class Moka_Init
 			return ;
 		}
 
-		if ( 'product' != $_POST['post_type'] || !current_user_can( 'manage_woocommerce' ) ) {
-			return;
+		if(isset($_POST['post_type']))
+		{
+			if ( 'product' != $_POST['post_type'] || !current_user_can( 'manage_woocommerce' ) ) {
+				return;
+			}
 		}
 
 		if(isset($_POST['_limitInstallment'])){
