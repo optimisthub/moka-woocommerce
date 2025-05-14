@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: Moka Payment Gateway for WooCommerce
+ * Plugin Name: Moka United Payment Gateway for WooCommerce
  * Plugin URI: https://github.com/optimisthub/moka-woocommerce
  * Description: Moka Payment gateway for woocommerce
  * Version: 3.8.6
