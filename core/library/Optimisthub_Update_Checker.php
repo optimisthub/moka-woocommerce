@@ -140,9 +140,13 @@ class Optimisthub_Update_Checker
         if ( isset($transient->checked ) && empty($transient->checked ) ) {
             return $transient;
         }
-
+	    
         $remote = $this->request();
-        
+
+	if (!is_object($transient)) {
+	    $transient = new stdClass();
+	}
+	    
         if(
             $remote 
             && data_get($remote, 'version') 
