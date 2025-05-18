@@ -135,40 +135,40 @@ class Optimisthub_Update_Checker
      * @param [type] $transient
      * @return void
      */
-    public function update( $transient ) {
-
-        if ( isset($transient->checked ) && empty($transient->checked ) ) {
+    public function update($transient) 
+    {
+        if (!is_object($transient)) {
+            $transient = new stdClass();
+        }
+    
+        if (isset($transient->checked) && empty($transient->checked)) {
             return $transient;
         }
-	    
+    
         $remote = $this->request();
-
-	if (!is_object($transient)) {
-	    $transient = new stdClass();
-	}
-	    
-        if(
-            $remote 
-            && data_get($remote, 'version') 
-            && version_compare( $this->version, $remote->version, '<' )
+    
+        if (
+            !$remote ||
+            !is_object($remote) ||
+            !property_exists($remote, 'version') ||
+            !version_compare($this->version, $remote->version, '<')
         ) {
-            $_response = new stdClass();
-            $_response->slug          = $this->plugin_slug;
-            $_response->plugin        = OPTIMISTHUB_MOKA_BASENAME; 
-            $_response->new_version   = data_get($remote, 'version');
-            $_response->tested        = data_get($remote, 'tested');
-            $_response->package       = data_get($remote, 'download_url');
-
-            if( is_array($transient->response) ){
-                $transient->response[ $_response->plugin ] = $_response;
-            }else{
-                $transient->response = [
-                    $_response->plugin => $_response,
-                ];
-            }
-
-        } 
-
+            return $transient;
+        }
+    
+        if (!isset($transient->response) || !is_array($transient->response)) {
+            $transient->response = [];
+        }
+    
+        $_response = new stdClass();
+        $_response->slug         = $this->plugin_slug;
+        $_response->plugin       = OPTIMISTHUB_MOKA_BASENAME;
+        $_response->new_version  = data_get($remote, 'version');
+        $_response->tested       = data_get($remote, 'tested');
+        $_response->package      = data_get($remote, 'download_url');
+    
+        $transient->response[$_response->plugin] = $_response;
+    
         return $transient;
     }
 
