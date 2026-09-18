@@ -836,6 +836,7 @@ function initOptimisthubGatewayClass()
                 'Currency'              => (string) $order->get_currency() == 'TRY' ? 'TL' : $order->get_currency() ,
                 'InstallmentNumber'     => (int) $selectedInstallment,
                 'ClientIP'              => (string) self::getUserIp(),
+                'ClientPort'            => (string) self::getUserPort(),
                 'RedirectUrl'           => (string) self::checkoutPaymentUrl($orderIdTrx),
                 'OtherTrxCode'          => (string) $this->order_prefix.'-OPT-'.$orderId,
                 'Software'              => (string) strtoupper('OPT-WpWoo-'.get_bloginfo('version').'-'.WC_VERSION),
@@ -880,29 +881,290 @@ function initOptimisthubGatewayClass()
         }
 
         /**
-         * User IP Adress
+         * Reserved / private IP ranges rejected by Moka United.
          *
-         * @return void
+         * @see https://developer.mokaunited.com ClientIP & ClientPort guide
+         * @return array
+         */
+        private function reservedIpRanges()
+        {
+            return [
+                '10.0.0.0/8',
+                '172.16.0.0/12',
+                '192.168.0.0/16',
+                '127.0.0.0/8',
+                '169.254.0.0/16',
+                '100.64.0.0/10',
+                '192.0.0.0/24',
+                '192.0.2.0/24',
+                '198.18.0.0/15',
+                '198.51.100.0/24',
+                '203.0.113.0/24',
+                '224.0.0.0/4',
+                '240.0.0.0/4',
+                '0.0.0.0/8',
+                '::1/128',
+                'fc00::/7',
+                'fe80::/10',
+                'ff00::/8',
+                '::/128',
+            ];
+        }
+
+        /**
+         * Check whether an IP is a usable public (non reserved) address.
+         *
+         * @param [string] $ip
+         * @return boolean
+         */
+        private function isPublicIp($ip)
+        {
+            $ip = trim((string) $ip);
+
+            if ($ip === '' || filter_var($ip, FILTER_VALIDATE_IP) === false) {
+                return false;
+            }
+
+            /**
+             * Some hosts report IPv4 mapped IPv6 (::ffff:1.2.3.4).
+             * Normalize before range checks.
+             */
+            if (stripos($ip, '::ffff:') === 0 && filter_var(substr($ip, 7), FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                $ip = substr($ip, 7);
+            }
+
+            /**
+             * Private / reserved IPv4 ranges are rejected outright.
+             *
+             * This is applied to IPv4 only: PHP also flags the documentation
+             * range 2001:db8::/32 as reserved, while Moka's guide lists it as
+             * a valid ClientIP value. IPv6 is range checked explicitly below.
+             */
+            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+                    return false;
+                }
+
+                /**
+                 * FILTER_FLAG_NO_RES_RANGE does not cover every range Moka rejects.
+                 */
+                foreach (self::reservedIpRanges() as $range) {
+                    if (!filter_var($range, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                        continue;
+                    }
+                    [$network, $bits] = explode('/', $range);
+                    $mask  = -1 << (32 - (int) $bits);
+                    $net   = ip2long($network) & $mask;
+                    $addr  = ip2long($ip) & $mask;
+                    if ($net === $addr) {
+                        return false;
+                    }
+                }
+            } elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+                /**
+                 * Moka accepts documentation style IPv6 such as 2001:db8::/32,
+                 * which PHP flags as reserved. Only the truly non routable
+                 * IPv6 ranges are rejected here.
+                 */
+                $bin = inet_pton($ip);
+
+                if ($bin === false) {
+                    return false;
+                }
+
+                $isInRange = static function ($network, $bits) use ($bin) {
+                    $netBin = inet_pton($network);
+                    if ($netBin === false) {
+                        return false;
+                    }
+                    $bytes = intdiv((int) $bits, 8);
+                    $rem   = (int) $bits % 8;
+
+                    if ($bytes > 0 && substr($bin, 0, $bytes) !== substr($netBin, 0, $bytes)) {
+                        return false;
+                    }
+
+                    if ($rem > 0) {
+                        $mask = 0xff << (8 - $rem) & 0xff;
+                        if ((ord($bin[$bytes]) & $mask) !== (ord($netBin[$bytes]) & $mask)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                };
+
+                foreach (['::1/128', '::/128', 'fc00::/7', 'fe80::/10', 'ff00::/8'] as $range) {
+                    [$network, $bits] = explode('/', $range);
+                    if ($isInRange($network, $bits)) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /**
+         * Resolve the real end user IP address.
+         *
+         * Reads CDN / proxy headers when present, otherwise falls back to REMOTE_ADDR.
+         * Only a valid public IP is ever returned.
+         *
+         * @return string
          */
         private function getUserIp()
         {
-            if ( isset($_SERVER["HTTP_CF_CONNECTING_IP"]) ) {
-                $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
-                $_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
-                $_SERVER['HTTP_X_FORWARDED_FOR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
-            }
-            $remote  = $_SERVER['REMOTE_ADDR'];
-
-            if( isset($_SERVER['HTTP_CLIENT_IP']) && filter_var($_SERVER['HTTP_CLIENT_IP'], FILTER_VALIDATE_IP) )
-            {
-                $remote = $_SERVER['HTTP_CLIENT_IP'];
-            }
-            elseif( isset($_SERVER['HTTP_X_FORWARDED_FOR']) && filter_var($_SERVER['HTTP_X_FORWARDED_FOR'], FILTER_VALIDATE_IP) )
-            {
-                $remote = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            /**
+             * Allow hosts behind custom proxies to short circuit the detection.
+             */
+            $customIp = apply_filters('optimisthub_moka_client_ip', null);
+            if ($customIp !== null && self::isPublicIp($customIp)) {
+                return (string) $customIp;
             }
 
-            return $remote;
+            $candidates = [];
+
+            /**
+             * Cloudflare and other CDNs expose the original visitor address here.
+             */
+            if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+                $candidates[] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+            }
+
+            if (!empty($_SERVER['HTTP_TRUE_CLIENT_IP'])) {
+                $candidates[] = $_SERVER['HTTP_TRUE_CLIENT_IP'];
+            }
+
+            if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
+                $candidates[] = $_SERVER['HTTP_X_REAL_IP'];
+            }
+
+            /**
+             * X-Forwarded-For may hold a chain: "client, proxy1, proxy2".
+             * The first usable public address is the real client.
+             */
+            $forwardedFor = '';
+            if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $forwardedFor = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            } elseif (!empty($_SERVER['HTTP_X_FORWARDED'])) {
+                $forwardedFor = $_SERVER['HTTP_X_FORWARDED'];
+            }
+
+            if ($forwardedFor !== '') {
+                foreach (explode(',', $forwardedFor) as $perIp) {
+                    $candidates[] = trim($perIp);
+                }
+            }
+
+            if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                $candidates[] = $_SERVER['HTTP_CLIENT_IP'];
+            }
+
+            if (!empty($_SERVER['REMOTE_ADDR'])) {
+                $candidates[] = $_SERVER['REMOTE_ADDR'];
+            }
+
+            foreach ($candidates as $perCandidate) {
+                /**
+                 * Some upstreams append the port to the address (1.2.3.4:5678).
+                 */
+                $perCandidate = trim((string) $perCandidate);
+                if (strpos($perCandidate, ',') !== false) {
+                    $perCandidate = trim(current(explode(',', $perCandidate)));
+                }
+                if (substr_count($perCandidate, ':') === 1) {
+                    $perCandidate = current(explode(':', $perCandidate));
+                }
+
+                if (self::isPublicIp($perCandidate)) {
+                    return (string) $perCandidate;
+                }
+            }
+
+            /**
+             * Last resort: hand back the raw remote address so the gateway
+             * response (and Moka validation error) stays traceable.
+             */
+            return isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+        }
+
+        /**
+         * Resolve the end user source port for the current connection.
+         *
+         * The port cannot be read from the connection itself once a proxy or
+         * load balancer terminates it, so proxy headers are checked first.
+         *
+         * @return string
+         */
+        private function getUserPort()
+        {
+            /**
+             * Allow hosts behind custom proxies to short circuit the detection.
+             */
+            $customPort = apply_filters('optimisthub_moka_client_port', null);
+            if (self::isValidPort($customPort)) {
+                return (string) $customPort;
+            }
+
+            $candidates = [];
+
+            if (!empty($_SERVER['HTTP_X_FORWARDED_PORT'])) {
+                $candidates[] = $_SERVER['HTTP_X_FORWARDED_PORT'];
+            }
+
+            if (!empty($_SERVER['HTTP_X_REAL_PORT'])) {
+                $candidates[] = $_SERVER['HTTP_X_REAL_PORT'];
+            }
+
+            if (!empty($_SERVER['HTTP_X_CLIENT_PORT'])) {
+                $candidates[] = $_SERVER['HTTP_X_CLIENT_PORT'];
+            }
+
+            if (!empty($_SERVER['REMOTE_PORT'])) {
+                $candidates[] = $_SERVER['REMOTE_PORT'];
+            }
+
+            foreach ($candidates as $perCandidate) {
+                /**
+                 * X-Forwarded-Port can be a comma separated chain too.
+                 */
+                $perCandidate = trim((string) $perCandidate);
+                if (strpos($perCandidate, ',') !== false) {
+                    $perCandidate = trim(current(explode(',', $perCandidate)));
+                }
+
+                if (self::isValidPort($perCandidate)) {
+                    return (string) $perCandidate;
+                }
+            }
+
+            return '';
+        }
+
+        /**
+         * Validate a client port value.
+         *
+         * Moka accepts digits only between 1 and 65535.
+         *
+         * @param [mixed] $port
+         * @return boolean
+         */
+        private function isValidPort($port)
+        {
+            if (is_int($port)) {
+                return $port >= 1 && $port <= 65535;
+            }
+
+            $port = trim((string) $port);
+
+            if ($port === '' || !ctype_digit($port)) {
+                return false;
+            }
+
+            $port = (int) $port;
+
+            return $port >= 1 && $port <= 65535;
         }
 
         /**

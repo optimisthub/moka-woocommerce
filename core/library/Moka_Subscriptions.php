@@ -545,6 +545,7 @@ class MokaSubscription
                         'Currency'              => data_get($orderDetails, 'Currency') ,
                         'InstallmentNumber'     => data_get($orderDetails, 'InstallmentNumber'),
                         'ClientIP'              => data_get($orderDetails, 'ClientIP'),
+                        'ClientPort'            => data_get($orderDetails, 'ClientPort'),
                         'OtherTrxCode'          => $otherTrxCode,
                         'Software'              => strtoupper('OPT-WpWoo-'.get_bloginfo('version').'-'.WC_VERSION), 
                         'Description'           => 'RecurringPayment-'.$orderId,

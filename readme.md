@@ -16,6 +16,44 @@
 - Moka United PAY WooCommerce module is 100% compatible with WooCommerce and Wordpress systems. 
 - After the integration you can offer manually created orders and payment support to your customers.
 
+## ClientIP & ClientPort (Required)
+
+TCMB regulation makes the end user `ClientIP` and `ClientPort` fields mandatory on every payment request.
+The plugin sends both automatically, with no configuration required on a standard server.
+
+**Behind a proxy, load balancer or CDN** the connection is terminated by the intermediary, so the real
+customer address and port must be forwarded to PHP. Configure your edge to pass these headers:
+
+```nginx
+# nginx
+proxy_set_header X-Real-IP        $remote_addr;
+proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Port $remote_port;
+```
+
+```apache
+# Apache
+RemoteIPHeader X-Forwarded-For
+```
+
+Cloudflare and most CDNs set `CF-Connecting-IP` / `X-Forwarded-For` automatically.
+
+The plugin reads, in order:
+
+- **IP** : `CF-Connecting-IP` -> `True-Client-IP` -> `X-Real-IP` -> `X-Forwarded-For` (first public address) -> `Client-IP` -> `REMOTE_ADDR`
+- **Port** : `X-Forwarded-Port` -> `X-Real-Port` -> `X-Client-Port` -> `REMOTE_PORT`
+
+Private, reserved and loopback addresses are discarded, because Moka rejects them.
+If your infrastructure uses custom header names, override the detection:
+
+```php
+add_filter('optimisthub_moka_client_ip', fn() => $_SERVER['HTTP_X_MY_CLIENT_IP'] ?? null);
+add_filter('optimisthub_moka_client_port', fn() => $_SERVER['HTTP_X_MY_CLIENT_PORT'] ?? null);
+```
+
+Since recurring subscription payments run from cron with no visitor connection, the original
+`ClientIP` / `ClientPort` captured on the first payment are reused for renewals.
+
 ## Requirements & Release Notes
 
 Moka United Pos, Moka United Pay plugin;

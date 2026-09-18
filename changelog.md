@@ -1,3 +1,23 @@
+#### Version 3.8.8
+- Feature : ClientPort support (mandatory per TCMB regulation)
+- Improvement : ClientIP detection rewritten for proxy / CDN / load balancer setups
+- Issue : X-Forwarded-For chains were not parsed, the proxy IP was sent instead of the customer IP
+- Issue : Private and reserved IP ranges (10.x, 172.16-31.x, 192.168.x, 127.0.0.1) were sent and rejected by Moka
+- Improvement : New filters `optimisthub_moka_client_ip` and `optimisthub_moka_client_port`
+
+#### Version 3.8.7
+- Improvement : Update checker
+
+#### Version 3.8.6
+- Improvement : Update checker
+
+#### Version 3.8.5
+- Improvement : PHP 8.x support
+- Issue : Undefined post_type key
+
+#### Version 3.8.4
+- Improvement : PHP 8.x support
+
 #### Version 3.8.3
 - Improvement : Force update check
 - Improvement : Translations Update
