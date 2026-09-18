@@ -1,3 +1,7 @@
+#### Version 3.8.9
+- Improvement : Release maintenance, no functional change
+- Information : WooCommerce client IP & port guide : https://github.com/optimisthub/moka-woocommerce#clientip--clientport-required
+
 #### Version 3.8.8
 - Feature : ClientPort support (mandatory per TCMB regulation)
 - Improvement : ClientIP detection rewritten for proxy / CDN / load balancer setups
