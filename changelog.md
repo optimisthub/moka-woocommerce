@@ -1,3 +1,10 @@
+#### Version 3.9.0
+- Feature : WordPress.org geçiş köprüsü — yönetici panelinde tek tıkla yeni sürüme geçiş
+- Information : Yeni eklenti artık WordPress.org üzerinden güncelleniyor: https://wordpress.org/plugins/optimisthub-moka-united-payment-for-woocommerce/
+- Information : Geçişte ayarlar (`woocommerce_mokapay_settings`) ve işlem geçmişi KORUNUR; geçit kimliği (`mokapay`) aynıdır
+- Improvement : Eski eklenti, yeni sürüm etkinleştirildikten SONRA devre dışı bırakılır — kurulum başarısız olursa ödeme almaya devam edilir
+- Issue : İki eklenti aynı anda etkin kalırsa geçit çakışması yaşanıyordu; köprü bunu otomatik çözer
+
 #### Version 3.8.9
 - Improvement : Release maintenance, no functional change
 - Information : WooCommerce client IP & port guide : https://github.com/optimisthub/moka-woocommerce#clientip--clientport-required

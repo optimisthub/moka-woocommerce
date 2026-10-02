@@ -3,7 +3,7 @@
  * Plugin Name: Moka United Payment Gateway for WooCommerce
  * Plugin URI: https://github.com/optimisthub/moka-woocommerce
  * Description: Moka Payment gateway for woocommerce
- * Version: 3.8.9
+ * Version: 3.9.0
  * Author: Optimist Hub
  * Author URI: https://optimisthub.com/?utm_source=moka-woocommerce&utm_campaign=moka-woocommerce&utm_content=plugins
  * Domain Path: /languages/ 
@@ -14,7 +14,7 @@ if ( !defined('ABSPATH') ) {
     exit;
 }
 
-define( 'OPTIMISTHUB_MOKA_PAY_VERSION', '3.8.9' );
+define( 'OPTIMISTHUB_MOKA_PAY_VERSION', '3.9.0' );
 define( 'OPTIMISTHUB_MOKA_FILE', __FILE__ );
 define( 'OPTIMISTHUB_MOKA_BASENAME', plugin_basename( OPTIMISTHUB_MOKA_FILE ) );
 define( 'OPTIMISTHUB_MOKA_DIR', plugin_dir_path( OPTIMISTHUB_MOKA_FILE ) );
@@ -109,4 +109,23 @@ function mokaPaySqlTables()
 
 register_activation_hook(__FILE__, 'mokaPaySqlTables');
 
-add_action( 'plugins_loaded', 'loadOptimisthubMoka' ); 
+add_action( 'plugins_loaded', 'loadOptimisthubMoka' );
+
+/**
+ * WordPress.org gecis koprusu (3.9.0).
+ *
+ * Yeni eklenti farkli bir slug ile yayinlandigi icin otomatik guncelleme
+ * akisi yoktur; bu sinif yoneticiye tek tikla gecis sunar.
+ *
+ * @return void
+ */
+function optimisthubMokaMigration()
+{
+	if ( ! class_exists( 'Optimisthub_Migration' ) ) {
+		return;
+	}
+
+	new Optimisthub_Migration();
+}
+
+add_action( 'plugins_loaded', 'optimisthubMokaMigration', 20 );
