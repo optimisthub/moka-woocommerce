@@ -32,12 +32,12 @@ class Optimisthub_Migration {
 	/**
 	 * Yeni eklentinin WordPress.org slug'ı.
 	 */
-	const TARGET_SLUG = 'optimisthub-moka-united-payment-for-woocommerce';
+	const TARGET_SLUG = 'optimist-hub-payment-gateway-with-moka-united-for-woocommerce';
 
 	/**
 	 * Yeni eklentinin ana dosyası (slug'a göre).
 	 */
-	const TARGET_FILE = 'optimisthub-moka-united-payment-for-woocommerce/optimisthub-moka-united-payment-for-woocommerce.php';
+	const TARGET_FILE = 'optimist-hub-payment-gateway-with-moka-united-for-woocommerce/optimist-hub-payment-gateway-with-moka-united-for-woocommerce.php';
 
 	/**
 	 * Eylem adı.
