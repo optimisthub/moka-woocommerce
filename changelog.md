@@ -1,3 +1,11 @@
+#### Version 3.9.1
+- Security : Ödeme callback doğrulaması sağlamlaştırıldı — callback artık siparişe bağlı, tek kullanımlık doğrulama kaydı olmadan kabul edilmiyor; kayıt yoksa hiçbir hash geçerli sayılmaz
+- Security : Hash karşılaştırması sabit zamanlı `hash_equals()` ile yapılıyor
+- Security : Sipariş yalnızca ödeme Moka tarafında sunucu-sunucuya doğrulandıktan sonra tamamlanıyor (`PaymentStatus=2` ve `TrxStatus=1`) ve tutar eşleşmesi aranıyor
+- Security : API kapısı fail-closed — yalnızca üst düzey `ResultCode` kabul edilir; `Data.IsSuccessful` tek başına yeterli değildir
+- Issue : İşlem kodu (`OtherTrxCode`) her denemede benzersiz üretiliyor; aynı sipariş için ikinci deneme reddediliyordu
+- Issue : `formatOrderDetailsForLog()` içindeki tanımsız `$params` değişkeni nedeniyle CVC ve son kullanma tarihi temizlenmiyor, tam kart numarası saklanıyordu; artık CVC/tarih temizlenir ve kart numarası yalnızca son 4 hanesiyle tutulur
+
 #### Version 3.9.0
 - Feature : WordPress.org geçiş köprüsü — yönetici panelinde tek tıkla yeni sürüme geçiş
 - Information : Yeni eklenti artık WordPress.org üzerinden güncelleniyor: https://wordpress.org/plugins/optimisthub-moka-united-payment-for-woocommerce/
