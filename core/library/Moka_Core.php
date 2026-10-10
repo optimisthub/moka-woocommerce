@@ -63,6 +63,44 @@ class MokaPayment
     }
 
     /**
+     * Fetch the transaction detail from Moka by `OtherTrxCode`.
+     *
+     * Used to verify a payment callback server-to-server before the order is
+     * completed. Returns the decoded response body (including `ResultCode`).
+     *
+     * @param string $otherTrxCode
+     * @return array
+     */
+    public function getPaymentDetail($otherTrxCode)
+    {
+        global $mokaKey;
+
+        $postParams = [
+            'PaymentDealerAuthentication' => 
+            [
+                'DealerCode'=> data_get($this->mokaOptions, 'company_code'),
+                'Username'  => data_get($this->mokaOptions, 'api_username'),
+                'Password'  => data_get($this->mokaOptions, 'api_password'),
+                'CheckKey'  => $mokaKey,
+            ],
+            'PaymentDealerRequest' => 
+            [
+                'OtherTrxCode' => $otherTrxCode,
+            ]
+        ]; 
+
+        $response = self::doRequest('/PaymentDealer/GetDealerPaymentTrxDetailList', $postParams);
+
+        if($response['status'] && $response['code'] == 200)
+        {
+            $responseBody = json_decode($response['body'], true);
+            return is_array($responseBody) ? $responseBody : [];
+        }
+
+        return [];
+    }
+
+    /**
      * Decide payment type
      *
      * @param [type] $params

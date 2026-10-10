@@ -661,6 +661,14 @@ function initOptimisthubGatewayClass()
             $order = new WC_order($orderId);
             $isCompleted = self::validatePayment(data_get($fetchData, 'id_hash'));
 
+            // Hash doğru olsa bile callback istemciden gelir; sipariş yalnızca
+            // ödeme Moka tarafında sunucu-sunucuya doğrulandıktan sonra tamamlanır.
+            if ($isCompleted && !self::verifyPaymentWithMoka($orderDetails)) {
+                $order->add_order_note( __('Moka Pay: callback hash doğrulandı ancak ödeme Moka tarafında teyit edilemedi. Sipariş tamamlanmadı.', 'moka-woocommerce') );
+
+                $isCompleted = false;
+            }
+
             if($isCompleted)
             { 
 
@@ -838,7 +846,13 @@ function initOptimisthubGatewayClass()
                 'ClientIP'              => (string) self::getUserIp(),
                 'ClientPort'            => (string) self::getUserPort(),
                 'RedirectUrl'           => (string) self::checkoutPaymentUrl($orderIdTrx),
-                'OtherTrxCode'          => (string) $this->order_prefix.'-OPT-'.$orderId,
+                // Moka OtherTrxCode'u bayi bazinda KALICI olarak benzersiz ister;
+                // siparis kimligi tekrar kullanilabilir bir deger oldugu icin ayni
+                // siparisle ikinci deneme reddedilir veya baska bir islemin kaydi
+                // eslesir. Her denemede yeni bir kod uretilir; callback dogrulamasi
+                // bu kodla saklandigi icin (bkz. saveHash/getHash) ayni deger
+                // getPaymentDetail() sorgusunda da kullanilir.
+                'OtherTrxCode'          => (string) $this->order_prefix.'-OPT-'.$orderIdTrx.'-'.date('YmdHis').'-'.mt_rand(1000, 9999),
                 'Software'              => (string) strtoupper('OPT-WpWoo-'.get_bloginfo('version').'-'.WC_VERSION),
                 'ReturnHash'            => (int) 1,
                 'SubMerchantName'       => "",
@@ -1269,21 +1283,102 @@ function initOptimisthubGatewayClass()
         }
         
         /**
-         * Validte payment With Stored Hash
+         * Validate payment With Stored Hash
          *
-         * @return void
+         * The stored `CodeForHash` is required: when it is missing the expected
+         * value would collapse to the publicly computable `sha256("T")`.
+         *
+         * @param string $hash Stored `CodeForHash` for the order.
+         * @return bool
          */
         private function validatePayment($hash)
         {
-            $postData       = $_POST;
-            $hashValue      = data_get($postData, 'hashValue');
-            $hashSession    = hash("sha256", $hash."T");
+            $hashValue = data_get($_POST, 'hashValue');
 
-            if ($hashValue == $hashSession) {
-                return true;
-            } else {
+            if (!is_string($hash) || $hash === '' || !is_string($hashValue) || $hashValue === '') {
                 return false;
             }
+
+            $hashSession = hash("sha256", $hash."T");
+
+            return hash_equals($hashSession, $hashValue);
+        }
+
+        /**
+         * Verify the payment on the Moka side.
+         *
+         * The callback comes from the client; even when the hash is correct the
+         * traffic can be imitated. The transaction is queried server-to-server
+         * and the order is only completed when Moka reports it as successful
+         * with a matching amount.
+         *
+         * @param array $orderDetails Order details sent to Moka.
+         * @return bool
+         */
+        private function verifyPaymentWithMoka($orderDetails)
+        {
+            $trxCode = data_get($orderDetails, 'OtherTrxCode');
+
+            if (!is_string($trxCode) || $trxCode === '') {
+                return false;
+            }
+
+            $response = $this->optimisthubMoka->getPaymentDetail($trxCode);
+
+            if (!is_array($response)) {
+                return false;
+            }
+
+            $resultCode = data_get($response, 'ResultCode');
+
+            // Fail-closed: üst düzey ResultCode başarılı olmalı. `Data.IsSuccessful`
+            // "istek işlendi" anlamına gelir, "ödeme başarılı" değil; bu yüzden
+            // onu tek başına yeterli saymak hatalı bir yanıtı ödeme kabul eder.
+            if ($resultCode !== 'Success' && $resultCode !== '00') {
+                return false;
+            }
+
+            $paymentDetail = data_get($response, 'Data.PaymentDetail');
+
+            if (!is_array($paymentDetail)) {
+                return false;
+            }
+
+            // Moka durum tablosu: PaymentStatus 2 (Ödeme) + TrxStatus 1 (Başarılı)
+            // birlikte "ödeme başarılı" demektir; TrxStatus tek başına 1 iken
+            // iptal (PaymentStatus 3) veya ön provizyon (1) olabilir.
+            $paymentStatus = (isset($paymentDetail['PaymentStatus']) && is_numeric($paymentDetail['PaymentStatus'])) ? (int) $paymentDetail['PaymentStatus'] : 0;
+            $trxStatus = (isset($paymentDetail['TrxStatus']) && is_numeric($paymentDetail['TrxStatus'])) ? (int) $paymentDetail['TrxStatus'] : 0;
+
+            if ($paymentStatus !== 2 || $trxStatus !== 1) {
+                return false;
+            }
+
+            // Tutar, ödeme başlatılırken Moka'ya gönderilen tutarla eşleşmeli.
+            $expectedAmount = data_get($orderDetails, 'Amount');
+            $mokaAmount = (isset($paymentDetail['Amount']) && is_numeric($paymentDetail['Amount'])) ? (float) $paymentDetail['Amount'] : 0.0;
+
+            if (!is_numeric($expectedAmount) || abs($mokaAmount - (float) $expectedAmount) >= 0.01) {
+                return false;
+            }
+
+            // Para birimi: TRY ve TL eşdeğerdir, alan boşsa bu adım atlanır.
+            $mokaCurrency = isset($paymentDetail['CurrencyCode']) ? strtoupper((string) $paymentDetail['CurrencyCode']) : '';
+            $expectedCurrency = strtoupper((string) data_get($orderDetails, 'Currency'));
+
+            if ($mokaCurrency === 'TRY') {
+                $mokaCurrency = 'TL';
+            }
+
+            if ($expectedCurrency === 'TRY') {
+                $expectedCurrency = 'TL';
+            }
+
+            if ($mokaCurrency !== '' && $expectedCurrency !== '' && $mokaCurrency !== $expectedCurrency) {
+                return false;
+            }
+
+            return true;
         }
 
         /**
@@ -1682,32 +1777,39 @@ function initOptimisthubGatewayClass()
          */
         private function formatOrderDetailsForLog($param)
         { 
-            
-            if( isset( $params['CvcNumber'] ) ) {
-                unset($params['CvcNumber']);
+            // CVC ve son kullanma tarihi hiçbir koşulda saklanmaz (PCI DSS).
+            // Not: bu blokta eskiden `$params` (tanımsız değişken) kullanılıyordu;
+            // bu yüzden alanlar hiç temizlenmiyor, tam kart numarası ve CVC
+            // veritabanına yazılıyordu.
+            if( isset( $param['CvcNumber'] ) ) {
+                unset($param['CvcNumber']);
             }
-            if( isset( $params['ExpYear'] ) ) {
-                unset($params['ExpYear']);
+            if( isset( $param['ExpYear'] ) ) {
+                unset($param['ExpYear']);
             }
-            if( isset( $params['ExpMonth'] ) ) {
-                unset($params['ExpMonth']);
+            if( isset( $param['ExpMonth'] ) ) {
+                unset($param['ExpMonth']);
             }
-            if( isset( $params['CustomerDetails'] ) ) {
-                if( isset( $params['CustomerDetails']['ExpYear'] ) ) {
-                    unset($params['CustomerDetails']['ExpYear']);
+            if( isset( $param['CustomerDetails'] ) ) {
+                if( isset( $param['CustomerDetails']['ExpYear'] ) ) {
+                    unset($param['CustomerDetails']['ExpYear']);
                 }
-                if( isset( $params['CustomerDetails']['ExpYear'] ) ) {
-                    unset($params['CustomerDetails']['ExpMonth']);
+                if( isset( $param['CustomerDetails']['ExpMonth'] ) ) {
+                    unset($param['CustomerDetails']['ExpMonth']);
+                }
+                if( isset( $param['CustomerDetails']['CvcNumber'] ) ) {
+                    unset($param['CustomerDetails']['CvcNumber']);
                 }
             }
 
-            if( data_get($param, 'hideCardNumber') ) {
-                if(data_get($param, 'CardNumber')) {
-                    $param['CardNumber'] = '**** **** **** '.substr($param['CardNumber'], -4);
-                } 
-                if(data_get($param, 'CustomerDetails.CardNumber')) {
-                    $param['CustomerDetails']['CardNumber'] = '**** **** **** '.substr($param['CustomerDetails']['CardNumber'], -4);
-                }
+            // Kart numarası yalnızca son 4 hanesiyle saklanır. Bu değeri işlevsel
+            // okuyan kod yok (Moka sorgusu OtherTrxCode ile yapılır), bu yüzden
+            // maskeleme koşulsuz uygulanır.
+            if( data_get($param, 'CardNumber') ) {
+                $param['CardNumber'] = '**** **** **** '.substr((string) $param['CardNumber'], -4);
+            }
+            if( data_get($param, 'CustomerDetails.CardNumber') ) {
+                $param['CustomerDetails']['CardNumber'] = '**** **** **** '.substr((string) $param['CustomerDetails']['CardNumber'], -4);
             }
            
             return json_encode($param, true);
