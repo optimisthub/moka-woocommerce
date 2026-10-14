@@ -1,8 +1,49 @@
 <p align="center">
-  <a href="https://optimisthub.com/?utm_source=moka-woocommerce&utm_campaign=moka-woocommerce&utm_content=readme">
-    <img alt="Optimisthub.com" src="https://www.optimisthub.com/cdn/moka/moka-woocommerce-plugin.png">
-  </a> 
+  <a href="https://wordpress.org/plugins/optimisthub-moka-united-payment-for-woocommerce/">
+    <img alt="Optimist Hub Payment Gateway with Moka United for WooCommerce" src="https://ps.w.org/optimisthub-moka-united-payment-for-woocommerce/assets/banner-1544x500.png">
+  </a>
 </p>
+
+---
+
+> # ⚠️ Bu eklenti artık geliştirilmiyor
+>
+> **Moka United for WooCommerce** artık **WordPress.org** üzerinden dağıtılıyor. Yeni sürümler, güvenlik düzeltmeleri ve destek yalnızca resmî eklentide yayınlanıyor. **Bu depo yalnızca arşiv amacıyla duruyor; yeni sürüm yayınlanmayacaktır.**
+>
+> ## 👉 [Resmî eklentiyi WordPress.org'dan indirin](https://wordpress.org/plugins/optimisthub-moka-united-payment-for-woocommerce/)
+>
+> | | |
+> |---|---|
+> | **Resmî eklenti** | <https://wordpress.org/plugins/optimisthub-moka-united-payment-for-woocommerce/> |
+> | **Bu depodaki son sürüm** | 3.9.2 |
+> | **Durum** | Geliştirme durduruldu |
+>
+> ### Geçiş nasıl yapılır
+>
+> 1. Yönetim panelinizde **Moka United güncellemesi** bildirimini görün ve bu depodan gelen **3.9.2** sürümüne güncelleyin.
+> 2. Güncellemeden sonra panelde geçiş köprüsü belirir: *"Moka United eklentisi yenilendi"*.
+> 3. **Yeni sürümü kur ve geç** butonuna basın — resmî eklenti WordPress.org'dan kurulur.
+> 4. **Ayarlarınız ve işlem geçmişiniz korunur**; geçit kimliği (`mokapay`) aynıdır. Eski eklenti, yeni sürüm etkinleştirildikten **sonra** devre dışı bırakılır — kurulum başarısız olursa ödeme almaya devam edersiniz.
+>
+> ### Neden resmî eklentiye geçmelisiniz
+>
+> - **Güvenlik:** resmî eklenti WordPress.org incelemesinden geçti (`APPROVED`), kart verisi hiçbir zaman sitenizde toplanmaz (PCI kapsamı **SAQ A**).
+> - **Güncellemeler:** WordPress çekirdeği üzerinden otomatik gelir; bu depodaki gibi ayrı bir güncelleme sunucusuna bağlı değildir.
+> - **Blok checkout desteği:** yeni WooCommerce blok ödeme sayfasıyla çalışır.
+> - **Çok döviz desteği:** Moka'nın kabul ettiği 14 para birimi (TRY → `TL` eşlemesiyle).
+> - **Türkçe + İngilizce** arayüz ve güncel uyumluluk (WordPress 7.1, PHP 7.4–8.x).
+>
+> ---
+>
+> ## ⚠️ This plugin is no longer maintained
+>
+> Development has moved to **WordPress.org**: **<https://wordpress.org/plugins/optimisthub-moka-united-payment-for-woocommerce/>**
+>
+> This repository is kept for archival only and will not receive new releases. Install the official plugin — your settings and transaction history are preserved, and the old plugin is deactivated only after the new one is active.
+
+---
+
+## Description
 
 ## Description
 
@@ -67,7 +108,12 @@ Moka United Pos, Moka United Pay plugin;
 
 ## How To Install
 
-- Moka United Pay WooCommerce Plugin Download ZIP file and then Install with wordpress extension installer page.
+> **Bu depodan kurulum artık önerilmez.** Resmî eklentiyi WordPress.org'dan kurun:
+> <https://wordpress.org/plugins/optimisthub-moka-united-payment-for-woocommerce/>
+>
+> Yönetim panelinizden veya WordPress eklenti dizininden arayarak da kurabilirsiniz: **Optimist Hub Payment Gateway with Moka United for WooCommerce**.
+
+- (Eski yol, arşiv) Moka United Pay WooCommerce Plugin Download ZIP file and then Install with wordpress extension installer page.
 
 ### Test Cards
 
