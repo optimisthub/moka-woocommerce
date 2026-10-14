@@ -1,3 +1,7 @@
+#### Version 3.9.2
+- Issue : WordPress.org geçiş köprüsü var olmayan bir slug'a işaret ediyordu (`optimist-hub-payment-gateway-with-moka-united-for-woocommerce`). Ödeme sayfasını 404 döndürdüğü için "Yeni sürüme geç" butonu hiçbir kullanıcıda çalışmayacaktı. Doğru slug ile değiştirildi: `optimisthub-moka-united-payment-for-woocommerce`.
+- Information : Köprü, yeni eklentiyi https://downloads.wordpress.org/plugin/optimisthub-moka-united-payment-for-woocommerce.zip adresinden kurar.
+
 #### Version 3.9.1
 - Security : Ödeme callback doğrulaması sağlamlaştırıldı — callback artık siparişe bağlı, tek kullanımlık doğrulama kaydı olmadan kabul edilmiyor; kayıt yoksa hiçbir hash geçerli sayılmaz
 - Security : Hash karşılaştırması sabit zamanlı `hash_equals()` ile yapılıyor
